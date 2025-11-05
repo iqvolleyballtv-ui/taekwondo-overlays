@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>TKD Control</title>
+  <style>
+    :root{ --red:#D61F1F; --blue:#1F56D6; --bg:#0b1020; --card:#0f172acc; --text:#F9FAFB; }
+    html,body{ height:100%; margin:0; font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial; background:var(--bg); color:var(--text); }
+    .wrap{ max-width:800px; margin:0 auto; padding:16px; display:grid; gap:16px; }
+    .card{ background:var(--card); border-radius:16px; padding:16px; }
+    button{ background:#1F2937; border:none; color:#fff; padding:10px 12px; border-radius:10px; cursor:pointer; font-weight:600; }
+    .score{ font-size:36px; font-weight:900; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <h2>Red</h2>
+      <div class="score" id="rscore">0</div>
+      <button onclick="add('red',1)">+1</button>
+      <button onclick="add('red',-1)">-1</button>
+    </div>
+
+    <div class="card">
+      <h2>Blue</h2>
+      <div class="score" id="bscore">0</div>
+      <button onclick="add('blue',1)">+1</button>
+      <button onclick="add('blue',-1)">-1</button>
+    </div>
+
+    <div class="card">
+      <h2>Timer</h2>
+      <div id="timer">02:00</div>
+      <button onclick="startStop()">Start/Stop</button>
+      <button onclick="reset()">Reset</button>
+    </div>
+  </div>
+  <script>
+    let r=0,b=0,time=120000,run=false,interval;
+    const pad=n=>String(n).padStart(2,"0");
+    const show=()=>document.querySelector("#timer").textContent=
+      `${pad(Math.floor(time/60000))}:${pad(Math.floor(time/1000)%60)}`;
+    function add(team,v){
+      if(team==='red'){r=Math.max(0,r+v);document.querySelector("#rscore").textContent=r;}
+      else{b=Math.max(0,b+v);document.querySelector("#bscore").textContent=b;}
+    }
+    function startStop(){
+      if(run){clearInterval(interval);run=false;}
+      else{run=true;interval=setInterval(()=>{time-=1000;if(time<=0){clearInterval(interval);time=0;run=false;}show();},1000);}
+    }
+    function reset(){clearInterval(interval);time=120000;run=false;show();}
+    show();
+  </script>
+</body>
+</html>
