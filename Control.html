@@ -3,54 +3,185 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>TKD Control</title>
+  <title>TKD Control (Firebase)</title>
   <style>
-    :root{ --red:#D61F1F; --blue:#1F56D6; --bg:#0b1020; --card:#0f172acc; --text:#F9FAFB; }
+    :root{ --red:#D61F1F; --blue:#1F56D6; --bg:#0b1020; --card:#0f172acc; --text:#F9FAFB; --border:#223055; }
     html,body{ height:100%; margin:0; font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial; background:var(--bg); color:var(--text); }
-    .wrap{ max-width:800px; margin:0 auto; padding:16px; display:grid; gap:16px; }
-    .card{ background:var(--card); border-radius:16px; padding:16px; }
-    button{ background:#1F2937; border:none; color:#fff; padding:10px 12px; border-radius:10px; cursor:pointer; font-weight:600; }
-    .score{ font-size:36px; font-weight:900; }
+    .wrap{ max-width:1024px; margin:0 auto; padding:16px; display:grid; gap:16px; }
+    .card{ background:var(--card); border:1px solid var(--border); border-radius:16px; padding:16px; box-shadow:0 8px 30px #0006; }
+    .row{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+    .grid2{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+    input,button{ font-size:14px; }
+    input[type="text"],input[type="number"]{ background:#0b1220; border:1px solid #26324e; color:#fff; padding:8px 10px; border-radius:10px; }
+    button{ background:#1F2937; border:1px solid #334155; color:#fff; padding:10px 12px; border-radius:10px; cursor:pointer; font-weight:700; }
+    .big{ font-size:28px; font-weight:900; min-width:40px; text-align:center; }
+    .pill{ padding:4px 10px; border-radius:999px; font-weight:800; }
+    .red{ background:var(--red); } .blue{ background:var(--blue); }
+    .note{ opacity:.8; font-size:12px }
   </style>
 </head>
 <body>
   <div class="wrap">
     <div class="card">
-      <h2>Red</h2>
-      <div class="score" id="rscore">0</div>
-      <button onclick="add('red',1)">+1</button>
-      <button onclick="add('red',-1)">-1</button>
+      <div class="row">
+        <label>Room</label><input id="room" value="room1" style="max-width:140px"/>
+        <label>Duration (sec)</label><input id="duration" type="number" min="10" step="10" value="120" style="max-width:120px"/>
+        <button id="connect">Connect</button>
+        <button id="reset">Reset Timer</button>
+      </div>
+      <div class="note">Usa el mismo <b>room</b> en el overlay URL (ej: <code>?room=room1</code>). Debes pulsar <b>Connect</b> primero.</div>
+    </div>
+
+    <div class="grid2">
+      <div class="card">
+        <div class="row"><span class="pill red">RED</span></div>
+        <div class="row" style="margin-top:10px; align-items:center">
+          <button data-act="red-1">−</button>
+          <div class="big" id="redScore">0</div>
+          <button data-act="red+1">＋</button>
+          <button data-act="red-gamjeom" style="margin-left:auto">Gam-jeom (+1 Blue)</button>
+          <div>Penalties: <span id="redPen">0</span></div>
+        </div>
+        <div class="row" style="margin-top:8px; width:100%">
+          <label>Nombre</label><input id="redName" class="grow" value="RED" style="flex:1"/>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="row"><span class="pill blue">BLUE</span></div>
+        <div class="row" style="margin-top:10px; align-items:center">
+          <button data-act="blue-1">−</button>
+          <div class="big" id="blueScore">0</div>
+          <button data-act="blue+1">＋</button>
+          <button data-act="blue-gamjeom" style="margin-left:auto">Gam-jeom (+1 Red)</button>
+          <div>Penalties: <span id="bluePen">0</span></div>
+        </div>
+        <div class="row" style="margin-top:8px; width:100%">
+          <label>Nombre</label><input id="blueName" class="grow" value="BLUE" style="flex:1"/>
+        </div>
+      </div>
     </div>
 
     <div class="card">
-      <h2>Blue</h2>
-      <div class="score" id="bscore">0</div>
-      <button onclick="add('blue',1)">+1</button>
-      <button onclick="add('blue',-1)">-1</button>
-    </div>
-
-    <div class="card">
-      <h2>Timer</h2>
-      <div id="timer">02:00</div>
-      <button onclick="startStop()">Start/Stop</button>
-      <button onclick="reset()">Reset</button>
+      <div class="row" style="align-items:center">
+        <div>Round:
+          <button data-round="1">1</button>
+          <button data-round="2">2</button>
+          <button data-round="3">3</button>
+        </div>
+        <button id="startStop" style="margin-left:auto">Start</button>
+        <button id="save">Save / Push</button>
+        <button id="clear">New Match</button>
+      </div>
+      <div class="note" style="margin-top:6px">
+        Atajos: <b>Espacio</b> start/stop, <b>R</b> reset, <b>A/Z</b> red +/−, <b>K/M</b> blue +/−, <b>Q</b> gam-jeom Red, <b>P</b> gam-jeom Blue, <b>1/2/3</b> round.
+      </div>
     </div>
   </div>
+
   <script>
-    let r=0,b=0,time=120000,run=false,interval;
-    const pad=n=>String(n).padStart(2,"0");
-    const show=()=>document.querySelector("#timer").textContent=
-      `${pad(Math.floor(time/60000))}:${pad(Math.floor(time/1000)%60)}`;
-    function add(team,v){
-      if(team==='red'){r=Math.max(0,r+v);document.querySelector("#rscore").textContent=r;}
-      else{b=Math.max(0,b+v);document.querySelector("#bscore").textContent=b;}
-    }
-    function startStop(){
-      if(run){clearInterval(interval);run=false;}
-      else{run=true;interval=setInterval(()=>{time-=1000;if(time<=0){clearInterval(interval);time=0;run=false;}show();},1000);}
-    }
-    function reset(){clearInterval(interval);time=120000;run=false;show();}
-    show();
+    // Estado del partido a sincronizar
+    let state = {
+      room:'room1', durationSec:120, remainingMs:120000, running:false, startedAt:null,
+      redName:'RED', blueName:'BLUE',
+      redScore:0, blueScore:0, redPen:0, bluePen:0, round:1
+    };
+
+    const $ = s=>document.querySelector(s);
+    const syncUI = ()=>{
+      $('#room').value=state.room; $('#duration').value=state.durationSec;
+      $('#redName').value=state.redName; $('#blueName').value=state.blueName;
+      $('#redScore').textContent=state.redScore; $('#blueScore').textContent=state.blueScore;
+      $('#redPen').textContent=state.redPen; $('#bluePen').textContent=state.bluePen;
+      $('#startStop').textContent = state.running? 'Stop' : 'Start';
+    };
+    const readInputs = ()=>{
+      state.room = $('#room').value.trim()||'room1';
+      state.durationSec = Math.max(10, parseInt($('#duration').value||120));
+      state.redName = $('#redName').value.trim()||'RED';
+      state.blueName = $('#blueName').value.trim()||'BLUE';
+    };
+    function publish(){ readInputs(); syncUI(); if(window._push) window._push(state); }
+
+    document.body.addEventListener('click', e=>{
+      const act = e.target.getAttribute?.('data-act');
+      const rd = e.target.getAttribute?.('data-round');
+      if(act){
+        if(act==='red+1') state.redScore++;
+        if(act==='red-1') state.redScore=Math.max(0,state.redScore-1);
+        if(act==='blue+1') state.blueScore++;
+        if(act==='blue-1') state.blueScore=Math.max(0,state.blueScore-1);
+        if(act==='red-gamjeom'){ state.redPen++; state.blueScore++; }
+        if(act==='blue-gamjeom'){ state.bluePen++; state.redScore++; }
+        publish();
+      }
+      if(rd){ state.round=parseInt(rd); publish(); }
+    });
+
+    $('#startStop').addEventListener('click', ()=>{
+      if(state.running){ const elapsed=Date.now()-(state.startedAt||Date.now()); state.remainingMs=Math.max(0,state.remainingMs-elapsed); state.running=false; state.startedAt=null; }
+      else{ if(state.remainingMs<=0) state.remainingMs=state.durationSec*1000; state.running=true; state.startedAt=Date.now(); }
+      publish();
+    });
+    $('#reset').addEventListener('click', ()=>{ state.running=false; state.startedAt=null; state.remainingMs=state.durationSec*1000; publish(); });
+    $('#save').addEventListener('click', publish);
+    $('#clear').addEventListener('click', ()=>{ state={...state, redScore:0, blueScore:0, redPen:0, bluePen:0, round:1, running:false, startedAt:null, remainingMs:state.durationSec*1000}; publish(); });
+
+    // Keyboard
+    document.addEventListener('keydown', (e)=>{
+      if(['INPUT','TEXTAREA'].includes(e.target.tagName)) return;
+      if(e.code==='Space'){ e.preventDefault(); $('#startStop').click(); }
+      if(e.key==='r' || e.key==='R') $('#reset').click();
+      if(e.key==='a' || e.key==='A'){ state.redScore++; publish(); }
+      if(e.key==='z' || e.key==='Z'){ state.redScore=Math.max(0,state.redScore-1); publish(); }
+      if(e.key==='k' || e.key==='K'){ state.blueScore++; publish(); }
+      if(e.key==='m' || e.key==='M'){ state.blueScore=Math.max(0,state.blueScore-1); publish(); }
+      if(e.key==='q' || e.key==='Q'){ state.redPen++; state.blueScore++; publish(); }
+      if(e.key==='p' || e.key==='P'){ state.bluePen++; state.redScore++; publish(); }
+      if(['1','2','3'].includes(e.key)){ state.round=parseInt(e.key); publish(); }
+    });
+  </script>
+
+  <!-- Firebase glue -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
+    import { getDatabase, ref, onValue, set, get } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
+
+    // 🔥 Pega aquí MISMO config que usaste en overlay.html
+   const firebaseConfig = {
+  apiKey: "AIzaSyD8r0rLLcLPJx3DsNGMuvVTfuwCMBxRPpM",
+  authDomain: "tkd-overlay.firebaseapp.com",
+  databaseURL: "https://tkd-overlay-default-rtdb.firebaseio.com",
+  projectId: "tkd-overlay",
+  storageBucket: "tkd-overlay.firebasestorage.app",
+  messagingSenderId: "41501920835",
+  appId: "1:41501920835:web:4ccecdf129cf20619d8ef6",
+  measurementId: "G-CXBJCL86EM"
+};
+
+    const app = initializeApp(firebaseConfig);
+    const db  = getDatabase(app);
+
+    const connectBtn = document.getElementById('connect');
+    connectBtn.addEventListener('click', async ()=>{
+      readInputs();
+      const stateRef = ref(db, `tkd/${state.room}/state`);
+      const snap = await get(stateRef);
+      if(!snap.exists()){
+        state.remainingMs = state.durationSec*1000;
+        await set(stateRef, state);
+      } else {
+        state = { ...state, ...snap.val() };
+      }
+      onValue(stateRef, s=>{ const incoming=s.val(); if(incoming){ state=incoming; syncUI(); } });
+      window._push = s => set(stateRef, s);
+      syncUI();
+    });
+
+    // Autoconectar si ?room
+    const u=new URL(location.href); const rq=u.searchParams.get('room');
+    if(rq){ document.getElementById('room').value=rq; document.getElementById('connect').click(); }
+    syncUI();
   </script>
 </body>
 </html>
