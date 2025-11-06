@@ -82,9 +82,41 @@
       $("#timer").textContent = `${pad(Math.floor(t/60))}:${pad(t%60)}`;
     }
 
-    onValue(stateRef, snap => {
-      if (snap.exists()) render(snap.val());
-    });
+    let live = null; // última versión del estado recibida
+onValue(stateRef, snap => {
+  if (!snap.exists()) return;
+  live = snap.val();
+  // Render fijo (nombres, scores, round, penalties)
+  $("#redName").textContent = live.redName;
+  $("#blueName").textContent = live.blueName;
+  $("#redScore").textContent = live.redScore;
+  $("#blueScore").textContent = live.blueScore;
+  $("#redPen").textContent = live.redPen;
+  $("#bluePen").textContent = live.bluePen;
+  $("#round").textContent = "R" + live.round;
+
+  // Pintar el tiempo inmediato
+  tick();
+});
+
+// — ticker local para que el conteo se vea corriendo en Yolo —
+const pad = n => String(n).padStart(2,"0");
+function renderTimer(ms){
+  ms = Math.max(0, ms|0);
+  const s = Math.floor(ms/1000);
+  $("#timer").textContent = `${pad(Math.floor(s/60))}:${pad(s%60)}`;
+}
+function tick(){
+  if(!live){ return; }
+  let ms = live.remainingMs;
+  if(live.running && live.startedAt){
+    ms = live.remainingMs - (Date.now() - live.startedAt);
+  }
+  renderTimer(ms);
+}
+// actualiza ~5 veces por segundo para que se vea fluido
+setInterval(tick, 200);
+
   </script>
 </body>
 </html>
