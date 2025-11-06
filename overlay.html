@@ -68,54 +68,59 @@
     const room = new URL(location.href).searchParams.get('room') || 'room1';
     const stateRef = ref(db, `tkd/${room}/state`);
 
-    const $ = s=>document.querySelector(s);
-    const pad = n=>String(n).padStart(2,"0");
-    function render(state){
-      $("#redName").textContent = state.redName;
-      $("#blueName").textContent = state.blueName;
-      $("#redScore").textContent = state.redScore;
-      $("#blueScore").textContent = state.blueScore;
-      $("#redPen").textContent = state.redPen;
-      $("#bluePen").textContent = state.bluePen;
-      $("#round").textContent = "R"+state.round;
-      let t = Math.max(0, Math.floor(state.remainingMs/1000));
-      $("#timer").textContent = `${pad(Math.floor(t/60))}:${pad(t%60)}`;
-    }
+    // Helpers
+const $   = s => document.querySelector(s);
+const pad = n => String(n).padStart(2, "0");
 
-    let live = null; // última versión del estado recibida
+// Estado recibido de Firebase
+let live = null;
+
+// Pintar nombres, scores, round, penalties
+function renderStatic() {
+  if (!live) return;
+  $("#redName").textContent   = live.redName;
+  $("#blueName").textContent  = live.blueName;
+  $("#redScore").textContent  = live.redScore;
+  $("#blueScore").textContent = live.blueScore;
+  $("#redPen").textContent    = live.redPen;
+  $("#bluePen").textContent   = live.bluePen;
+  $("#round").textContent     = "R" + live.round;
+}
+
+// Pintar timer según running/startedAt/remainingMs
+let lastRenderedSec = null;
+function renderTimerNow() {
+  if (!live) return;
+  let ms = live.remainingMs;
+  if (live.running && live.startedAt) {
+    ms = live.remainingMs - (Date.now() - live.startedAt);
+  }
+  ms = Math.max(0, ms|0);
+  const sec = Math.floor(ms / 1000);
+  if (sec !== lastRenderedSec) {
+    lastRenderedSec = sec;
+    const mm = Math.floor(sec / 60);
+    const ss = sec % 60;
+    $("#timer").textContent = `${pad(mm)}:${pad(ss)}`;
+  }
+}
+
+// Bucle que no se pausa en Yolo
+function loop() {
+  renderTimerNow();
+  requestAnimationFrame(loop);
+}
+
+// Suscripción a Firebase
 onValue(stateRef, snap => {
   if (!snap.exists()) return;
   live = snap.val();
-  // Render fijo (nombres, scores, round, penalties)
-  $("#redName").textContent = live.redName;
-  $("#blueName").textContent = live.blueName;
-  $("#redScore").textContent = live.redScore;
-  $("#blueScore").textContent = live.blueScore;
-  $("#redPen").textContent = live.redPen;
-  $("#bluePen").textContent = live.bluePen;
-  $("#round").textContent = "R" + live.round;
-
-  // Pintar el tiempo inmediato
-  tick();
+  renderStatic();   // nombres, scores, round, penalties
+  renderTimerNow(); // minuto/seg actual al recibir cambio
 });
 
-// — ticker local para que el conteo se vea corriendo en Yolo —
-const pad = n => String(n).padStart(2,"0");
-function renderTimer(ms){
-  ms = Math.max(0, ms|0);
-  const s = Math.floor(ms/1000);
-  $("#timer").textContent = `${pad(Math.floor(s/60))}:${pad(s%60)}`;
-}
-function tick(){
-  if(!live){ return; }
-  let ms = live.remainingMs;
-  if(live.running && live.startedAt){
-    ms = live.remainingMs - (Date.now() - live.startedAt);
-  }
-  renderTimer(ms);
-}
-// actualiza ~5 veces por segundo para que se vea fluido
-setInterval(tick, 200);
+// Arranca el bucle
+requestAnimationFrame(loop);
 
   </script>
 </body>
