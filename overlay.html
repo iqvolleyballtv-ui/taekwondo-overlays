@@ -46,19 +46,31 @@
       </div>
     </div>
   </div>
-  <script>
-    // Simple local-only version (no Firebase)
-    let state = {
-      redName: "RED", blueName: "BLUE",
-      redScore: 0, blueScore: 0,
-      redPen: 0, bluePen: 0,
-      round: 1,
-      remaining: 120000, // 2min
-      running: false
-    };
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
+    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
+
+    // 🔥 Pega aquí tu configuración de Firebase
+    const firebaseConfig = {
+  apiKey: "AIzaSyD8r0rLLcLPJx3DsNGMuvVTfuwCMBxRPpM",
+  authDomain: "tkd-overlay.firebaseapp.com",
+  databaseURL: "https://tkd-overlay-default-rtdb.firebaseio.com",
+  projectId: "tkd-overlay",
+  storageBucket: "tkd-overlay.firebasestorage.app",
+  messagingSenderId: "41501920835",
+  appId: "1:41501920835:web:4ccecdf129cf20619d8ef6",
+  measurementId: "G-CXBJCL86EM"
+};
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    const room = new URL(location.href).searchParams.get('room') || 'room1';
+    const stateRef = ref(db, `tkd/${room}/state`);
+
     const $ = s=>document.querySelector(s);
     const pad = n=>String(n).padStart(2,"0");
-    function render(){
+    function render(state){
       $("#redName").textContent = state.redName;
       $("#blueName").textContent = state.blueName;
       $("#redScore").textContent = state.redScore;
@@ -66,10 +78,13 @@
       $("#redPen").textContent = state.redPen;
       $("#bluePen").textContent = state.bluePen;
       $("#round").textContent = "R"+state.round;
-      let t = Math.max(0, Math.floor(state.remaining/1000));
+      let t = Math.max(0, Math.floor(state.remainingMs/1000));
       $("#timer").textContent = `${pad(Math.floor(t/60))}:${pad(t%60)}`;
     }
-    render();
+
+    onValue(stateRef, snap => {
+      if (snap.exists()) render(snap.val());
+    });
   </script>
 </body>
 </html>
