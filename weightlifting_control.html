@@ -12,9 +12,14 @@
     .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
     .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
     input,button,select{font-size:14px}
-    input[type="text"],input[type="url"],input[type="number"]{background:#0b1220;border:1px solid #26324e;color:#fff;
-      padding:8px 10px;border-radius:10px;width:100%}
-    button{background:#1F2937;border:1px solid #334155;color:#fff;padding:10px 12px;border-radius:10px;cursor:pointer;font-weight:800}
+    input[type="text"],input[type="url"],input[type="number"]{
+      background:#0b1220;border:1px solid #26324e;color:#fff;
+      padding:8px 10px;border-radius:10px;width:100%
+    }
+    button{
+      background:#1F2937;border:1px solid #334155;color:#fff;
+      padding:10px 12px;border-radius:10px;cursor:pointer;font-weight:800
+    }
     .ok{background:#064e3b;border-color:#065f46}
     .no{background:#7f1d1d;border-color:#991b1b}
     .note{font-size:12px;color:var(--muted)}
@@ -22,6 +27,7 @@
 </head>
 <body>
   <div class="wrap">
+    <!-- Tarjeta 1: sesión y reloj -->
     <div class="card">
       <div class="row">
         <label>Room</label><input id="room" value="wl1" style="max-width:140px"/>
@@ -34,33 +40,52 @@
       </div>
     </div>
 
+    <!-- Tarjeta 2: datos del atleta -->
     <div class="card">
       <div class="grid">
         <div>
           <div class="row"><b>Atleta</b></div>
-          <div class="row"><input id="athleteName" placeholder="Nombre del atleta"></div>
-          <div class="row"><label>Foto (URL)</label><input id="athletePhoto" type="url" placeholder="https://...jpg/png"></div>
+          <div class="row">
+            <input id="athleteName" placeholder="Nombre del atleta">
+          </div>
+          <div class="row">
+            <label>Foto (URL)</label>
+            <input id="athletePhoto" type="url" placeholder="https://...jpg/png">
+          </div>
         </div>
         <div>
           <div class="row"><b>Institución</b></div>
-          <div class="row"><input id="instName" placeholder="Institución"></div>
-          <div class="row"><label>Logo (URL)</label><input id="instLogo" type="url" placeholder="https://...png"></div>
+          <div class="row">
+            <input id="instName" placeholder="Institución">
+          </div>
+          <div class="row">
+            <label>Logo (URL)</label>
+            <input id="instLogo" type="url" placeholder="https://...png">
+          </div>
         </div>
       </div>
-      <div class="row">
-  <label>Foto desde archivo</label>
-  <input id="athletePhotoFile" type="file" accept="image/*" style="max-width:260px"/>
-  <label>Logo institución desde archivo</label>
-  <input id="instLogoFile" type="file" accept="image/*" style="max-width:260px"/>
-</div>
+
+      <!-- NUEVOS CAMPOS: subir archivo desde la compu -->
+      <div class="row" style="margin-top:10px">
+        <label>Foto desde archivo</label>
+        <input id="athletePhotoFile" type="file" accept="image/*" style="max-width:260px"/>
+        <label>Logo institución desde archivo</label>
+        <input id="instLogoFile" type="file" accept="image/*" style="max-width:260px"/>
+      </div>
 
       <div class="row" style="margin-top:10px">
         <label>Disciplina</label>
-        <select id="discipline"><option>Snatch</option><option>Clean &amp; Jerk</option></select>
-        <label>Intento #</label><input id="attemptNo" type="number" min="1" max="3" value="1" style="max-width:80px"/>
-        <label>Peso (kg)</label><input id="declaredWeight" type="number" step="1" value="100" style="max-width:120px"/>
+        <select id="discipline">
+          <option>Snatch</option>
+          <option>Clean &amp; Jerk</option>
+        </select>
+        <label>Intento #</label>
+        <input id="attemptNo" type="number" min="1" max="3" value="1" style="max-width:80px"/>
+        <label>Peso (kg)</label>
+        <input id="declaredWeight" type="number" step="1" value="100" style="max-width:120px"/>
         <button id="save">Save / Push</button>
       </div>
+
       <div class="row">
         <div>Resultado:</div>
         <button class="ok" id="markOk">GOOD LIFT</button>
@@ -72,11 +97,14 @@
 
     <div class="card">
       <div class="row">
-        <div class="note">Atajos: <b>Espacio</b> start/stop, <b>R</b> reset, <b>O</b> OK, <b>N</b> NO, <b>1/2/3</b> intento.</div>
+        <div class="note">
+          Atajos: <b>Espacio</b> start/stop, <b>R</b> reset, <b>O</b> OK, <b>N</b> NO, <b>1/2/3</b> intento.
+        </div>
       </div>
     </div>
   </div>
 
+  <!-- Lógica local del control -->
   <script>
     let state = {
       room:'wl1',
@@ -89,60 +117,62 @@
     };
 
     const $=s=>document.querySelector(s);
+
     const read=()=>{
-  state.room = $('#room').value.trim()||'wl1';
-  state.sessionName = $('#sessionName').value.trim()||'LAI Weightlifting';
-  state.discipline = $('#discipline').value;
-  state.attemptNo = Math.max(1,Math.min(3,parseInt($('#attemptNo').value||1)));
-  state.declaredWeight = parseFloat($('#declaredWeight').value||0);
-  state.athleteName = $('#athleteName').value.trim();
+      state.room = $('#room').value.trim()||'wl1';
+      state.sessionName = $('#sessionName').value.trim()||'LAI Weightlifting';
+      state.discipline = $('#discipline').value;
+      state.attemptNo = Math.max(1,Math.min(3,parseInt($('#attemptNo').value||1)));
+      state.declaredWeight = parseFloat($('#declaredWeight').value||0);
+      state.athleteName = $('#athleteName').value.trim();
 
-  // Si hay URL escrita, la usamos; si está vacío, dejamos lo que ya tenga (base64 de archivo, por ejemplo)
-  const urlPhoto = $('#athletePhoto').value.trim();
-  if(urlPhoto) state.athletePhoto = urlPhoto;
+      // Foto por URL (si hay texto)
+      const urlPhoto = $('#athletePhoto').value.trim();
+      if(urlPhoto) state.athletePhoto = urlPhoto;
 
-  state.instName = $('#instName').value.trim();
+      state.instName = $('#instName').value.trim();
 
-  const urlLogo = $('#instLogo').value.trim();
-  if(urlLogo) state.instLogo = urlLogo;
+      const urlLogo = $('#instLogo').value.trim();
+      if(urlLogo) state.instLogo = urlLogo;
 
-  const secs = Math.max(1,parseInt($('#clockSec').value||120));
-  if(!state.running) state.clockMs = secs*1000;
-};
+      const secs = Math.max(1,parseInt($('#clockSec').value||120));
+      if(!state.running) state.clockMs = secs*1000;
+    };
 
     const syncUI=()=>{
-  $('#room').value=state.room;
-  $('#sessionName').value=state.sessionName;
-  $('#discipline').value=state.discipline;
-  $('#attemptNo').value=state.attemptNo;
-  $('#declaredWeight').value=state.declaredWeight;
-  $('#athleteName').value=state.athleteName;
+      $('#room').value=state.room;
+      $('#sessionName').value=state.sessionName;
+      $('#discipline').value=state.discipline;
+      $('#attemptNo').value=state.attemptNo;
+      $('#declaredWeight').value=state.declaredWeight;
+      $('#athleteName').value=state.athleteName;
 
-  // Si la foto viene de archivo (data URL), no llenamos el input con ese string larguísimo
-  if(state.athletePhoto && state.athletePhoto.startsWith('data:')){
-    $('#athletePhoto').value = '';
-    $('#athletePhoto').placeholder = 'Imagen cargada desde archivo';
-  }else{
-    $('#athletePhoto').value = state.athletePhoto || '';
-    $('#athletePhoto').placeholder = 'https://...jpg/png';
-  }
+      // Placeholders inteligentes para no llenar con el base64
+      if(state.athletePhoto && state.athletePhoto.startsWith('data:')){
+        $('#athletePhoto').value = '';
+        $('#athletePhoto').placeholder = 'Imagen cargada desde archivo';
+      }else{
+        $('#athletePhoto').value = state.athletePhoto || '';
+        $('#athletePhoto').placeholder = 'https://...jpg/png';
+      }
 
-  $('#instName').value=state.instName;
+      $('#instName').value=state.instName;
 
-  if(state.instLogo && state.instLogo.startsWith('data:')){
-    $('#instLogo').value = '';
-    $('#instLogo').placeholder = 'Logo cargado desde archivo';
-  }else{
-    $('#instLogo').value = state.instLogo || '';
-    $('#instLogo').placeholder = 'https://...png';
-  }
+      if(state.instLogo && state.instLogo.startsWith('data:')){
+        $('#instLogo').value = '';
+        $('#instLogo').placeholder = 'Logo cargado desde archivo';
+      }else{
+        $('#instLogo').value = state.instLogo || '';
+        $('#instLogo').placeholder = 'https://...png';
+      }
 
-  $('#clockSec').value=Math.max(1,Math.round(state.clockMs/1000));
-  $('#startStop').textContent = state.running ? 'Stop' : 'Start';
-};
+      $('#clockSec').value=Math.max(1,Math.round(state.clockMs/1000));
+      $('#startStop').textContent = state.running ? 'Stop' : 'Start';
+    };
 
     function publish(){ read(); syncUI(); if(window._push) window._push(state); }
 
+    // Botones básicos
     $('#save').addEventListener('click', publish);
 
     $('#startStop').addEventListener('click', ()=>{
@@ -155,31 +185,6 @@
       }
       publish();
     });
-// Subir foto del atleta desde archivo
-$('#athletePhotoFile').addEventListener('change', e=>{
-  const file = e.target.files[0];
-  if(!file) return;
-  const reader = new FileReader();
-  reader.onload = ev=>{
-    state.athletePhoto = ev.target.result;  // data URL
-    syncUI();
-    if(window._push) window._push(state);
-  };
-  reader.readAsDataURL(file);
-});
-
-// Subir logo de institución desde archivo
-$('#instLogoFile').addEventListener('change', e=>{
-  const file = e.target.files[0];
-  if(!file) return;
-  const reader = new FileReader();
-  reader.onload = ev=>{
-    state.instLogo = ev.target.result;  // data URL
-    syncUI();
-    if(window._push) window._push(state);
-  };
-  reader.readAsDataURL(file);
-});
 
     $('#reset').addEventListener('click', ()=>{
       read();
@@ -204,6 +209,32 @@ $('#instLogoFile').addEventListener('change', e=>{
       publish();
     });
 
+    // NUEVO: leer archivos locales y convertir a data URL
+    $('#athletePhotoFile').addEventListener('change', e=>{
+      const file = e.target.files[0];
+      if(!file) return;
+      const reader = new FileReader();
+      reader.onload = ev=>{
+        state.athletePhoto = ev.target.result; // data URL
+        syncUI();
+        if(window._push) window._push(state);
+      };
+      reader.readAsDataURL(file);
+    });
+
+    $('#instLogoFile').addEventListener('change', e=>{
+      const file = e.target.files[0];
+      if(!file) return;
+      const reader = new FileReader();
+      reader.onload = ev=>{
+        state.instLogo = ev.target.result; // data URL
+        syncUI();
+        if(window._push) window._push(state);
+      };
+      reader.readAsDataURL(file);
+    });
+
+    // Atajos de teclado
     document.addEventListener('keydown',(e)=>{
       if(['INPUT','TEXTAREA','SELECT'].includes(e.target.tagName)) return;
       if(e.code==='Space'){ e.preventDefault(); $('#startStop').click(); }
@@ -214,6 +245,7 @@ $('#instLogoFile').addEventListener('change', e=>{
     });
   </script>
 
+  <!-- Firebase: MISMO CONFIG QUE TKD -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
     import { getDatabase, ref, onValue, set, get } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
@@ -249,6 +281,7 @@ $('#instLogoFile').addEventListener('change', e=>{
       syncUI();
     });
 
+    // Autoconectar si viene ?room en la URL
     const u=new URL(location.href);
     const rq=u.searchParams.get('room');
     if(rq){
@@ -259,3 +292,4 @@ $('#instLogoFile').addEventListener('change', e=>{
   </script>
 </body>
 </html>
+Add file upload for photos
