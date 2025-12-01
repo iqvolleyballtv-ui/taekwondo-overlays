@@ -47,6 +47,13 @@
           <div class="row"><label>Logo (URL)</label><input id="instLogo" type="url" placeholder="https://...png"></div>
         </div>
       </div>
+      <div class="row">
+  <label>Foto desde archivo</label>
+  <input id="athletePhotoFile" type="file" accept="image/*" style="max-width:260px"/>
+  <label>Logo institución desde archivo</label>
+  <input id="instLogoFile" type="file" accept="image/*" style="max-width:260px"/>
+</div>
+
       <div class="row" style="margin-top:10px">
         <label>Disciplina</label>
         <select id="discipline"><option>Snatch</option><option>Clean &amp; Jerk</option></select>
@@ -83,31 +90,57 @@
 
     const $=s=>document.querySelector(s);
     const read=()=>{
-      state.room = $('#room').value.trim()||'wl1';
-      state.sessionName = $('#sessionName').value.trim()||'LAI Weightlifting';
-      state.discipline = $('#discipline').value;
-      state.attemptNo = Math.max(1,Math.min(3,parseInt($('#attemptNo').value||1)));
-      state.declaredWeight = parseFloat($('#declaredWeight').value||0);
-      state.athleteName = $('#athleteName').value.trim();
-      state.athletePhoto = $('#athletePhoto').value.trim();
-      state.instName = $('#instName').value.trim();
-      state.instLogo = $('#instLogo').value.trim();
-      const secs = Math.max(1,parseInt($('#clockSec').value||120));
-      if(!state.running) state.clockMs = secs*1000;
-    };
+  state.room = $('#room').value.trim()||'wl1';
+  state.sessionName = $('#sessionName').value.trim()||'LAI Weightlifting';
+  state.discipline = $('#discipline').value;
+  state.attemptNo = Math.max(1,Math.min(3,parseInt($('#attemptNo').value||1)));
+  state.declaredWeight = parseFloat($('#declaredWeight').value||0);
+  state.athleteName = $('#athleteName').value.trim();
+
+  // Si hay URL escrita, la usamos; si está vacío, dejamos lo que ya tenga (base64 de archivo, por ejemplo)
+  const urlPhoto = $('#athletePhoto').value.trim();
+  if(urlPhoto) state.athletePhoto = urlPhoto;
+
+  state.instName = $('#instName').value.trim();
+
+  const urlLogo = $('#instLogo').value.trim();
+  if(urlLogo) state.instLogo = urlLogo;
+
+  const secs = Math.max(1,parseInt($('#clockSec').value||120));
+  if(!state.running) state.clockMs = secs*1000;
+};
+
     const syncUI=()=>{
-      $('#room').value=state.room;
-      $('#sessionName').value=state.sessionName;
-      $('#discipline').value=state.discipline;
-      $('#attemptNo').value=state.attemptNo;
-      $('#declaredWeight').value=state.declaredWeight;
-      $('#athleteName').value=state.athleteName;
-      $('#athletePhoto').value=state.athletePhoto;
-      $('#instName').value=state.instName;
-      $('#instLogo').value=state.instLogo;
-      $('#clockSec').value=Math.max(1,Math.round(state.clockMs/1000));
-      $('#startStop').textContent = state.running ? 'Stop' : 'Start';
-    };
+  $('#room').value=state.room;
+  $('#sessionName').value=state.sessionName;
+  $('#discipline').value=state.discipline;
+  $('#attemptNo').value=state.attemptNo;
+  $('#declaredWeight').value=state.declaredWeight;
+  $('#athleteName').value=state.athleteName;
+
+  // Si la foto viene de archivo (data URL), no llenamos el input con ese string larguísimo
+  if(state.athletePhoto && state.athletePhoto.startsWith('data:')){
+    $('#athletePhoto').value = '';
+    $('#athletePhoto').placeholder = 'Imagen cargada desde archivo';
+  }else{
+    $('#athletePhoto').value = state.athletePhoto || '';
+    $('#athletePhoto').placeholder = 'https://...jpg/png';
+  }
+
+  $('#instName').value=state.instName;
+
+  if(state.instLogo && state.instLogo.startsWith('data:')){
+    $('#instLogo').value = '';
+    $('#instLogo').placeholder = 'Logo cargado desde archivo';
+  }else{
+    $('#instLogo').value = state.instLogo || '';
+    $('#instLogo').placeholder = 'https://...png';
+  }
+
+  $('#clockSec').value=Math.max(1,Math.round(state.clockMs/1000));
+  $('#startStop').textContent = state.running ? 'Stop' : 'Start';
+};
+
     function publish(){ read(); syncUI(); if(window._push) window._push(state); }
 
     $('#save').addEventListener('click', publish);
@@ -122,6 +155,31 @@
       }
       publish();
     });
+// Subir foto del atleta desde archivo
+$('#athletePhotoFile').addEventListener('change', e=>{
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = ev=>{
+    state.athletePhoto = ev.target.result;  // data URL
+    syncUI();
+    if(window._push) window._push(state);
+  };
+  reader.readAsDataURL(file);
+});
+
+// Subir logo de institución desde archivo
+$('#instLogoFile').addEventListener('change', e=>{
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = ev=>{
+    state.instLogo = ev.target.result;  // data URL
+    syncUI();
+    if(window._push) window._push(state);
+  };
+  reader.readAsDataURL(file);
+});
 
     $('#reset').addEventListener('click', ()=>{
       read();
