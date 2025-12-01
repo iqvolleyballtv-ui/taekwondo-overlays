@@ -74,17 +74,20 @@
       </div>
 
       <div class="row" style="margin-top:10px">
-        <label>Disciplina</label>
-        <select id="discipline">
-          <option>Snatch</option>
-          <option>Clean &amp; Jerk</option>
-        </select>
-        <label>Intento #</label>
-        <input id="attemptNo" type="number" min="1" max="3" value="1" style="max-width:80px"/>
-        <label>Peso (kg)</label>
-        <input id="declaredWeight" type="number" step="1" value="100" style="max-width:120px"/>
-        <button id="save">Save / Push</button>
-      </div>
+  <label>Disciplina</label>
+  <select id="discipline">
+    <option>Snatch</option>
+    <option>Clean &amp; Jerk</option>
+  </select>
+  <label>Intento #</label>
+  <input id="attemptNo" type="number" min="1" max="3" value="1" style="max-width:80px"/>
+  <label>Peso (kg)</label>
+  <input id="declaredWeight" type="number" step="1" value="100" style="max-width:120px"/>
+  <label>Ranking</label>
+  <input id="rank" type="number" min="1" value="1" style="max-width:80px"/>
+  <button id="save">Save / Push</button>
+</div>
+
 
       <div class="row">
         <div>Resultado:</div>
@@ -107,37 +110,42 @@
   <!-- Lógica local del control -->
   <script>
     let state = {
-      room:'wl1',
-      sessionName:'LAI Weightlifting – Plataforma A',
-      clockMs:120000, running:false, startedAt:null,
-      athleteName:'', athletePhoto:'', instName:'', instLogo:'',
-      discipline:'Snatch', attemptNo:1, declaredWeight:100,
-      attempts:[null,null,null],
-      result:null
-    };
+  room:'wl1',
+  sessionName:'LAI Weightlifting – Plataforma A',
+  clockMs:120000, running:false, startedAt:null,
+  athleteName:'', athletePhoto:'', instName:'', instLogo:'',
+  discipline:'Snatch', attemptNo:1, declaredWeight:100,
+  rank:1,
+  attempts:[null,null,null],
+  result:null
+};
+
 
     const $=s=>document.querySelector(s);
 
     const read=()=>{
-      state.room = $('#room').value.trim()||'wl1';
-      state.sessionName = $('#sessionName').value.trim()||'LAI Weightlifting';
-      state.discipline = $('#discipline').value;
-      state.attemptNo = Math.max(1,Math.min(3,parseInt($('#attemptNo').value||1)));
-      state.declaredWeight = parseFloat($('#declaredWeight').value||0);
-      state.athleteName = $('#athleteName').value.trim();
+  state.room = $('#room').value.trim()||'wl1';
+  state.sessionName = $('#sessionName').value.trim()||'LAI Weightlifting';
+  state.discipline = $('#discipline').value;
+  state.attemptNo = Math.max(1,Math.min(3,parseInt($('#attemptNo').value||1)));
+  state.declaredWeight = parseFloat($('#declaredWeight').value||0);
+  state.athleteName = $('#athleteName').value.trim();
 
-      // Foto por URL (si hay texto)
-      const urlPhoto = $('#athletePhoto').value.trim();
-      if(urlPhoto) state.athletePhoto = urlPhoto;
+  const urlPhoto = $('#athletePhoto').value.trim();
+  if(urlPhoto) state.athletePhoto = urlPhoto;
 
-      state.instName = $('#instName').value.trim();
+  state.instName = $('#instName').value.trim();
 
-      const urlLogo = $('#instLogo').value.trim();
-      if(urlLogo) state.instLogo = urlLogo;
+  const urlLogo = $('#instLogo').value.trim();
+  if(urlLogo) state.instLogo = urlLogo;
 
-      const secs = Math.max(1,parseInt($('#clockSec').value||120));
-      if(!state.running) state.clockMs = secs*1000;
-    };
+  // 👉 NUEVO: ranking
+  state.rank = Math.max(1, parseInt($('#rank').value || 1));
+
+  const secs = Math.max(1,parseInt($('#clockSec').value||120));
+  if(!state.running) state.clockMs = secs*1000;
+};
+
 
     const syncUI=()=>{
       $('#room').value=state.room;
@@ -168,6 +176,8 @@
 
       $('#clockSec').value=Math.max(1,Math.round(state.clockMs/1000));
       $('#startStop').textContent = state.running ? 'Stop' : 'Start';
+      // 👉 NUEVO: ranking
+      $('#rank').value = state.rank || 1;
     };
 
     function publish(){ read(); syncUI(); if(window._push) window._push(state); }
