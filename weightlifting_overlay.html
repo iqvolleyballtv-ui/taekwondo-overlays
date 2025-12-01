@@ -335,14 +335,21 @@
 
     // RENDER ESTÁTICO
     function renderStatic(){
-      if(!live) return;
+  if(!live) return;
 
-      const inst = live.instName || '';
-const rank = live.rank || 1;
+  const inst = live.instName || '';
+  const rank = live.rank || 1;   // 👈 tomamos el ranking del estado
 
-$('#laneBox').textContent = rank;              // 👉 ahora muestra ranking numérico
-$('#presentInst').textContent = inst || 'INSTITUCIÓN';
-$('#presentName').textContent = live.athleteName || '';
+  // Bloque amarillo: ranking numérico
+  $('#laneBox').textContent = rank;
+
+  // Texto de institución y nombre
+  $('#presentInst').textContent = inst || 'INSTITUCIÓN';
+  $('#presentName').textContent = live.athleteName || '';
+
+  // --- el resto de la función sigue igual ---
+  // Foto atleta / logo institución, attempt, disciplina, peso, etc.
+
 
       // Foto del atleta (izquierda). Si no hay, usamos logo institución.
       if(live.athletePhoto){
