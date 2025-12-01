@@ -338,11 +338,11 @@
       if(!live) return;
 
       const inst = live.instName || '';
-      const instCode = inst ? inst.slice(0,3).toUpperCase() : 'LAI';
+const rank = live.rank || 1;
 
-      $('#laneBox').textContent = instCode;
-      $('#presentInst').textContent = inst || 'INSTITUCIÓN';
-      $('#presentName').textContent = live.athleteName || '';
+$('#laneBox').textContent = rank;              // 👉 ahora muestra ranking numérico
+$('#presentInst').textContent = inst || 'INSTITUCIÓN';
+$('#presentName').textContent = live.athleteName || '';
 
       // Foto del atleta (izquierda). Si no hay, usamos logo institución.
       if(live.athletePhoto){
