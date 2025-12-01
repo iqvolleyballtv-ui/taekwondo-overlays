@@ -13,8 +13,6 @@
       --text:#F9FAFB;
       --muted:#B0C4D9;
       --accent:#FBBF24;
-      --good:#22C55E;
-      --bad:#EF4444;
     }
     html,body{
       margin:0;
@@ -183,7 +181,7 @@
       text-overflow:ellipsis;
     }
 
-    /* Timer + LAI logo bottom-right */
+    /* Timer + logo abajo derecha */
 
     .timer-wrap{
       position:absolute;
@@ -229,14 +227,10 @@
       white-space:nowrap;
     }
 
-    /* Helpers de visibilidad */
+    /* Helpers */
 
-    .hidden{
-      opacity:0;
-    }
-    .visible{
-      opacity:1;
-    }
+    .hidden{ opacity:0; }
+    .visible{ opacity:1; }
   </style>
 </head>
 <body>
@@ -245,12 +239,12 @@
     <!-- PRESENTACIÓN DEL ATLETA (cuando el reloj NO corre) -->
     <div id="present" class="present-wrap visible">
       <div class="present-main">
-        <div class="present-lane" id="laneBox">A</div>
+        <div class="present-lane" id="laneBox">UPR</div>
         <div class="present-body">
           <img id="presentFlag" class="present-flag" alt="">
           <div class="present-text">
-            <div class="present-inst" id="presentInst">INST</div>
-            <div class="present-name" id="presentName">ATHLETE NAME</div>
+            <div class="present-inst" id="presentInst">INSTITUCIÓN</div>
+            <div class="present-name" id="presentName">Nombre atleta</div>
           </div>
         </div>
         <div class="present-logo-box">
@@ -276,10 +270,10 @@
       <div class="live-tag" id="liveAttemptTag">ATTEMPT 1</div>
       <div class="live-weight" id="liveWeight">100 KG</div>
       <div class="live-disc" id="liveDisc">SNATCH</div>
-      <div class="live-name-mini" id="liveNameMini">ATHLETE NAME</div>
+      <div class="live-name-mini" id="liveNameMini">Nombre atleta</div>
     </div>
 
-    <!-- Timer + logo LAI -->
+    <!-- Timer + logo evento / institución -->
     <div id="timerArea" class="timer-wrap hidden">
       <div class="timer-box" id="timerBox">02:00</div>
       <div class="timer-lai" id="timerLai">
@@ -312,14 +306,8 @@
     const room = url.searchParams.get('room') || 'wl1';
     const stateRef = ref(db, `wl/${room}/state`);
 
-    // Logo LAI desde la URL (?laiLogo=https://...)
-    const laiLogoUrl = url.searchParams.get('laiLogo');
-    if(laiLogoUrl){
-      const img = document.getElementById('laiLogo');
-      img.src = laiLogoUrl;
-      img.style.display = 'block';
-      document.getElementById('laiText').textContent = '';
-    }
+    // Logo LAI opcional por URL (?laiLogo=https://...)
+    const laiLogoUrl = url.searchParams.get('laiLogo') || null;
 
     const $ = s => document.querySelector(s);
     const pad = n => String(n).padStart(2,'0');
@@ -327,7 +315,25 @@
     let live = null;
     let lastSec = null;
 
-    // RENDER ESTÁTICO (nombre, institución, etc.)
+    function updateTimerLogo(){
+      const img  = $('#laiLogo');
+      const text = $('#laiText');
+
+      if(live && live.instLogo){       // 1) prioridad: logo de la institución
+        img.src = live.instLogo;
+        img.style.display = 'block';
+        text.textContent = '';
+      }else if(laiLogoUrl){            // 2) si no hay instLogo, usamos el LAI por URL
+        img.src = laiLogoUrl;
+        img.style.display = 'block';
+        text.textContent = '';
+      }else{                           // 3) si nada, texto "LAI"
+        img.style.display = 'none';
+        text.textContent = 'LAI';
+      }
+    }
+
+    // RENDER ESTÁTICO
     function renderStatic(){
       if(!live) return;
 
@@ -338,14 +344,22 @@
       $('#presentInst').textContent = inst || 'INSTITUCIÓN';
       $('#presentName').textContent = live.athleteName || '';
 
-      // logo / bandera (usamos instLogo como “flag” también)
-      if(live.instLogo){
+      // Foto del atleta (izquierda). Si no hay, usamos logo institución.
+      if(live.athletePhoto){
+        $('#presentFlag').src = live.athletePhoto;
+        $('#presentFlag').style.display = 'block';
+      }else if(live.instLogo){
         $('#presentFlag').src = live.instLogo;
         $('#presentFlag').style.display = 'block';
+      }else{
+        $('#presentFlag').style.display = 'none';
+      }
+
+      // Logo institución (derecha)
+      if(live.instLogo){
         $('#presentLogo').src = live.instLogo;
         $('#presentLogo').style.display = 'block';
       }else{
-        $('#presentFlag').style.display = 'none';
         $('#presentLogo').style.display = 'none';
       }
 
@@ -362,9 +376,12 @@
       $('#liveDisc').textContent = disc;
       $('#liveWeight').textContent = `${w} KG`;
       $('#liveNameMini').textContent = live.athleteName || '';
+
+      // Timer logo
+      updateTimerLogo();
     }
 
-    // RENDER TIMER
+    // RENDER TIMER Y CAMBIO DE ESTADO
     function renderTimer(){
       if(!live) return;
       let ms = live.clockMs ?? 0;
@@ -380,8 +397,8 @@
         $('#timerBox').textContent = `${pad(Math.floor(sec/60))}:${pad(sec%60)}`;
       }
 
-      // Cambiar entre presentación y overlay de levantamiento
       const running = !!live.running && ms > 0;
+
       if(running){
         $('#present').classList.remove('visible');
         $('#present').classList.add('hidden');
@@ -416,4 +433,4 @@
   </script>
 </body>
 </html>
-Olympic style overlay
+Fix athlete photo and timer logo
