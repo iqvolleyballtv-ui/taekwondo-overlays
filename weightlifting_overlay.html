@@ -3,75 +3,291 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>Weightlifting Overlay (LAI)</title>
+  <title>Weightlifting Overlay LAI</title>
   <style>
     :root{
       --bg: transparent;
-      --panel: #0b1220cc;
-      --text: #F8FAFC;
-      --muted:#9DB2CE;
-      --ok:#22c55e; --bad:#ef4444;
-      --accent:#fbbf24;
-      --border:#ffffff22;
+      --panel-dark:#06141FEE;
+      --panel-light:#11A5C8;
+      --panel-mid:#093452;
+      --text:#F9FAFB;
+      --muted:#B0C4D9;
+      --accent:#FBBF24;
+      --good:#22C55E;
+      --bad:#EF4444;
     }
-    html,body{height:100%;margin:0;background:var(--bg);font-family:system-ui,-apple-system,Inter,Roboto,Segoe UI,Arial}
-    .root{position:absolute;inset:0;pointer-events:none}
+    html,body{
+      margin:0;
+      height:100%;
+      background:var(--bg);
+      font-family:system-ui,-apple-system,Inter,Roboto,Segoe UI,Arial;
+    }
+    .root{
+      position:absolute;
+      inset:0;
+      pointer-events:none;
+    }
 
-    .top{display:flex;gap:12px;align-items:center;justify-content:center;margin-top:10px}
-    .chip{display:flex;align-items:center;gap:8px;background:var(--panel);border:1px solid var(--border);
-      color:var(--text);border-radius:14px;padding:6px 12px;backdrop-filter:blur(8px);box-shadow:0 8px 30px #0006;}
-    .timer{font-weight:900;font-size:36px;line-height:1;color:var(--accent);min-width:110px;text-align:center}
-    .session{font-weight:700;font-size:14px;opacity:.95}
+    /* ---------------- PRESENTACIÓN (cuando el reloj NO corre) ---------------- */
 
-    .card{position:absolute;left:24px;bottom:24px;display:flex;gap:12px;align-items:center;background:var(--panel);
-      border:1px solid var(--border);border-radius:18px;padding:10px 12px;backdrop-filter:blur(8px);
-      box-shadow:0 8px 30px #0007;min-width:520px}
-    .photo{width:72px;height:72px;border-radius:12px;object-fit:cover;background:#0003;border:1px solid #fff2}
-    .block{min-width:0}
-    .name{font-weight:900;font-size:22px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    .inst{display:flex;align-items:center;gap:8px;color:var(--muted);font-weight:600}
-    .logo{width:22px;height:22px;border-radius:5px;object-fit:contain;background:#0005;border:1px solid #fff2}
-    .row{display:flex;align-items:center;gap:10px;margin-top:6px;color:var(--text)}
-    .pill{padding:4px 10px;border-radius:999px;background:#0009;border:1px solid var(--border);font-weight:800}
-    .weight{font-weight:900;font-size:28px}
-    .attempts{display:flex;gap:6px;margin-left:6px}
-    .dot{width:16px;height:16px;border-radius:50%;background:#64748b;border:1px solid #fff3}
-    .dot.ok{background:var(--ok)} .dot.no{background:var(--bad)}
-    .result{margin-left:auto;font-weight:900;font-size:20px;padding:4px 10px;border-radius:10px;border:1px solid var(--border)}
-    .result.ok{color:#10b981;background:#022e1fcc}
-    .result.no{color:#f87171;background:#2e0202cc}
+    .present-wrap{
+      position:absolute;
+      left:50%;
+      bottom:6%;
+      transform:translateX(-50%);
+      width:80%;
+      max-width:1200px;
+      color:var(--text);
+      transition:opacity .25s ease;
+    }
+
+    .present-main{
+      display:flex;
+      align-items:stretch;
+      background:var(--panel-mid);
+      border-radius:10px 10px 0 0;
+      overflow:hidden;
+      box-shadow:0 12px 35px #0009;
+    }
+    .present-lane{
+      width:56px;
+      background:#FBBF24;
+      color:#081018;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      font-weight:900;
+      font-size:24px;
+    }
+    .present-body{
+      flex:1;
+      display:flex;
+      align-items:center;
+      padding:10px 16px;
+      gap:14px;
+    }
+    .present-flag{
+      width:68px;
+      height:46px;
+      border-radius:6px;
+      object-fit:cover;
+      background:#0004;
+    }
+    .present-text{
+      flex:1;
+      min-width:0;
+    }
+    .present-inst{
+      font-size:18px;
+      font-weight:700;
+      letter-spacing:.18em;
+      color:var(--muted);
+      text-transform:uppercase;
+    }
+    .present-name{
+      font-size:28px;
+      font-weight:900;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .present-logo-box{
+      width:90px;
+      background:#0B2135;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:8px;
+    }
+    .present-logo{
+      max-width:100%;
+      max-height:60px;
+      object-fit:contain;
+      filter:drop-shadow(0 0 6px #0008);
+    }
+
+    .present-bottom{
+      display:flex;
+      background:var(--panel-light);
+      border-radius:0 0 10px 10px;
+      overflow:hidden;
+      font-weight:700;
+      font-size:18px;
+    }
+    .present-cell{
+      flex:1;
+      padding:8px 18px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      color:#04212C;
+    }
+    .present-cell:nth-child(2){
+      background:#0F9CBF;
+    }
+    .present-weight{
+      background:#083349;
+      color:var(--accent);
+      font-size:22px;
+      flex:1.2;
+    }
+    .tag-attempt{
+      margin-right:6px;
+      font-weight:900;
+    }
+
+    /* ---------------- LEVANTAMIENTO (cuando el reloj SÍ corre) ---------------- */
+
+    .live-bar{
+      position:absolute;
+      left:4%;
+      bottom:3%;
+      display:flex;
+      align-items:center;
+      background:var(--panel-dark);
+      border-radius:10px;
+      padding:8px 14px;
+      gap:10px;
+      box-shadow:0 12px 30px #000a;
+      color:var(--text);
+      transition:opacity .25s ease;
+    }
+    .live-tag{
+      padding:4px 10px;
+      border-radius:999px;
+      background:#0B2135;
+      font-size:14px;
+      text-transform:uppercase;
+      letter-spacing:.12em;
+      color:var(--muted);
+    }
+    .live-weight{
+      font-size:30px;
+      font-weight:900;
+      letter-spacing:.05em;
+    }
+    .live-disc{
+      font-size:18px;
+      font-weight:700;
+      text-transform:uppercase;
+      color:var(--muted);
+    }
+    .live-name-mini{
+      margin-left:10px;
+      font-weight:700;
+      max-width:260px;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+
+    /* Timer + LAI logo bottom-right */
+
+    .timer-wrap{
+      position:absolute;
+      right:4%;
+      bottom:3%;
+      display:flex;
+      align-items:center;
+      gap:10px;
+      transition:opacity .25s ease;
+    }
+    .timer-box{
+      background:#F4F4F5;
+      color:#020617;
+      border-radius:10px;
+      padding:8px 14px;
+      font-weight:900;
+      font-size:26px;
+      min-width:92px;
+      text-align:center;
+      box-shadow:0 10px 28px #000a;
+    }
+    .timer-lai{
+      background:#022C3A;
+      color:var(--text);
+      border-radius:10px;
+      padding:8px 14px;
+      display:flex;
+      align-items:center;
+      gap:8px;
+      box-shadow:0 10px 28px #000a;
+      font-weight:800;
+      font-size:16px;
+      text-transform:uppercase;
+      letter-spacing:.14em;
+    }
+    .timer-lai img{
+      width:34px;
+      height:34px;
+      object-fit:contain;
+      filter:drop-shadow(0 0 6px #0008);
+    }
+    .timer-lai span{
+      white-space:nowrap;
+    }
+
+    /* Helpers de visibilidad */
+
+    .hidden{
+      opacity:0;
+    }
+    .visible{
+      opacity:1;
+    }
   </style>
 </head>
 <body>
   <div class="root">
-    <!-- TOP BAR -->
-    <div class="top">
-      <div class="chip">
-        <div class="session" id="sessionName">LAI Weightlifting – Plataforma A</div>
+
+    <!-- PRESENTACIÓN DEL ATLETA (cuando el reloj NO corre) -->
+    <div id="present" class="present-wrap visible">
+      <div class="present-main">
+        <div class="present-lane" id="laneBox">A</div>
+        <div class="present-body">
+          <img id="presentFlag" class="present-flag" alt="">
+          <div class="present-text">
+            <div class="present-inst" id="presentInst">INST</div>
+            <div class="present-name" id="presentName">ATHLETE NAME</div>
+          </div>
+        </div>
+        <div class="present-logo-box">
+          <img id="presentLogo" class="present-logo" alt="">
+        </div>
       </div>
-      <div class="chip">
-        <div class="timer" id="timer">02:00</div>
-        <div class="session">Attempt clock</div>
+      <div class="present-bottom">
+        <div class="present-cell">
+          <span class="tag-attempt">ATTEMPT</span>
+          <span id="presentAttemptNo">1</span>
+        </div>
+        <div class="present-cell">
+          <span id="presentDiscipline">SNATCH</span>
+        </div>
+        <div class="present-cell present-weight">
+          <span id="presentWeight">100 KG</span>
+        </div>
       </div>
     </div>
 
-    <!-- TARJETA DEL ATLETA -->
-    <div class="card">
-      <img id="athletePhoto" class="photo" alt="">
-      <div class="block">
-        <div class="name" id="athleteName">ATHLETE NAME</div>
-        <div class="inst">
-          <img id="instLogo" class="logo" alt="">
-          <span id="instName">Institution</span>
-        </div>
-        <div class="row">
-          <span class="pill" id="attemptPill">Snatch — Attempt 1</span>
-          <span class="weight" id="declaredWeight">100 kg</span>
-          <div class="attempts" id="attemptDots"></div>
-          <span class="result" id="attemptResult">—</span>
-        </div>
+    <!-- BARRA DURANTE LEVANTAMIENTO (cuando el reloj SÍ corre) -->
+    <div id="liveBar" class="live-bar hidden">
+      <div class="live-tag" id="liveAttemptTag">ATTEMPT 1</div>
+      <div class="live-weight" id="liveWeight">100 KG</div>
+      <div class="live-disc" id="liveDisc">SNATCH</div>
+      <div class="live-name-mini" id="liveNameMini">ATHLETE NAME</div>
+    </div>
+
+    <!-- Timer + logo LAI -->
+    <div id="timerArea" class="timer-wrap hidden">
+      <div class="timer-box" id="timerBox">02:00</div>
+      <div class="timer-lai" id="timerLai">
+        <img id="laiLogo" alt="" style="display:none;">
+        <span id="laiText">LAI</span>
       </div>
     </div>
+
   </div>
 
   <script type="module">
@@ -92,66 +308,98 @@
 
     const app  = initializeApp(firebaseConfig);
     const db   = getDatabase(app);
-    const room = new URL(location.href).searchParams.get('room') || 'wl1';
+    const url  = new URL(location.href);
+    const room = url.searchParams.get('room') || 'wl1';
     const stateRef = ref(db, `wl/${room}/state`);
 
-    const $  = s => document.querySelector(s);
+    // Logo LAI desde la URL (?laiLogo=https://...)
+    const laiLogoUrl = url.searchParams.get('laiLogo');
+    if(laiLogoUrl){
+      const img = document.getElementById('laiLogo');
+      img.src = laiLogoUrl;
+      img.style.display = 'block';
+      document.getElementById('laiText').textContent = '';
+    }
+
+    const $ = s => document.querySelector(s);
     const pad = n => String(n).padStart(2,'0');
 
     let live = null;
     let lastSec = null;
 
+    // RENDER ESTÁTICO (nombre, institución, etc.)
     function renderStatic(){
       if(!live) return;
-      $('#sessionName').textContent = live.sessionName || 'LAI Weightlifting';
-      $('#athleteName').textContent = live.athleteName || '';
-      $('#instName').textContent    = live.instName || '';
 
-      if(live.athletePhoto){
-        $('#athletePhoto').src = live.athletePhoto;
-        $('#athletePhoto').style.display = 'block';
-      } else {
-        $('#athletePhoto').style.display = 'none';
-      }
+      const inst = live.instName || '';
+      const instCode = inst ? inst.slice(0,3).toUpperCase() : 'LAI';
 
+      $('#laneBox').textContent = instCode;
+      $('#presentInst').textContent = inst || 'INSTITUCIÓN';
+      $('#presentName').textContent = live.athleteName || '';
+
+      // logo / bandera (usamos instLogo como “flag” también)
       if(live.instLogo){
-        $('#instLogo').src = live.instLogo;
-        $('#instLogo').style.display = 'block';
-      } else {
-        $('#instLogo').style.display = 'none';
+        $('#presentFlag').src = live.instLogo;
+        $('#presentFlag').style.display = 'block';
+        $('#presentLogo').src = live.instLogo;
+        $('#presentLogo').style.display = 'block';
+      }else{
+        $('#presentFlag').style.display = 'none';
+        $('#presentLogo').style.display = 'none';
       }
 
-      $('#declaredWeight').textContent = (live.declaredWeight ?? 0) + ' kg';
-      $('#attemptPill').textContent = `${live.discipline || 'Snatch'} — Attempt ${live.attemptNo || 1}`;
+      const attemptNo = live.attemptNo || 1;
+      const disc = (live.discipline || 'Snatch').toUpperCase();
+      const w = live.declaredWeight ?? 0;
 
-      // dots de los 3 intentos: 'ok' | 'no' | null
-      const dots = live.attempts || []; // array de 3
-      const html = [0,1,2].map(i=>{
-        const v = dots[i];
-        return `<span class="dot ${v==='ok'?'ok':v==='no'?'no':''}"></span>`;
-      }).join('');
-      $('#attemptDots').innerHTML = html;
+      $('#presentAttemptNo').textContent = attemptNo;
+      $('#presentDiscipline').textContent = disc;
+      $('#presentWeight').textContent = `${w} KG`;
 
-      const res = live.result; // 'ok' | 'no' | null
-      const rEl = $('#attemptResult');
-      rEl.className = 'result' + (res==='ok'?' ok':res==='no'?' no':'');
-      rEl.textContent = res==='ok' ? 'GOOD LIFT' : res==='no' ? 'NO LIFT' : '—';
+      // Live bar
+      $('#liveAttemptTag').textContent = `ATTEMPT ${attemptNo}`;
+      $('#liveDisc').textContent = disc;
+      $('#liveWeight').textContent = `${w} KG`;
+      $('#liveNameMini').textContent = live.athleteName || '';
     }
 
+    // RENDER TIMER
     function renderTimer(){
       if(!live) return;
       let ms = live.clockMs ?? 0;
+
       if(live.running && live.startedAt){
         ms = live.clockMs - (Date.now() - live.startedAt);
       }
       ms = Math.max(0, ms|0);
       const sec = Math.floor(ms/1000);
+
       if(sec !== lastSec){
         lastSec = sec;
-        $('#timer').textContent = `${pad(Math.floor(sec/60))}:${pad(sec%60)}`;
+        $('#timerBox').textContent = `${pad(Math.floor(sec/60))}:${pad(sec%60)}`;
+      }
+
+      // Cambiar entre presentación y overlay de levantamiento
+      const running = !!live.running && ms > 0;
+      if(running){
+        $('#present').classList.remove('visible');
+        $('#present').classList.add('hidden');
+        $('#liveBar').classList.remove('hidden');
+        $('#liveBar').classList.add('visible');
+        $('#timerArea').classList.remove('hidden');
+        $('#timerArea').classList.add('visible');
+      }else{
+        $('#present').classList.remove('hidden');
+        $('#present').classList.add('visible');
+        $('#liveBar').classList.remove('visible');
+        $('#liveBar').classList.add('hidden');
+        $('#timerArea').classList.remove('visible');
+        $('#timerArea').classList.add('hidden');
       }
     }
 
+    // SUSCRIPCIÓN A FIREBASE
     onValue(stateRef, snap=>{
       if(!snap.exists()) return;
       live = snap.val();
@@ -159,8 +407,13 @@
       renderTimer();
     });
 
-    function loop(){ renderTimer(); requestAnimationFrame(loop); }
+    // Bucle suave para que el timer se vea corriendo también en Yolo
+    function loop(){
+      renderTimer();
+      requestAnimationFrame(loop);
+    }
     requestAnimationFrame(loop);
   </script>
 </body>
 </html>
+Olympic style overlay
