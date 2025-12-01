@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Weightlifting Overlay (LAI)</title>
+  <style>
+    :root{
+      --bg: transparent;
+      --panel: #0b1220cc;
+      --text: #F8FAFC;
+      --muted:#9DB2CE;
+      --ok:#22c55e; --bad:#ef4444;
+      --accent:#fbbf24;
+      --border:#ffffff22;
+    }
+    html,body{height:100%;margin:0;background:var(--bg);font-family:system-ui,-apple-system,Inter,Roboto,Segoe UI,Arial}
+    .root{position:absolute;inset:0;pointer-events:none}
+
+    .top{display:flex;gap:12px;align-items:center;justify-content:center;margin-top:10px}
+    .chip{display:flex;align-items:center;gap:8px;background:var(--panel);border:1px solid var(--border);
+      color:var(--text);border-radius:14px;padding:6px 12px;backdrop-filter:blur(8px);box-shadow:0 8px 30px #0006;}
+    .timer{font-weight:900;font-size:36px;line-height:1;color:var(--accent);min-width:110px;text-align:center}
+    .session{font-weight:700;font-size:14px;opacity:.95}
+
+    .card{position:absolute;left:24px;bottom:24px;display:flex;gap:12px;align-items:center;background:var(--panel);
+      border:1px solid var(--border);border-radius:18px;padding:10px 12px;backdrop-filter:blur(8px);
+      box-shadow:0 8px 30px #0007;min-width:520px}
+    .photo{width:72px;height:72px;border-radius:12px;object-fit:cover;background:#0003;border:1px solid #fff2}
+    .block{min-width:0}
+    .name{font-weight:900;font-size:22px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .inst{display:flex;align-items:center;gap:8px;color:var(--muted);font-weight:600}
+    .logo{width:22px;height:22px;border-radius:5px;object-fit:contain;background:#0005;border:1px solid #fff2}
+    .row{display:flex;align-items:center;gap:10px;margin-top:6px;color:var(--text)}
+    .pill{padding:4px 10px;border-radius:999px;background:#0009;border:1px solid var(--border);font-weight:800}
+    .weight{font-weight:900;font-size:28px}
+    .attempts{display:flex;gap:6px;margin-left:6px}
+    .dot{width:16px;height:16px;border-radius:50%;background:#64748b;border:1px solid #fff3}
+    .dot.ok{background:var(--ok)} .dot.no{background:var(--bad)}
+    .result{margin-left:auto;font-weight:900;font-size:20px;padding:4px 10px;border-radius:10px;border:1px solid var(--border)}
+    .result.ok{color:#10b981;background:#022e1fcc}
+    .result.no{color:#f87171;background:#2e0202cc}
+  </style>
+</head>
+<body>
+  <div class="root">
+    <!-- TOP BAR -->
+    <div class="top">
+      <div class="chip">
+        <div class="session" id="sessionName">LAI Weightlifting – Plataforma A</div>
+      </div>
+      <div class="chip">
+        <div class="timer" id="timer">02:00</div>
+        <div class="session">Attempt clock</div>
+      </div>
+    </div>
+
+    <!-- TARJETA DEL ATLETA -->
+    <div class="card">
+      <img id="athletePhoto" class="photo" alt="">
+      <div class="block">
+        <div class="name" id="athleteName">ATHLETE NAME</div>
+        <div class="inst">
+          <img id="instLogo" class="logo" alt="">
+          <span id="instName">Institution</span>
+        </div>
+        <div class="row">
+          <span class="pill" id="attemptPill">Snatch — Attempt 1</span>
+          <span class="weight" id="declaredWeight">100 kg</span>
+          <div class="attempts" id="attemptDots"></div>
+          <span class="result" id="attemptResult">—</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
+    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
+
+    // MISMA CONFIG DE TKD
+    const firebaseConfig = {
+      apiKey: "AIzaSyD8r0rLCLLPJx3DsNGMuvVtFuwCMBXrR9M",
+      authDomain: "tkd-overlay.firebaseapp.com",
+      databaseURL: "https://tkd-overlay-default-rtdb.firebaseio.com",
+      projectId: "tkd-overlay",
+      storageBucket: "tkd-overlay.firebasestorage.app",
+      messagingSenderId: "41501920835",
+      appId: "1:41501920835:web:4ccecdf129cf20619d8ef6",
+      measurementId: "G-CXBJCL86EM"
+    };
+
+    const app  = initializeApp(firebaseConfig);
+    const db   = getDatabase(app);
+    const room = new URL(location.href).searchParams.get('room') || 'wl1';
+    const stateRef = ref(db, `wl/${room}/state`);
+
+    const $  = s => document.querySelector(s);
+    const pad = n => String(n).padStart(2,'0');
+
+    let live = null;
+    let lastSec = null;
+
+    function renderStatic(){
+      if(!live) return;
+      $('#sessionName').textContent = live.sessionName || 'LAI Weightlifting';
+      $('#athleteName').textContent = live.athleteName || '';
+      $('#instName').textContent    = live.instName || '';
+
+      if(live.athletePhoto){
+        $('#athletePhoto').src = live.athletePhoto;
+        $('#athletePhoto').style.display = 'block';
+      } else {
+        $('#athletePhoto').style.display = 'none';
+      }
+
+      if(live.instLogo){
+        $('#instLogo').src = live.instLogo;
+        $('#instLogo').style.display = 'block';
+      } else {
+        $('#instLogo').style.display = 'none';
+      }
+
+      $('#declaredWeight').textContent = (live.declaredWeight ?? 0) + ' kg';
+      $('#attemptPill').textContent = `${live.discipline || 'Snatch'} — Attempt ${live.attemptNo || 1}`;
+
+      // dots de los 3 intentos: 'ok' | 'no' | null
+      const dots = live.attempts || []; // array de 3
+      const html = [0,1,2].map(i=>{
+        const v = dots[i];
+        return `<span class="dot ${v==='ok'?'ok':v==='no'?'no':''}"></span>`;
+      }).join('');
+      $('#attemptDots').innerHTML = html;
+
+      const res = live.result; // 'ok' | 'no' | null
+      const rEl = $('#attemptResult');
+      rEl.className = 'result' + (res==='ok'?' ok':res==='no'?' no':'');
+      rEl.textContent = res==='ok' ? 'GOOD LIFT' : res==='no' ? 'NO LIFT' : '—';
+    }
+
+    function renderTimer(){
+      if(!live) return;
+      let ms = live.clockMs ?? 0;
+      if(live.running && live.startedAt){
+        ms = live.clockMs - (Date.now() - live.startedAt);
+      }
+      ms = Math.max(0, ms|0);
+      const sec = Math.floor(ms/1000);
+      if(sec !== lastSec){
+        lastSec = sec;
+        $('#timer').textContent = `${pad(Math.floor(sec/60))}:${pad(sec%60)}`;
+      }
+    }
+
+    onValue(stateRef, snap=>{
+      if(!snap.exists()) return;
+      live = snap.val();
+      renderStatic();
+      renderTimer();
+    });
+
+    function loop(){ renderTimer(); requestAnimationFrame(loop); }
+    requestAnimationFrame(loop);
+  </script>
+</body>
+</html>
