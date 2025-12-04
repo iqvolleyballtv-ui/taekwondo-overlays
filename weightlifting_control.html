@@ -353,12 +353,16 @@
     });
 
     // -------------------- resultados --------------------
-    $('#good').addEventListener('click', async ()=>{
+        $('#good').addEventListener('click', async ()=>{
       if(!stateRef) return;
       read();
       state.result = 'ok';
       const idx = state.attemptNo-1;
       state.attempts[idx] = 'ok';
+
+      // 👉 actualiza el UI del control al momento
+      syncUI();
+
       await pushState();
     });
 
@@ -368,8 +372,26 @@
       state.result = 'no';
       const idx = state.attemptNo-1;
       state.attempts[idx] = 'no';
+
+      // 👉 actualiza el UI del control al momento
+      syncUI();
+
       await pushState();
     });
+
+    $('#clearResult').addEventListener('click', async ()=>{
+      if(!stateRef) return;
+      read();
+      state.result = null;
+      const idx = state.attemptNo-1;
+      state.attempts[idx] = null;
+
+      // 👉 actualiza el UI del control al momento
+      syncUI();
+
+      await pushState();
+    });
+
 
     $('#clearResult').addEventListener('click', async ()=>{
       if(!stateRef) return;
