@@ -411,38 +411,42 @@
     }
 
     function renderTimer(){
-      if(!live) return;
-      let ms = live.clockMs ?? 0;
+  if(!live) return;
+  let ms = live.clockMs ?? 0;
 
-      if(live.running && live.startedAt){
-        ms = live.clockMs - (Date.now() - live.startedAt);
-      }
-      ms = Math.max(0, ms|0);
-      const sec = Math.floor(ms/1000);
+  if(live.running && live.startedAt){
+    ms = live.clockMs - (Date.now() - live.startedAt);
+  }
+  ms = Math.max(0, ms|0);
+  const sec = Math.floor(ms/1000);
 
-      if(sec !== lastSec){
-        lastSec = sec;
-        $('#timerBox').textContent = `${pad(Math.floor(sec/60))}:${pad(sec%60)}`;
-      }
+  if(sec !== lastSec){
+    lastSec = sec;
+    $('#timerBox').textContent = `${pad(Math.floor(sec/60))}:${pad(sec%60)}`;
+  }
 
-      const running = !!live.running && ms > 0;
+  const running   = !!live.running && ms > 0;
+  const hasResult = !!live.result;        // 👈 hay GOOD / NO LIFT
 
-      if(running){
-        $('#present').classList.remove('visible');
-        $('#present').classList.add('hidden');
-        $('#liveBar').classList.remove('hidden');
-        $('#liveBar').classList.add('visible');
-        $('#timerArea').classList.remove('hidden');
-        $('#timerArea').classList.add('visible');
-      }else{
-        $('#present').classList.remove('hidden');
-        $('#present').classList.add('visible');
-        $('#liveBar').classList.remove('visible');
-        $('#liveBar').classList.add('hidden');
-        $('#timerArea').classList.remove('visible');
-        $('#timerArea').classList.add('hidden');
-      }
-    }
+  // 👉 Mostrar barra de levantamiento si el reloj corre
+  //    O si ya marcamos resultado.
+  if(running || hasResult){
+    $('#present').classList.remove('visible');
+    $('#present').classList.add('hidden');
+    $('#liveBar').classList.remove('hidden');
+    $('#liveBar').classList.add('visible');
+    $('#timerArea').classList.remove('hidden');
+    $('#timerArea').classList.add('visible');
+  }else{
+    $('#present').classList.remove('hidden');
+    $('#present').classList.add('visible');
+    $('#liveBar').classList.remove('visible');
+    $('#liveBar').classList.add('hidden');
+    $('#timerArea').classList.remove('visible');
+    $('#timerArea').classList.add('hidden');
+  }
+}
+
 
     onValue(stateRef, snap=>{
       if(!snap.exists()) return;
