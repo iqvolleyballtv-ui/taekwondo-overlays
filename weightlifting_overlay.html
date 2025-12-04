@@ -26,7 +26,7 @@
       pointer-events:none;
     }
 
-    /* ---------------- PRESENTACIÓN ---------------- */
+    /* PRESENTACIÓN */
 
     .present-wrap{
       position:absolute;
@@ -136,7 +136,7 @@
       font-weight:900;
     }
 
-    /* ---------------- LEVANTAMIENTO ---------------- */
+    /* LEVANTAMIENTO */
 
     .live-bar{
       position:absolute;
@@ -197,7 +197,7 @@
       color:#fee2e2;
     }
 
-    /* ---------------- Timer + logo ---------------- */
+    /* Timer + logo */
 
     .timer-wrap{
       position:absolute;
@@ -243,10 +243,8 @@
       white-space:nowrap;
     }
 
-    /* Helpers */
-
-    .hidden{ opacity:0; }
-    .visible{ opacity:1; }
+    .hidden{opacity:0;}
+    .visible{opacity:1;}
   </style>
 </head>
 <body>
@@ -354,13 +352,10 @@
       const inst = live.instName || '';
       const rank = live.rank || 1;
 
-      // bloque amarillo: ranking
       $('#laneBox').textContent = rank;
-
       $('#presentInst').textContent = inst || 'INSTITUCIÓN';
       $('#presentName').textContent = live.athleteName || '';
 
-      // foto atleta (si no, logo institución, si no, nada)
       if(live.athletePhoto){
         $('#presentFlag').src = live.athletePhoto;
         $('#presentFlag').style.display = 'block';
@@ -371,7 +366,6 @@
         $('#presentFlag').style.display = 'none';
       }
 
-      // logo institución
       if(live.instLogo){
         $('#presentLogo').src = live.instLogo;
         $('#presentLogo').style.display = 'block';
@@ -392,7 +386,6 @@
       $('#liveWeight').textContent = `${w} KG`;
       $('#liveNameMini').textContent = live.athleteName || '';
 
-      // resultado
       const resEl = $('#liveResult');
       const res = live.result || null;
 
@@ -411,42 +404,39 @@
     }
 
     function renderTimer(){
-  if(!live) return;
-  let ms = live.clockMs ?? 0;
+      if(!live) return;
+      let ms = live.clockMs ?? 0;
 
-  if(live.running && live.startedAt){
-    ms = live.clockMs - (Date.now() - live.startedAt);
-  }
-  ms = Math.max(0, ms|0);
-  const sec = Math.floor(ms/1000);
+      if(live.running && live.startedAt){
+        ms = live.clockMs - (Date.now() - live.startedAt);
+      }
+      ms = Math.max(0, ms|0);
+      const sec = Math.floor(ms/1000);
 
-  if(sec !== lastSec){
-    lastSec = sec;
-    $('#timerBox').textContent = `${pad(Math.floor(sec/60))}:${pad(sec%60)}`;
-  }
+      if(sec !== lastSec){
+        lastSec = sec;
+        $('#timerBox').textContent = `${pad(Math.floor(sec/60))}:${pad(sec%60)}`;
+      }
 
-  const running   = !!live.running && ms > 0;
-  const hasResult = !!live.result;        // 👈 hay GOOD / NO LIFT
+      const running   = !!live.running && ms > 0;
+      const hasResult = !!live.result;
 
-  // 👉 Mostrar barra de levantamiento si el reloj corre
-  //    O si ya marcamos resultado.
-  if(running || hasResult){
-    $('#present').classList.remove('visible');
-    $('#present').classList.add('hidden');
-    $('#liveBar').classList.remove('hidden');
-    $('#liveBar').classList.add('visible');
-    $('#timerArea').classList.remove('hidden');
-    $('#timerArea').classList.add('visible');
-  }else{
-    $('#present').classList.remove('hidden');
-    $('#present').classList.add('visible');
-    $('#liveBar').classList.remove('visible');
-    $('#liveBar').classList.add('hidden');
-    $('#timerArea').classList.remove('visible');
-    $('#timerArea').classList.add('hidden');
-  }
-}
-
+      if(running || hasResult){
+        $('#present').classList.remove('visible');
+        $('#present').classList.add('hidden');
+        $('#liveBar').classList.remove('hidden');
+        $('#liveBar').classList.add('visible');
+        $('#timerArea').classList.remove('hidden');
+        $('#timerArea').classList.add('visible');
+      }else{
+        $('#present').classList.remove('hidden');
+        $('#present').classList.add('visible');
+        $('#liveBar').classList.remove('visible');
+        $('#liveBar').classList.add('hidden');
+        $('#timerArea').classList.remove('visible');
+        $('#timerArea').classList.add('hidden');
+      }
+    }
 
     onValue(stateRef, snap=>{
       if(!snap.exists()) return;
