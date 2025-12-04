@@ -8,7 +8,6 @@
     :root{
       --bg:#020617;
       --panel:#020617;
-      --panel-soft:#020617;
       --border:#1f2937;
       --accent:#0ea5e9;
       --accent-soft:#0369a1;
@@ -195,7 +194,6 @@
     const db   = getDatabase(app);
     const $    = s => document.querySelector(s);
 
-    // -------------------- estado --------------------
     let state = {
       room: "wl1",
       sessionName: "LAI Weightlifting – Plataforma A",
@@ -214,7 +212,7 @@
       declaredWeight: 100,
       rank: 1,
 
-      attempts: [null,null,null], // ok / no / null
+      attempts: [null,null,null],
       result: null
     };
 
@@ -276,7 +274,6 @@
       }
     }
 
-    // -------------------- file uploads --------------------
     function readFileAsDataUrl(file, cb){
       const r = new FileReader();
       r.onload = e => cb(e.target.result);
@@ -289,6 +286,7 @@
       readFileAsDataUrl(f, url=>{
         state.athletePhoto = url;
         $('#athletePhoto').value = url;
+        syncUI();
         pushState();
       });
     });
@@ -299,11 +297,11 @@
       readFileAsDataUrl(f, url=>{
         state.instLogo = url;
         $('#instLogo').value = url;
+        syncUI();
         pushState();
       });
     });
 
-    // -------------------- firebase --------------------
     async function pushState(){
       if(!isConnected || !stateRef) return;
       await set(stateRef, state);
@@ -324,6 +322,7 @@
 
     $('#save').addEventListener('click', async ()=>{
       read();
+      syncUI();
       await pushState();
     });
 
@@ -338,6 +337,7 @@
         state.clockMs = Math.max(0, state.clockMs - (Date.now() - state.startedAt));
         state.startedAt = null;
       }
+      syncUI();
       await pushState();
     });
 
@@ -349,20 +349,17 @@
       state.result = null;
       const secs = Math.max(1, parseInt($('#clockSec').value || 120));
       state.clockMs = secs*1000;
+      syncUI();
       await pushState();
     });
 
-    // -------------------- resultados --------------------
-        $('#good').addEventListener('click', async ()=>{
+    $('#good').addEventListener('click', async ()=>{
       if(!stateRef) return;
       read();
       state.result = 'ok';
       const idx = state.attemptNo-1;
       state.attempts[idx] = 'ok';
-
-      // 👉 actualiza el UI del control al momento
       syncUI();
-
       await pushState();
     });
 
@@ -372,10 +369,7 @@
       state.result = 'no';
       const idx = state.attemptNo-1;
       state.attempts[idx] = 'no';
-
-      // 👉 actualiza el UI del control al momento
       syncUI();
-
       await pushState();
     });
 
@@ -385,24 +379,10 @@
       state.result = null;
       const idx = state.attemptNo-1;
       state.attempts[idx] = null;
-
-      // 👉 actualiza el UI del control al momento
       syncUI();
-
       await pushState();
     });
 
-
-    $('#clearResult').addEventListener('click', async ()=>{
-      if(!stateRef) return;
-      read();
-      state.result = null;
-      const idx = state.attemptNo-1;
-      state.attempts[idx] = null;
-      await pushState();
-    });
-
-    // -------------------- teclado --------------------
     document.addEventListener('keydown', e=>{
       if(['INPUT','TEXTAREA'].includes(e.target.tagName)) return;
       if(e.code === 'Space'){
@@ -415,11 +395,11 @@
       if(['1','2','3'].includes(e.key)){
         $('#attemptNo').value = e.key;
         state.attemptNo = parseInt(e.key);
+        syncUI();
         pushState();
       }
     });
 
-    // -------------------- iniciar --------------------
     (function initFromUrl(){
       const u = new URL(location.href);
       const rm = u.searchParams.get('room');
