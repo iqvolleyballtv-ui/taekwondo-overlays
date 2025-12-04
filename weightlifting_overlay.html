@@ -180,6 +180,23 @@
       overflow:hidden;
       text-overflow:ellipsis;
     }
+        .live-result{
+      font-size:14px;
+      font-weight:800;
+      padding:4px 10px;
+      border-radius:999px;
+      min-width:100px;
+      text-align:center;
+    }
+    .live-result.good{
+      background:#16a34a;
+      color:#ecfdf5;
+    }
+    .live-result.bad{
+      background:#b91c1c;
+      color:#fee2e2;
+    }
+
 
     /* Timer + logo abajo derecha */
 
@@ -267,11 +284,14 @@
 
     <!-- BARRA DURANTE LEVANTAMIENTO (cuando el reloj SÍ corre) -->
     <div id="liveBar" class="live-bar hidden">
-      <div class="live-tag" id="liveAttemptTag">ATTEMPT 1</div>
-      <div class="live-weight" id="liveWeight">100 KG</div>
-      <div class="live-disc" id="liveDisc">SNATCH</div>
-      <div class="live-name-mini" id="liveNameMini">Nombre atleta</div>
-    </div>
+  <div class="live-tag" id="liveAttemptTag">ATTEMPT 1</div>
+  <div class="live-weight" id="liveWeight">100 KG</div>
+  <div class="live-disc" id="liveDisc">SNATCH</div>
+  <div class="live-name-mini" id="liveNameMini">Nombre atleta</div>
+  <!-- 👉 Resultado del intento -->
+  <div class="live-result" id="liveResult"></div>
+</div>
+
 
     <!-- Timer + logo evento / institución -->
     <div id="timerArea" class="timer-wrap hidden">
@@ -379,14 +399,29 @@
       $('#presentWeight').textContent = `${w} KG`;
 
       // Live bar
-      $('#liveAttemptTag').textContent = `ATTEMPT ${attemptNo}`;
-      $('#liveDisc').textContent = disc;
-      $('#liveWeight').textContent = `${w} KG`;
-      $('#liveNameMini').textContent = live.athleteName || '';
+        $('#liveAttemptTag').textContent = `ATTEMPT ${attemptNo}`;
+  $('#liveDisc').textContent = disc;
+  $('#liveWeight').textContent = `${w} KG`;
+  $('#liveNameMini').textContent = live.athleteName || '';
 
-      // Timer logo
-      updateTimerLogo();
-    }
+  // 👉 Resultado (GOOD LIFT / NO LIFT)
+  const resEl = $('#liveResult');
+  const res = live.result || null;
+
+  if(res === 'ok'){
+    resEl.textContent = 'GOOD LIFT';
+    resEl.className = 'live-result good';
+  }else if(res === 'no'){
+    resEl.textContent = 'NO LIFT';
+    resEl.className = 'live-result bad';
+  }else{
+    resEl.textContent = '';
+    resEl.className = 'live-result';
+  }
+
+  // Timer logo
+  updateTimerLogo();
+
 
     // RENDER TIMER Y CAMBIO DE ESTADO
     function renderTimer(){
