@@ -1,264 +1,184 @@
 <!doctype html>
 <html lang="es">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>Weightlifting Control (LAI)</title>
+  <meta charset="utf-8" />
+  <title>Weightlifting Control</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
-    :root{ --bg:#0b1020; --card:#0f172acc; --text:#F8FAFC; --muted:#9DB2CE; --border:#223055; }
-    html,body{height:100%;margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Inter,Roboto,Segoe UI,Arial}
-    .wrap{max-width:1100px;margin:0 auto;padding:16px;display:grid;gap:14px}
-    .card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:14px;box-shadow:0 8px 30px #0006}
-    .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-    .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-    input,button,select{font-size:14px}
-    input[type="text"],input[type="url"],input[type="number"]{
-      background:#0b1220;border:1px solid #26324e;color:#fff;
-      padding:8px 10px;border-radius:10px;width:100%
+    :root{
+      --bg:#020617;
+      --panel:#020617;
+      --panel-soft:#020617;
+      --border:#1f2937;
+      --accent:#0ea5e9;
+      --accent-soft:#0369a1;
+      --danger:#b91c1c;
+      --good:#16a34a;
+      --text:#f9fafb;
+      --muted:#9ca3af;
+      --input:#020617;
     }
+    *{box-sizing:border-box;font-family:system-ui,-apple-system,Inter,Roboto,Segoe UI,Arial;}
+    html,body{margin:0;height:100%;background:var(--bg);color:var(--text);}
+    body{padding:16px;}
+    h1{margin:0 0 8px;font-size:20px;}
+    .card{
+      border-radius:12px;
+      background:radial-gradient(circle at top, #0b1120 0, #020617 55%, #000 100%);
+      border:1px solid var(--border);
+      padding:16px;
+      margin-bottom:16px;
+      box-shadow:0 18px 40px #000a;
+    }
+    .row{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px 12px;
+      align-items:center;
+      margin-bottom:8px;
+    }
+    label{
+      font-size:13px;
+      text-transform:uppercase;
+      letter-spacing:.08em;
+      color:var(--muted);
+    }
+    input,select{
+      padding:6px 8px;
+      border-radius:8px;
+      border:1px solid var(--border);
+      background:var(--input);
+      color:var(--text);
+      min-width:0;
+    }
+    input[readonly]{opacity:.7;}
     button{
-      background:#1F2937;border:1px solid #334155;color:#fff;
-      padding:10px 12px;border-radius:10px;cursor:pointer;font-weight:800
+      border-radius:999px;
+      border:none;
+      padding:8px 14px;
+      font-weight:600;
+      cursor:pointer;
+      background:var(--accent-soft);
+      color:white;
+      transition:background .15s, transform .05s;
     }
-    .ok{background:#064e3b;border-color:#065f46}
-    .no{background:#7f1d1d;border-color:#991b1b}
-    .note{font-size:12px;color:var(--muted)}
+    button:hover{background:var(--accent);}
+    button:active{transform:scale(.97);}
+    .btn-line{display:flex;gap:8px;flex-wrap:wrap;}
+    .btn-good{background:var(--good);}
+    .btn-good:hover{background:#22c55e;}
+    .btn-bad{background:var(--danger);}
+    .btn-bad:hover{background:#ef4444;}
+    .btn-ghost{
+      background:transparent;
+      border:1px solid var(--border);
+      color:var(--muted);
+    }
+    .tag{
+      padding:2px 8px;
+      border-radius:999px;
+      font-size:11px;
+      text-transform:uppercase;
+      letter-spacing:.1em;
+      border:1px solid var(--border);
+      color:var(--muted);
+    }
+    .section-title{
+      font-size:14px;
+      font-weight:700;
+      margin-bottom:4px;
+    }
+    .col{
+      flex:1 1 260px;
+      min-width:220px;
+    }
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <!-- Tarjeta 1: sesión y reloj -->
-    <div class="card">
-      <div class="row">
-        <label>Room</label><input id="room" value="wl1" style="max-width:140px"/>
-        <label>Sesión</label><input id="sessionName" value="LAI Weightlifting – Plataforma A" style="min-width:260px"/>
-        <label>Reloj (seg)</label><input id="clockSec" type="number" min="10" step="5" value="120" style="max-width:120px"/>
+  <div class="card">
+    <h1>LAI Weightlifting – Control</h1>
+    <div class="row">
+      <label>Room</label>
+      <input id="room" style="max-width:90px" />
+      <label>Sesión</label>
+      <input id="sessionName" style="flex:1" />
+      <label>Reloj (seg)</label>
+      <input id="clockSec" type="number" min="1" value="120" style="max-width:90px" />
+      <div class="btn-line">
         <button id="connect">Connect</button>
         <button id="startStop">Start</button>
-        <button id="reset">Reset</button>
-        <span class="note">Usa el mismo <b>?room=</b> que en el overlay.</span>
+        <button id="reset" class="btn-ghost">Reset</button>
       </div>
     </div>
-
-    <!-- Tarjeta 2: datos del atleta -->
-    <div class="card">
-      <div class="grid">
-        <div>
-          <div class="row"><b>Atleta</b></div>
-          <div class="row">
-            <input id="athleteName" placeholder="Nombre del atleta">
-          </div>
-          <div class="row">
-            <label>Foto (URL)</label>
-            <input id="athletePhoto" type="url" placeholder="https://...jpg/png">
-          </div>
-        </div>
-        <div>
-          <div class="row"><b>Institución</b></div>
-          <div class="row">
-            <input id="instName" placeholder="Institución">
-          </div>
-          <div class="row">
-            <label>Logo (URL)</label>
-            <input id="instLogo" type="url" placeholder="https://...png">
-          </div>
-        </div>
-      </div>
-
-      <!-- NUEVOS CAMPOS: subir archivo desde la compu -->
-      <div class="row" style="margin-top:10px">
-        <label>Foto desde archivo</label>
-        <input id="athletePhotoFile" type="file" accept="image/*" style="max-width:260px"/>
-        <label>Logo institución desde archivo</label>
-        <input id="instLogoFile" type="file" accept="image/*" style="max-width:260px"/>
-      </div>
-
-      <div class="row" style="margin-top:10px">
-  <label>Disciplina</label>
-  <select id="discipline">
-    <option>Snatch</option>
-    <option>Clean &amp; Jerk</option>
-  </select>
-  <label>Intento #</label>
-  <input id="attemptNo" type="number" min="1" max="3" value="1" style="max-width:80px"/>
-  <label>Peso (kg)</label>
-  <input id="declaredWeight" type="number" step="1" value="100" style="max-width:120px"/>
-  <label>Ranking</label>
-  <input id="rank" type="number" min="1" value="1" style="max-width:80px"/>
-  <button id="save">Save / Push</button>
-</div>
-
-
-      <div class="row">
-        <div>Resultado:</div>
-        <button class="ok" id="markOk">GOOD LIFT</button>
-        <button class="no" id="markNo">NO LIFT</button>
-        <button id="clearRes">Borrar</button>
-        <div class="note">Los circulitos de intento se llenan automáticamente.</div>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="row">
-        <div class="note">
-          Atajos: <b>Espacio</b> start/stop, <b>R</b> reset, <b>O</b> OK, <b>N</b> NO, <b>1/2/3</b> intento.
-        </div>
-      </div>
+    <div style="font-size:12px;color:var(--muted);margin-top:4px">
+      Usa el mismo <code>?room=</code> que en el overlay. Atajos: barra espaciadora = Start/Stop, R = Reset, O = GOOD, N = NO, 1/2/3 = intento.
     </div>
   </div>
 
-  <!-- Lógica local del control -->
-  <script>
-    let state = {
-  room:'wl1',
-  sessionName:'LAI Weightlifting – Plataforma A',
-  clockMs:120000, running:false, startedAt:null,
-  athleteName:'', athletePhoto:'', instName:'', instLogo:'',
-  discipline:'Snatch', attemptNo:1, declaredWeight:100,
-  rank:1,
-  attempts:[null,null,null],
-  result:null
-};
+  <div class="card">
+    <div class="row">
+      <div class="col">
+        <div class="section-title">Atleta</div>
+        <div class="row">
+          <label>Nombre</label>
+          <input id="athleteName" style="flex:1" />
+        </div>
+        <div class="row">
+          <label>Foto (URL)</label>
+          <input id="athletePhoto" readonly style="flex:1" placeholder="Imagen cargada desde archivo" />
+        </div>
+        <div class="row">
+          <label>Foto desde archivo</label>
+          <input id="athleteFile" type="file" accept="image/*" />
+        </div>
+      </div>
 
+      <div class="col">
+        <div class="section-title">Institución</div>
+        <div class="row">
+          <label>Nombre</label>
+          <input id="instName" style="flex:1" />
+        </div>
+        <div class="row">
+          <label>Logo (URL)</label>
+          <input id="instLogo" readonly style="flex:1" placeholder="Logo cargado desde archivo" />
+        </div>
+        <div class="row">
+          <label>Logo institución desde archivo</label>
+          <input id="instFile" type="file" accept="image/*" />
+        </div>
+      </div>
+    </div>
 
-    const $=s=>document.querySelector(s);
+    <div class="row" style="margin-top:12px">
+      <label>Disciplina</label>
+      <select id="discipline">
+        <option>Snatch</option>
+        <option>Clean &amp; Jerk</option>
+      </select>
+      <label>Intento #</label>
+      <input id="attemptNo" type="number" min="1" max="3" value="1" style="max-width:80px" />
+      <label>Peso (kg)</label>
+      <input id="declaredWeight" type="number" step="1" value="100" style="max-width:100px" />
+      <label>Ranking</label>
+      <input id="rank" type="number" min="1" value="1" style="max-width:80px" />
+      <button id="save">Save / Push</button>
+    </div>
 
-    const read=()=>{
-  state.room = $('#room').value.trim()||'wl1';
-  state.sessionName = $('#sessionName').value.trim()||'LAI Weightlifting';
-  state.discipline = $('#discipline').value;
-  state.attemptNo = Math.max(1,Math.min(3,parseInt($('#attemptNo').value||1)));
-  state.declaredWeight = parseFloat($('#declaredWeight').value||0);
-  state.athleteName = $('#athleteName').value.trim();
+    <div class="row" style="margin-top:8px">
+      <label>Resultado</label>
+      <div class="btn-line">
+        <button id="good" class="btn-good">GOOD LIFT</button>
+        <button id="bad" class="btn-bad">NO LIFT</button>
+        <button id="clearResult" class="btn-ghost">Borrar</button>
+      </div>
+      <span class="tag" id="resultTag">SIN RESULTADO</span>
+    </div>
+  </div>
 
-  const urlPhoto = $('#athletePhoto').value.trim();
-  if(urlPhoto) state.athletePhoto = urlPhoto;
-
-  state.instName = $('#instName').value.trim();
-
-  const urlLogo = $('#instLogo').value.trim();
-  if(urlLogo) state.instLogo = urlLogo;
-
-  // 👉 NUEVO: ranking
-  state.rank = Math.max(1, parseInt($('#rank').value || 1));
-
-  const secs = Math.max(1,parseInt($('#clockSec').value||120));
-  if(!state.running) state.clockMs = secs*1000;
-};
-
-
-    const syncUI=()=>{
-      $('#room').value=state.room;
-      $('#sessionName').value=state.sessionName;
-      $('#discipline').value=state.discipline;
-      $('#attemptNo').value=state.attemptNo;
-      $('#declaredWeight').value=state.declaredWeight;
-      $('#athleteName').value=state.athleteName;
-
-      // Placeholders inteligentes para no llenar con el base64
-      if(state.athletePhoto && state.athletePhoto.startsWith('data:')){
-        $('#athletePhoto').value = '';
-        $('#athletePhoto').placeholder = 'Imagen cargada desde archivo';
-      }else{
-        $('#athletePhoto').value = state.athletePhoto || '';
-        $('#athletePhoto').placeholder = 'https://...jpg/png';
-      }
-
-      $('#instName').value=state.instName;
-
-      if(state.instLogo && state.instLogo.startsWith('data:')){
-        $('#instLogo').value = '';
-        $('#instLogo').placeholder = 'Logo cargado desde archivo';
-      }else{
-        $('#instLogo').value = state.instLogo || '';
-        $('#instLogo').placeholder = 'https://...png';
-      }
-
-      $('#clockSec').value=Math.max(1,Math.round(state.clockMs/1000));
-      $('#startStop').textContent = state.running ? 'Stop' : 'Start';
-      // 👉 NUEVO: ranking
-      $('#rank').value = state.rank || 1;
-    };
-
-    function publish(){ read(); syncUI(); if(window._push) window._push(state); }
-
-    // Botones básicos
-    $('#save').addEventListener('click', publish);
-
-    $('#startStop').addEventListener('click', ()=>{
-      if(state.running){
-        const elapsed = Date.now()-(state.startedAt||Date.now());
-        state.clockMs = Math.max(0,state.clockMs-elapsed);
-        state.running=false; state.startedAt=null;
-      }else{
-        state.running=true; state.startedAt=Date.now();
-      }
-      publish();
-    });
-
-    $('#reset').addEventListener('click', ()=>{
-      read();
-      state.running=false;
-      state.startedAt=null;
-      state.clockMs=parseInt($('#clockSec').value||120)*1000;
-      publish();
-    });
-
-    $('#markOk').addEventListener('click', ()=>{
-      state.result='ok';
-      state.attempts[state.attemptNo-1]='ok';
-      publish();
-    });
-    $('#markNo').addEventListener('click', ()=>{
-      state.result='no';
-      state.attempts[state.attemptNo-1]='no';
-      publish();
-    });
-    $('#clearRes').addEventListener('click', ()=>{
-      state.result=null;
-      publish();
-    });
-
-    // NUEVO: leer archivos locales y convertir a data URL
-    $('#athletePhotoFile').addEventListener('change', e=>{
-      const file = e.target.files[0];
-      if(!file) return;
-      const reader = new FileReader();
-      reader.onload = ev=>{
-        state.athletePhoto = ev.target.result; // data URL
-        syncUI();
-        if(window._push) window._push(state);
-      };
-      reader.readAsDataURL(file);
-    });
-
-    $('#instLogoFile').addEventListener('change', e=>{
-      const file = e.target.files[0];
-      if(!file) return;
-      const reader = new FileReader();
-      reader.onload = ev=>{
-        state.instLogo = ev.target.result; // data URL
-        syncUI();
-        if(window._push) window._push(state);
-      };
-      reader.readAsDataURL(file);
-    });
-
-    // Atajos de teclado
-    document.addEventListener('keydown',(e)=>{
-      if(['INPUT','TEXTAREA','SELECT'].includes(e.target.tagName)) return;
-      if(e.code==='Space'){ e.preventDefault(); $('#startStop').click(); }
-      if(e.key==='r' || e.key==='R') $('#reset').click();
-      if(e.key==='o' || e.key==='O') $('#markOk').click();
-      if(e.key==='n' || e.key==='N') $('#markNo').click();
-      if(['1','2','3'].includes(e.key)){ $('#attemptNo').value=e.key; read(); publish(); }
-    });
-  </script>
-
-  <!-- Firebase: MISMO CONFIG QUE TKD -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
-    import { getDatabase, ref, onValue, set, get } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
+    import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyD8r0rLCLLPJx3DsNGMuvVtFuwCMBXrR9M",
@@ -271,35 +191,221 @@
       measurementId: "G-CXBJCL86EM"
     };
 
-    const app = initializeApp(firebaseConfig);
-    const db  = getDatabase(app);
+    const app  = initializeApp(firebaseConfig);
+    const db   = getDatabase(app);
+    const $    = s => document.querySelector(s);
 
-    document.getElementById('connect').addEventListener('click', async ()=>{
-      read();
-      const stateRef = ref(db, `wl/${state.room}/state`);
-      const snap = await get(stateRef);
-      if(!snap.exists()){
-        await set(stateRef, state);
+    // -------------------- estado --------------------
+    let state = {
+      room: "wl1",
+      sessionName: "LAI Weightlifting – Plataforma A",
+      clockMs: 120000,
+      running: false,
+      startedAt: null,
+
+      athleteName: "",
+      athletePhoto: "",
+
+      instName: "",
+      instLogo: "",
+
+      discipline: "Snatch",
+      attemptNo: 1,
+      declaredWeight: 100,
+      rank: 1,
+
+      attempts: [null,null,null], // ok / no / null
+      result: null
+    };
+
+    let stateRef = null;
+    let isConnected = false;
+
+    function syncUI(){
+      $('#room').value = state.room;
+      $('#sessionName').value = state.sessionName;
+      $('#clockSec').value = Math.max(1, Math.round(state.clockMs/1000));
+
+      $('#athleteName').value = state.athleteName;
+      $('#athletePhoto').value = state.athletePhoto || "";
+      $('#instName').value = state.instName;
+      $('#instLogo').value = state.instLogo || "";
+
+      $('#discipline').value = state.discipline;
+      $('#attemptNo').value = state.attemptNo;
+      $('#declaredWeight').value = state.declaredWeight;
+      $('#rank').value = state.rank || 1;
+
+      $('#startStop').textContent = state.running ? "Stop" : "Start";
+
+      const tag = $('#resultTag');
+      if(state.result === 'ok'){
+        tag.textContent = 'GOOD LIFT';
+        tag.style.borderColor = '#16a34a';
+        tag.style.color = '#bbf7d0';
+      }else if(state.result === 'no'){
+        tag.textContent = 'NO LIFT';
+        tag.style.borderColor = '#b91c1c';
+        tag.style.color = '#fecaca';
       }else{
-        state = { ...state, ...snap.val() };
+        tag.textContent = 'SIN RESULTADO';
+        tag.style.borderColor = 'var(--border)';
+        tag.style.color = 'var(--muted)';
       }
-      onValue(stateRef, s=>{
-        const incoming = s.val();
-        if(incoming){ state=incoming; syncUI(); }
+    }
+
+    function read(){
+      state.room = $('#room').value.trim() || 'wl1';
+      state.sessionName = $('#sessionName').value.trim() || 'LAI Weightlifting – Plataforma A';
+      state.discipline = $('#discipline').value;
+      state.attemptNo = Math.max(1, Math.min(3, parseInt($('#attemptNo').value || 1)));
+      state.declaredWeight = parseFloat($('#declaredWeight').value || 0);
+      state.rank = Math.max(1, parseInt($('#rank').value || 1));
+
+      state.athleteName = $('#athleteName').value.trim();
+      const urlPhoto = $('#athletePhoto').value.trim();
+      if(urlPhoto) state.athletePhoto = urlPhoto;
+
+      state.instName = $('#instName').value.trim();
+      const urlLogo = $('#instLogo').value.trim();
+      if(urlLogo) state.instLogo = urlLogo;
+
+      const secs = Math.max(1, parseInt($('#clockSec').value || 120));
+      if(!state.running){
+        state.clockMs = secs*1000;
+      }
+    }
+
+    // -------------------- file uploads --------------------
+    function readFileAsDataUrl(file, cb){
+      const r = new FileReader();
+      r.onload = e => cb(e.target.result);
+      r.readAsDataURL(file);
+    }
+
+    $('#athleteFile').addEventListener('change', e=>{
+      const f = e.target.files[0];
+      if(!f) return;
+      readFileAsDataUrl(f, url=>{
+        state.athletePhoto = url;
+        $('#athletePhoto').value = url;
+        pushState();
       });
-      window._push = s => set(stateRef, s);
-      syncUI();
     });
 
-    // Autoconectar si viene ?room en la URL
-    const u=new URL(location.href);
-    const rq=u.searchParams.get('room');
-    if(rq){
-      document.getElementById('room').value=rq;
-      document.getElementById('connect').click();
+    $('#instFile').addEventListener('change', e=>{
+      const f = e.target.files[0];
+      if(!f) return;
+      readFileAsDataUrl(f, url=>{
+        state.instLogo = url;
+        $('#instLogo').value = url;
+        pushState();
+      });
+    });
+
+    // -------------------- firebase --------------------
+    async function pushState(){
+      if(!isConnected || !stateRef) return;
+      await set(stateRef, state);
     }
-    syncUI();
+
+    $('#connect').addEventListener('click', async ()=>{
+      read();
+      stateRef = ref(db, `wl/${state.room}/state`);
+      await set(stateRef, state);
+      onValue(stateRef, snap=>{
+        if(!snap.exists()) return;
+        state = snap.val();
+        syncUI();
+      });
+      isConnected = true;
+      $('#connect').textContent = 'Connected';
+    });
+
+    $('#save').addEventListener('click', async ()=>{
+      read();
+      await pushState();
+    });
+
+    $('#startStop').addEventListener('click', async ()=>{
+      if(!stateRef) return;
+      read();
+      if(!state.running){
+        state.running = true;
+        state.startedAt = Date.now();
+      }else{
+        state.running = false;
+        state.clockMs = Math.max(0, state.clockMs - (Date.now() - state.startedAt));
+        state.startedAt = null;
+      }
+      await pushState();
+    });
+
+    $('#reset').addEventListener('click', async ()=>{
+      if(!stateRef) return;
+      read();
+      state.running = false;
+      state.startedAt = null;
+      state.result = null;
+      const secs = Math.max(1, parseInt($('#clockSec').value || 120));
+      state.clockMs = secs*1000;
+      await pushState();
+    });
+
+    // -------------------- resultados --------------------
+    $('#good').addEventListener('click', async ()=>{
+      if(!stateRef) return;
+      read();
+      state.result = 'ok';
+      const idx = state.attemptNo-1;
+      state.attempts[idx] = 'ok';
+      await pushState();
+    });
+
+    $('#bad').addEventListener('click', async ()=>{
+      if(!stateRef) return;
+      read();
+      state.result = 'no';
+      const idx = state.attemptNo-1;
+      state.attempts[idx] = 'no';
+      await pushState();
+    });
+
+    $('#clearResult').addEventListener('click', async ()=>{
+      if(!stateRef) return;
+      read();
+      state.result = null;
+      const idx = state.attemptNo-1;
+      state.attempts[idx] = null;
+      await pushState();
+    });
+
+    // -------------------- teclado --------------------
+    document.addEventListener('keydown', e=>{
+      if(['INPUT','TEXTAREA'].includes(e.target.tagName)) return;
+      if(e.code === 'Space'){
+        e.preventDefault();
+        $('#startStop').click();
+      }
+      if(e.key === 'r' || e.key === 'R') $('#reset').click();
+      if(e.key === 'o' || e.key === 'O') $('#good').click();
+      if(e.key === 'n' || e.key === 'N') $('#bad').click();
+      if(['1','2','3'].includes(e.key)){
+        $('#attemptNo').value = e.key;
+        state.attemptNo = parseInt(e.key);
+        pushState();
+      }
+    });
+
+    // -------------------- iniciar --------------------
+    (function initFromUrl(){
+      const u = new URL(location.href);
+      const rm = u.searchParams.get('room');
+      if(rm){
+        state.room = rm;
+      }
+      syncUI();
+    })();
   </script>
 </body>
 </html>
-Add file upload for photos
