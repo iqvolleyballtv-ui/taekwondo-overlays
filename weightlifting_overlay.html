@@ -26,7 +26,7 @@
       pointer-events:none;
     }
 
-    /* ---------------- PRESENTACIÓN (cuando el reloj NO corre) ---------------- */
+    /* ---------------- PRESENTACIÓN ---------------- */
 
     .present-wrap{
       position:absolute;
@@ -136,7 +136,7 @@
       font-weight:900;
     }
 
-    /* ---------------- LEVANTAMIENTO (cuando el reloj SÍ corre) ---------------- */
+    /* ---------------- LEVANTAMIENTO ---------------- */
 
     .live-bar{
       position:absolute;
@@ -180,7 +180,7 @@
       overflow:hidden;
       text-overflow:ellipsis;
     }
-        .live-result{
+    .live-result{
       font-size:14px;
       font-weight:800;
       padding:4px 10px;
@@ -197,8 +197,7 @@
       color:#fee2e2;
     }
 
-
-    /* Timer + logo abajo derecha */
+    /* ---------------- Timer + logo ---------------- */
 
     .timer-wrap{
       position:absolute;
@@ -253,10 +252,10 @@
 <body>
   <div class="root">
 
-    <!-- PRESENTACIÓN DEL ATLETA (cuando el reloj NO corre) -->
+    <!-- PRESENTACIÓN DEL ATLETA -->
     <div id="present" class="present-wrap visible">
       <div class="present-main">
-        <div class="present-lane" id="laneBox">UPR</div>
+        <div class="present-lane" id="laneBox">1</div>
         <div class="present-body">
           <img id="presentFlag" class="present-flag" alt="">
           <div class="present-text">
@@ -282,18 +281,16 @@
       </div>
     </div>
 
-    <!-- BARRA DURANTE LEVANTAMIENTO (cuando el reloj SÍ corre) -->
+    <!-- BARRA DURANTE LEVANTAMIENTO -->
     <div id="liveBar" class="live-bar hidden">
-  <div class="live-tag" id="liveAttemptTag">ATTEMPT 1</div>
-  <div class="live-weight" id="liveWeight">100 KG</div>
-  <div class="live-disc" id="liveDisc">SNATCH</div>
-  <div class="live-name-mini" id="liveNameMini">Nombre atleta</div>
-  <!-- 👉 Resultado del intento -->
-  <div class="live-result" id="liveResult"></div>
-</div>
+      <div class="live-tag" id="liveAttemptTag">ATTEMPT 1</div>
+      <div class="live-weight" id="liveWeight">100 KG</div>
+      <div class="live-disc" id="liveDisc">SNATCH</div>
+      <div class="live-name-mini" id="liveNameMini">Nombre atleta</div>
+      <div class="live-result" id="liveResult"></div>
+    </div>
 
-
-    <!-- Timer + logo evento / institución -->
+    <!-- Timer + logo -->
     <div id="timerArea" class="timer-wrap hidden">
       <div class="timer-box" id="timerBox">02:00</div>
       <div class="timer-lai" id="timerLai">
@@ -308,7 +305,6 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
     import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
 
-    // MISMA CONFIG DE TKD
     const firebaseConfig = {
       apiKey: "AIzaSyD8r0rLCLLPJx3DsNGMuvVtFuwCMBXrR9M",
       authDomain: "tkd-overlay.firebaseapp.com",
@@ -326,7 +322,6 @@
     const room = url.searchParams.get('room') || 'wl1';
     const stateRef = ref(db, `wl/${room}/state`);
 
-    // Logo LAI opcional por URL (?laiLogo=https://...)
     const laiLogoUrl = url.searchParams.get('laiLogo') || null;
 
     const $ = s => document.querySelector(s);
@@ -339,39 +334,33 @@
       const img  = $('#laiLogo');
       const text = $('#laiText');
 
-      if(live && live.instLogo){       // 1) prioridad: logo de la institución
+      if(live && live.instLogo){
         img.src = live.instLogo;
         img.style.display = 'block';
         text.textContent = '';
-      }else if(laiLogoUrl){            // 2) si no hay instLogo, usamos el LAI por URL
+      }else if(laiLogoUrl){
         img.src = laiLogoUrl;
         img.style.display = 'block';
         text.textContent = '';
-      }else{                           // 3) si nada, texto "LAI"
+      }else{
         img.style.display = 'none';
         text.textContent = 'LAI';
       }
     }
 
-    // RENDER ESTÁTICO
     function renderStatic(){
-  if(!live) return;
+      if(!live) return;
 
-  const inst = live.instName || '';
-  const rank = live.rank || 1;   // 👈 tomamos el ranking del estado
+      const inst = live.instName || '';
+      const rank = live.rank || 1;
 
-  // Bloque amarillo: ranking numérico
-  $('#laneBox').textContent = rank;
+      // bloque amarillo: ranking
+      $('#laneBox').textContent = rank;
 
-  // Texto de institución y nombre
-  $('#presentInst').textContent = inst || 'INSTITUCIÓN';
-  $('#presentName').textContent = live.athleteName || '';
+      $('#presentInst').textContent = inst || 'INSTITUCIÓN';
+      $('#presentName').textContent = live.athleteName || '';
 
-  // --- el resto de la función sigue igual ---
-  // Foto atleta / logo institución, attempt, disciplina, peso, etc.
-
-
-      // Foto del atleta (izquierda). Si no hay, usamos logo institución.
+      // foto atleta (si no, logo institución, si no, nada)
       if(live.athletePhoto){
         $('#presentFlag').src = live.athletePhoto;
         $('#presentFlag').style.display = 'block';
@@ -382,7 +371,7 @@
         $('#presentFlag').style.display = 'none';
       }
 
-      // Logo institución (derecha)
+      // logo institución
       if(live.instLogo){
         $('#presentLogo').src = live.instLogo;
         $('#presentLogo').style.display = 'block';
@@ -398,32 +387,29 @@
       $('#presentDiscipline').textContent = disc;
       $('#presentWeight').textContent = `${w} KG`;
 
-      // Live bar
-        $('#liveAttemptTag').textContent = `ATTEMPT ${attemptNo}`;
-  $('#liveDisc').textContent = disc;
-  $('#liveWeight').textContent = `${w} KG`;
-  $('#liveNameMini').textContent = live.athleteName || '';
+      $('#liveAttemptTag').textContent = `ATTEMPT ${attemptNo}`;
+      $('#liveDisc').textContent = disc;
+      $('#liveWeight').textContent = `${w} KG`;
+      $('#liveNameMini').textContent = live.athleteName || '';
 
-  // 👉 Resultado (GOOD LIFT / NO LIFT)
-  const resEl = $('#liveResult');
-  const res = live.result || null;
+      // resultado
+      const resEl = $('#liveResult');
+      const res = live.result || null;
 
-  if(res === 'ok'){
-    resEl.textContent = 'GOOD LIFT';
-    resEl.className = 'live-result good';
-  }else if(res === 'no'){
-    resEl.textContent = 'NO LIFT';
-    resEl.className = 'live-result bad';
-  }else{
-    resEl.textContent = '';
-    resEl.className = 'live-result';
-  }
+      if(res === 'ok'){
+        resEl.textContent = 'GOOD LIFT';
+        resEl.className = 'live-result good';
+      }else if(res === 'no'){
+        resEl.textContent = 'NO LIFT';
+        resEl.className = 'live-result bad';
+      }else{
+        resEl.textContent = '';
+        resEl.className = 'live-result';
+      }
 
-  // Timer logo
-  updateTimerLogo();
+      updateTimerLogo();
+    }
 
-
-    // RENDER TIMER Y CAMBIO DE ESTADO
     function renderTimer(){
       if(!live) return;
       let ms = live.clockMs ?? 0;
@@ -458,7 +444,6 @@
       }
     }
 
-    // SUSCRIPCIÓN A FIREBASE
     onValue(stateRef, snap=>{
       if(!snap.exists()) return;
       live = snap.val();
@@ -466,7 +451,6 @@
       renderTimer();
     });
 
-    // Bucle suave para que el timer se vea corriendo también en Yolo
     function loop(){
       renderTimer();
       requestAnimationFrame(loop);
@@ -475,4 +459,3 @@
   </script>
 </body>
 </html>
-Fix athlete photo and timer logo
