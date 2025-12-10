@@ -2,25 +2,18 @@
 <html lang="es">
 <head>
   <meta charset="utf-8" />
-  <title>VB Score Overlay</title>
+  <title>VB Score Overlay – TEST</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
-    :root{
-      --panel:#020617f5;
-      --border:#0f172a;
-      --accent:#0ea5e9;
-      --text:#f9fafb;
-      --muted:#9ca3af;
-    }
-    *{box-sizing:border-box;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;}
     html,body{
       margin:0;
       padding:0;
       height:100%;
-      background:transparent;
-      overflow:hidden;
+      background:#0f172a;
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
+      color:#f9fafb;
     }
-    #root{
+    .wrapper{
       position:absolute;
       top:40px;
       left:40px;
@@ -28,7 +21,7 @@
     .card{
       border-radius:14px;
       background:linear-gradient(to bottom,#020617f5,#020617f0);
-      border:1px solid #0f172a;
+      border:1px solid #111827;
       box-shadow:0 24px 60px #000c;
       min-width:520px;
       overflow:hidden;
@@ -44,10 +37,6 @@
       display:flex;
       justify-content:space-between;
       align-items:center;
-    }
-    .title span{
-      font-size:11px;
-      color:#9ca3af;
     }
     .rows{
       display:flex;
@@ -91,11 +80,8 @@
       align-items:center;
       justify-content:center;
       overflow:hidden;
-    }
-    .logo img{
-      max-width:100%;
-      max-height:100%;
-      object-fit:contain;
+      color:#9ca3af;
+      font-size:10px;
     }
     .info{
       display:flex;
@@ -106,7 +92,7 @@
       font-size:11px;
       text-transform:uppercase;
       letter-spacing:.16em;
-      color:var(--muted);
+      color:#9ca3af;
       white-space:nowrap;
     }
     .name{
@@ -144,7 +130,6 @@
       text-align:right;
       font-size:26px;
       font-weight:900;
-      box-shadow:0 0 0 1px #020617 inset;
       display:flex;
       align-items:center;
       justify-content:flex-end;
@@ -157,176 +142,48 @@
       background:#22c55e;
       box-shadow:0 0 0 4px #22c55e33,0 0 18px #22c55eaa;
     }
-    .highlight{
-      position:relative;
-    }
-    .highlight::after{
-      content:"";
-      position:absolute;
-      inset:2px;
-      border-radius:12px;
-      border:2px solid transparent;
-      pointer-events:none;
-    }
-    .highlight.set::after{
-      border-color:#fb923c;
-      box-shadow:0 0 18px #fb923c80;
-    }
-    .highlight.match::after{
-      border-color:#facc15;
-      box-shadow:0 0 22px #facc1580;
-    }
-    .badge-wrap{
-      position:absolute;
-      right:18px;
-      top:6px;
-      bottom:6px;
-      display:flex;
-      align-items:center;
-      pointer-events:none;
-    }
-    .badge{
-      padding:4px 14px;
-      border-radius:999px;
-      font-size:12px;
-      font-weight:700;
-      text-transform:uppercase;
-      letter-spacing:.16em;
-      background:#f97316;
-      color:#111827;
-      box-shadow:0 8px 24px #000b;
-    }
-    .badge.match{
-      background:#facc15;
-    }
   </style>
 </head>
 <body>
-  <div id="root"></div>
-
-    <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
-    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyD8r0rLCLLPJx3DsNGMuvVtFuwCMBXrR9M",
-      authDomain: "tkd-overlay.firebaseapp.com",
-      databaseURL: "https://tkd-overlay-default-rtdb.firebaseio.com",
-      projectId: "tkd-overlay",
-      storageBucket: "tkd-overlay.firebasestorage.app",
-      messagingSenderId: "41501920835",
-      appId: "1:41501920835:web:4ccecdf129cf20619d8ef6",
-      measurementId: "G-CXBJCL86EM"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db  = getDatabase(app);
-
-    const root = document.getElementById("root");
-
-    const url  = new URL(location.href);
-    const room = url.searchParams.get("room") || "vb1";
-    const stateRef = ref(db, `vb/${room}/state`);
-
-    const makeLogo = url => url ? `<img src="${url}">` : "";
-
-    function render(state){
-      if(!state){
-        // Fallback: marcador demo para que NUNCA se vea en blanco
-        state = {
-          matchTitle:"Volleyball Match",
-          highlight:"none",
-          showSummary:false,
-          serving:"A",
-          teamA:{ short:"ITA", name:"ITALY", logo:"" },
-          teamB:{ short:"USA", name:"UNITED STATES", logo:"" },
-          setsWonA:0,
-          setsWonB:0,
-          scoreA:23,
-          scoreB:24
-        };
-      }
-
-      const a = state.teamA || {};
-      const b = state.teamB || {};
-
-      const hl = state.highlight || "none";
-      const hlRowA = (hl==="setA" || hl==="matchA");
-      const hlRowB = (hl==="setB" || hl==="matchB");
-      let hlLabel = "";
-      let hlClass = "";
-      if(hl==="setA" || hl==="setB"){
-        hlLabel = "Set point";
-        hlClass = "set";
-      }else if(hl==="matchA" || hl==="matchB"){
-        hlLabel = "Match point";
-        hlClass = "match";
-      }
-
-      const serving = state.serving || "A";
-
-      root.innerHTML = `
-        <div class="card">
-          <div class="title">
-            <div>${(state.matchTitle || "Volleyball Match").toUpperCase()}</div>
-            <span>${state.showSummary ? "Set summary" : "Live score"}</span>
+  <div class="wrapper">
+    <div class="card">
+      <div class="title">
+        <div>BRONZE MEDAL MATCH</div>
+        <span>LIVE SCORE</span>
+      </div>
+      <div class="rows">
+        <div class="row">
+          <div class="seed">ITA</div>
+          <div class="logo">LOGO</div>
+          <div class="info">
+            <div class="short">ITA</div>
+            <div class="name">ITALY</div>
           </div>
-          <div class="rows">
-            <div class="row ${hlRowA ? "highlight "+hlClass : ""}">
-              <div class="seed">${(a.short || "A").slice(0,3).toUpperCase()}</div>
-              <div class="logo">${makeLogo(a.logo)}</div>
-              <div class="info">
-                <div class="short">${(a.short || "A").toUpperCase()}</div>
-                <div class="name">${a.name || "TEAM A"}</div>
-              </div>
-              <div class="sets">
-                <span>Sets</span>${state.setsWonA ?? 0}
-              </div>
-              <div class="score">
-                <span>${state.scoreA ?? 0}</span>
-                ${serving==="A" ? '<div class="serve"></div>' : ""}
-              </div>
-            </div>
-
-            <div class="row ${hlRowB ? "highlight "+hlClass : ""}">
-              <div class="seed">${(b.short || "B").slice(0,3).toUpperCase()}</div>
-              <div class="logo">${makeLogo(b.logo)}</div>
-              <div class="info">
-                <div class="short">${(b.short || "B").toUpperCase()}</div>
-                <div class="name">${b.name || "TEAM B"}</div>
-              </div>
-              <div class="sets">
-                <span>Sets</span>${state.setsWonB ?? 0}
-              </div>
-              <div class="score">
-                <span>${state.scoreB ?? 0}</span>
-                ${serving==="B" ? '<div class="serve"></div>' : ""}
-              </div>
-            </div>
+          <div class="sets">
+            <span>Sets</span> 0
           </div>
-
-          ${hlLabel ? `
-            <div class="badge-wrap">
-              <div class="badge ${hlClass==="match" ? "match" : ""}">
-                ${hlLabel}
-              </div>
-            </div>
-          ` : ""}
+          <div class="score">
+            <span>23</span>
+            <div class="serve"></div>
+          </div>
         </div>
-      `;
-    }
 
-    // 🔹 1) Dibujamos algo de inmediato (por si Firebase tarda o falla)
-    render(null);
-
-    // 🔹 2) Cuando Firebase mande estado, sobrescribimos
-    onValue(stateRef, snap=>{
-      if(!snap.exists()){
-        // si aún no hay data en Firebase, dejamos el marcador demo
-        return;
-      }
-      render(snap.val());
-    });
-  </script>
+        <div class="row">
+          <div class="seed">USA</div>
+          <div class="logo">LOGO</div>
+          <div class="info">
+            <div class="short">USA</div>
+            <div class="name">UNITED STATES</div>
+          </div>
+          <div class="sets">
+            <span>Sets</span> 1
+          </div>
+          <div class="score">
+            <span>24</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </body>
 </html>
