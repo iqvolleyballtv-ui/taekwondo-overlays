@@ -2,306 +2,223 @@
 <html lang="es">
 <head>
   <meta charset="utf-8" />
-  <title>Volleyball Scoreboard – Control</title>
+  <title>VB Score Control</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
-    :root{
-      --bg:#020617;
-      --panel:#020617;
-      --border:#1f2937;
-      --accent:#0ea5e9;
-      --accent-soft:#0369a1;
-      --danger:#b91c1c;
-      --good:#16a34a;
-      --text:#f9fafb;
-      --muted:#9ca3af;
-      --input:#020617;
-      --teamA:#0ea5e9;
-      --teamB:#f97373;
+    *{box-sizing:border-box;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;}
+    body{
+      margin:0;
+      padding:24px;
+      background:#020617;
+      color:#e5e7eb;
     }
-    *{box-sizing:border-box;font-family:system-ui,-apple-system,Inter,Roboto,Segoe UI,Arial;}
-    html,body{margin:0;height:100%;background:var(--bg);color:var(--text);}
-    body{padding:16px;}
-    h1{margin:0 0 8px;font-size:20px;}
+    h1{
+      margin:0 0 16px;
+      font-size:22px;
+    }
     .card{
-      border-radius:12px;
-      background:radial-gradient(circle at top, #0b1120 0, #020617 55%, #000 100%);
-      border:1px solid var(--border);
-      padding:16px;
-      margin-bottom:16px;
-      box-shadow:0 18px 40px #000a;
-    }
-    .row{
-      display:flex;
-      flex-wrap:wrap;
-      gap:8px 12px;
-      align-items:center;
-      margin-bottom:8px;
-    }
-    .col{
-      flex:1 1 260px;
-      min-width:240px;
+      background:#020617;
+      border-radius:16px;
+      border:1px solid #111827;
+      padding:16px 20px 20px;
+      max-width:780px;
+      box-shadow:0 18px 50px #000c;
     }
     label{
       font-size:12px;
       text-transform:uppercase;
-      letter-spacing:.08em;
-      color:var(--muted);
+      letter-spacing:.14em;
+      color:#9ca3af;
+      display:block;
+      margin-bottom:4px;
     }
-    input,select{
-      padding:6px 8px;
-      border-radius:8px;
-      border:1px solid var(--border);
-      background:var(--input);
-      color:var(--text);
-      min-width:0;
+    input, select{
+      width:100%;
+      border-radius:10px;
+      border:1px solid #1f2937;
+      background:#020617;
+      color:#e5e7eb;
+      padding:8px 10px;
       font-size:14px;
     }
-    input[readonly]{opacity:.7;}
+    input:focus, select:focus{
+      outline:none;
+      border-color:#0ea5e9;
+      box-shadow:0 0 0 1px #0ea5e9;
+    }
+    .row{
+      display:flex;
+      gap:12px;
+      margin-bottom:10px;
+    }
+    .row > div{
+      flex:1;
+    }
     button{
-      border-radius:999px;
       border:none;
-      padding:8px 14px;
+      border-radius:999px;
+      padding:7px 14px;
+      font-size:13px;
       font-weight:600;
+      text-transform:uppercase;
+      letter-spacing:.12em;
       cursor:pointer;
-      background:var(--accent-soft);
-      color:white;
-      transition:background .15s, transform .05s;
-      font-size:14px;
     }
-    button:hover{background:var(--accent);}
-    button:active{transform:scale(.97);}
+    .btn-primary{
+      background:#0ea5e9;
+      color:#0b1120;
+    }
+    .btn-danger{
+      background:#ef4444;
+      color:#0b1120;
+    }
     .btn-ghost{
       background:transparent;
-      border:1px solid var(--border);
-      color:var(--muted);
-    }
-    .btn-good{background:var(--good);}
-    .btn-good:hover{background:#22c55e;}
-    .btn-bad{background:var(--danger);}
-    .btn-bad:hover{background:#ef4444;}
-    .btn-teamA{background:var(--teamA);}
-    .btn-teamB{background:var(--teamB);}
-    .btn-small{padding:4px 10px;font-size:12px;}
-    .tag{
-      padding:2px 10px;
-      border-radius:999px;
-      font-size:11px;
-      text-transform:uppercase;
-      letter-spacing:.1em;
-      border:1px solid var(--border);
-      color:var(--muted);
+      border:1px solid #1f2937;
+      color:#e5e7eb;
     }
     .section-title{
-      font-size:14px;
-      font-weight:700;
-      margin-bottom:4px;
+      font-size:13px;
       text-transform:uppercase;
-      letter-spacing:.08em;
-      color:var(--muted);
+      letter-spacing:.18em;
+      color:#9ca3af;
+      margin:18px 0 6px;
     }
-    .score-display{
-      font-size:32px;
-      font-weight:900;
-      padding:4px 12px;
-      border-radius:10px;
-      background:#020617;
-      border:1px solid #1f2937;
-      min-width:70px;
+    .score-row{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      margin-bottom:6px;
+    }
+    .score-row span{
+      font-size:13px;
+      min-width:60px;
+    }
+    .score-box{
+      min-width:46px;
       text-align:center;
-    }
-    .sets-display{
-      font-size:20px;
+      font-size:18px;
       font-weight:800;
-      padding:2px 10px;
-      border-radius:999px;
-      border:1px solid #1f2937;
-      background:#020617;
-      min-width:40px;
-      text-align:center;
     }
-    .hint{
+    .status{
+      margin-top:10px;
       font-size:12px;
-      color:var(--muted);
-      margin-top:4px;
+      color:#9ca3af;
     }
-    .pill-radio{
-      padding:4px 10px;
+    .pill-toggle{
+      display:flex;
+      gap:8px;
+      margin-top:6px;
+    }
+    .pill-toggle button{
       border-radius:999px;
-      border:1px solid var(--border);
-      font-size:12px;
-      text-transform:uppercase;
-      letter-spacing:.08em;
-      cursor:pointer;
-      background:transparent;
-      color:var(--muted);
+      padding:5px 10px;
+      font-size:11px;
     }
-    .pill-radio.active{
-      background:#0f172a;
-      color:#e5e7eb;
-      border-color:var(--accent);
-    }
-    .divider{
-      border-top:1px solid #111827;
-      margin:6px 0 10px;
+    .pill-toggle button.active{
+      background:#facc15;
+      color:#111827;
     }
   </style>
 </head>
 <body>
-  <!-- TOP: datos generales -->
-  <div class="card">
-    <h1>Volleyball Scoreboard – Control</h1>
-    <div class="row">
-      <label>Room</label>
-      <input id="room" style="max-width:100px" />
-      <label>Match title</label>
-      <input id="matchTitle" style="flex:1" placeholder="BRONZE MEDAL MATCH" />
-      <div style="display:flex;gap:8px;flex-wrap:wrap">
-        <button id="connect">Connect</button>
-        <span class="tag" id="statusTag">Offline</span>
-      </div>
-    </div>
-    <div class="hint">
-      Usa el mismo <code>?room=</code> en el overlay.<br/>
-      Atajos: Q/W = +1/-1 Team A · O/P = +1/-1 Team B · S = cambiar servicio · F = Fin de set.
-    </div>
-  </div>
+  <h1>Volleyball Scoreboard – Control</h1>
 
-  <!-- TEAMS -->
   <div class="card">
     <div class="row">
-      <div class="col">
-        <div class="section-title">Team A (arriba en el overlay)</div>
-        <div class="row">
-          <label>Nombre corto</label>
-          <input id="teamA_short" style="max-width:90px" placeholder="UPR" />
-          <label>Nombre</label>
-          <input id="teamA_name" style="flex:1" placeholder="UPRM" />
-        </div>
-        <div class="row">
-          <label>Logo (URL)</label>
-          <input id="teamA_logo" style="flex:1" placeholder="Logo cargado desde archivo o URL" />
-        </div>
-        <div class="row">
-          <label>Logo desde archivo</label>
-          <input id="teamA_file" type="file" accept="image/*" />
-        </div>
+      <div style="flex:0.7">
+        <label>Room</label>
+        <input id="roomInput" value="vb1" />
       </div>
-      <div class="col">
-        <div class="section-title">Team B (abajo en el overlay)</div>
-        <div class="row">
-          <label>Nombre corto</label>
-          <input id="teamB_short" style="max-width:90px" placeholder="SAG" />
-          <label>Nombre</label>
-          <input id="teamB_name" style="flex:1" placeholder="SAGRADO" />
-        </div>
-        <div class="row">
-          <label>Logo (URL)</label>
-          <input id="teamB_logo" style="flex:1" placeholder="Logo cargado desde archivo o URL" />
-        </div>
-        <div class="row">
-          <label>Logo desde archivo</label>
-          <input id="teamB_file" type="file" accept="image/*" />
-        </div>
+      <div style="flex:1.3">
+        <label>Match title</label>
+        <input id="matchTitle" placeholder="Bronze Medal Match · LAI" />
       </div>
-    </div>
-  </div>
-
-  <!-- SCORE & SETS -->
-  <div class="card">
-    <div class="section-title">Marcador en vivo</div>
-    <div class="row">
-      <!-- Team A -->
-      <div class="col">
-        <label>Team A score</label>
-        <div class="row">
-          <button class="btn-teamA" id="a_minus">-1</button>
-          <div class="score-display" id="scoreA">0</div>
-          <button class="btn-teamA" id="a_plus">+1</button>
-        </div>
-        <div class="row">
-          <label>Sets A</label>
-          <div class="sets-display" id="setsA">0</div>
-        </div>
-      </div>
-
-      <!-- Info central -->
-      <div class="col" style="align-items:flex-start">
-        <div class="row">
-          <label>Set actual</label>
-          <input id="currentSet" type="number" min="1" max="5" style="max-width:70px" />
-          <label>Puntos objetivo</label>
-          <input id="targetPoints" type="number" min="1" style="max-width:90px" />
-          <button id="autoTarget" class="btn-ghost btn-small">Auto 25/15</button>
-        </div>
-        <div class="row">
-          <button id="finishSet" class="btn-good">Fin de set</button>
-          <button id="undoLast" class="btn-ghost btn-small">Undo último punto</button>
-          <button id="resetMatch" class="btn-bad btn-small">Reset match</button>
-        </div>
-      </div>
-
-      <!-- Team B -->
-      <div class="col">
-        <label>Team B score</label>
-        <div class="row">
-          <button class="btn-teamB" id="b_minus">-1</button>
-          <div class="score-display" id="scoreB">0</div>
-          <button class="btn-teamB" id="b_plus">+1</button>
-        </div>
-        <div class="row">
-          <label>Sets B</label>
-          <div class="sets-display" id="setsB">0</div>
-        </div>
+      <div style="flex:0.7;display:flex;align-items:flex-end;gap:8px;">
+        <button id="connectBtn" class="btn-primary" style="flex:1;">Connect</button>
+        <button id="resetBtn" class="btn-ghost" style="flex:0.8;">Reset</button>
       </div>
     </div>
 
-    <div class="divider"></div>
-
-    <!-- Servicio -->
+    <div class="section-title">Equipo A</div>
     <div class="row">
-      <div class="section-title">Servicio</div>
-    </div>
-    <div class="row">
-      <button class="pill-radio" id="serveNone">Sin servicio</button>
-      <button class="pill-radio" id="serveA">Saca Team A</button>
-      <button class="pill-radio" id="serveB">Saca Team B</button>
-    </div>
-
-    <div class="divider"></div>
-
-    <!-- Set / Match point -->
-    <div class="row">
-      <div class="section-title">Set / Match Point</div>
-    </div>
-    <div class="row">
-      <button class="pill-radio" id="hlNone">Normal</button>
-      <button class="pill-radio" id="hlSetA">Set Point A</button>
-      <button class="pill-radio" id="hlSetB">Set Point B</button>
-      <button class="pill-radio" id="hlMatchA">Match Point A</button>
-      <button class="pill-radio" id="hlMatchB">Match Point B</button>
+      <div>
+        <label>Nombre corto (ITA)</label>
+        <input id="aShort" value="A" />
+      </div>
+      <div>
+        <label>Nombre completo</label>
+        <input id="aName" value="Team A" />
+      </div>
+      <div>
+        <label>Logo (URL)</label>
+        <input id="aLogo" placeholder="https://..." />
+      </div>
+      <div style="flex:0.5">
+        <label>Sets ganados</label>
+        <input id="aSets" type="number" value="0" />
+      </div>
     </div>
 
-    <div class="divider"></div>
-
-    <!-- Resumen -->
+    <div class="section-title">Equipo B</div>
     <div class="row">
-      <div class="section-title">Resumen de sets</div>
-    </div>
-    <div class="row">
-      <button class="pill-radio" id="summaryOff">Resumen OFF</button>
-      <button class="pill-radio" id="summaryOn">Resumen ON</button>
+      <div>
+        <label>Nombre corto (USA)</label>
+        <input id="bShort" value="B" />
+      </div>
+      <div>
+        <label>Nombre completo</label>
+        <input id="bName" value="Team B" />
+      </div>
+      <div>
+        <label>Logo (URL)</label>
+        <input id="bLogo" placeholder="https://..." />
+      </div>
+      <div style="flex:0.5">
+        <label>Sets ganados</label>
+        <input id="bSets" type="number" value="0" />
+      </div>
     </div>
 
-    <div class="hint">
-      <strong>Fin de set</strong> guardará el resultado de ese set en el historial para que el overlay pueda mostrar el resumen (SET 1: 25–23, etc.).<br/>
-      El overlay será quien decida el layout visual (score normal vs resumen).
+    <div class="section-title">Marcador actual</div>
+    <div class="score-row">
+      <span>A</span>
+      <button id="aMinus" class="btn-ghost">-</button>
+      <div id="aScore" class="score-box">0</div>
+      <button id="aPlus" class="btn-primary">+</button>
+      <span style="margin-left:8px;">Serve</span>
+      <button id="serveA" class="btn-ghost">A</button>
     </div>
+    <div class="score-row">
+      <span>B</span>
+      <button id="bMinus" class="btn-ghost">-</button>
+      <div id="bScore" class="score-box">0</div>
+      <button id="bPlus" class="btn-primary">+</button>
+      <span style="margin-left:8px;">Serve</span>
+      <button id="serveB" class="btn-ghost">B</button>
+    </div>
+
+    <div class="section-title">Highlight</div>
+    <div class="pill-toggle">
+      <button data-hl="none"   class="btn-ghost active">Normal</button>
+      <button data-hl="setA"   class="btn-ghost">Set point A</button>
+      <button data-hl="setB"   class="btn-ghost">Set point B</button>
+      <button data-hl="matchA" class="btn-ghost">Match point A</button>
+      <button data-hl="matchB" class="btn-ghost">Match point B</button>
+    </div>
+
+    <div class="section-title">Vista</div>
+    <div class="pill-toggle">
+      <button id="liveViewBtn" class="btn-ghost active">Marcador</button>
+      <button id="summaryViewBtn" class="btn-ghost">Resumen sets</button>
+    </div>
+
+    <div class="status" id="status">Sin conectar.</div>
   </div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
-    import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
+    import { getDatabase, ref, get, set, onValue } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyD8r0rLCLLPJx3DsNGMuvVtFuwCMBXrR9M",
@@ -314,296 +231,164 @@
       measurementId: "G-CXBJCL86EM"
     };
 
-    const app  = initializeApp(firebaseConfig);
-    const db   = getDatabase(app);
-    const $    = s => document.querySelector(s);
+    const app = initializeApp(firebaseConfig);
+    const db  = getDatabase(app);
 
-    const url = new URL(location.href);
-    const initialRoom = url.searchParams.get('room') || 'vb1';
+    const $ = id => document.getElementById(id);
 
-    let state = {
-      room: initialRoom,
-      matchTitle: "BRONZE MEDAL MATCH",
+    // Inputs
+    const roomInput = $("roomInput");
+    const matchTitle = $("matchTitle");
 
-      teamA: { short:"ITA", name:"ITALY", logo:"" },
-      teamB: { short:"USA", name:"USA", logo:"" },
+    const aShort = $("aShort");
+    const aName  = $("aName");
+    const aLogo  = $("aLogo");
+    const aSets  = $("aSets");
 
-      scoreA: 0,
-      scoreB: 0,
-      setsWonA: 0,
-      setsWonB: 0,
+    const bShort = $("bShort");
+    const bName  = $("bName");
+    const bLogo  = $("bLogo");
+    const bSets  = $("bSets");
 
-      currentSet: 1,
-      targetPoints: 25,
-      setScores: [],      // [{set:1,a:25,b:23}, ...]
-      serving: null,      // 'A' | 'B' | null
-      highlight: "none",  // 'none','setA','setB','matchA','matchB'
-      showSummary: false,
+    const aScoreBox = $("aScore");
+    const bScoreBox = $("bScore");
+    const statusEl  = $("status");
 
-      lastPoints: []      // historial para undo [{team:'A',delta:1}]
-    };
+    // Botones
+    const connectBtn = $("connectBtn");
+    const resetBtn   = $("resetBtn");
+    const aPlus      = $("aPlus");
+    const aMinus     = $("aMinus");
+    const bPlus      = $("bPlus");
+    const bMinus     = $("bMinus");
+    const serveA     = $("serveA");
+    const serveB     = $("serveB");
+    const liveViewBtn    = $("liveViewBtn");
+    const summaryViewBtn = $("summaryViewBtn");
 
+    let highlight = "none";
+    let showSummary = false;
+    let serving = "A";
+    let scoreA = 0;
+    let scoreB = 0;
     let stateRef = null;
-    let online = false;
 
-    function setStatus(text, ok){
-      const tag = $('#statusTag');
-      tag.textContent = text;
-      tag.style.borderColor = ok ? '#16a34a' : 'var(--border)';
-      tag.style.color = ok ? '#bbf7d0' : 'var(--muted)';
+    function updateLocalUI(){
+      aScoreBox.textContent = scoreA;
+      bScoreBox.textContent = scoreB;
+      serveA.classList.toggle("btn-primary", serving==="A");
+      serveB.classList.toggle("btn-primary", serving==="B");
     }
 
-    function syncUI(){
-      $('#room').value = state.room;
-      $('#matchTitle').value = state.matchTitle;
-
-      $('#teamA_short').value = state.teamA.short;
-      $('#teamA_name').value  = state.teamA.name;
-      $('#teamA_logo').value  = state.teamA.logo || "";
-
-      $('#teamB_short').value = state.teamB.short;
-      $('#teamB_name').value  = state.teamB.name;
-      $('#teamB_logo').value  = state.teamB.logo || "";
-
-      $('#scoreA').textContent = state.scoreA;
-      $('#scoreB').textContent = state.scoreB;
-      $('#setsA').textContent  = state.setsWonA;
-      $('#setsB').textContent  = state.setsWonB;
-
-      $('#currentSet').value   = state.currentSet;
-      $('#targetPoints').value = state.targetPoints;
-
-      // Servicio
-      for(const id of ['serveNone','serveA','serveB']){
-        $('#'+id).classList.remove('active');
-      }
-      if(state.serving === 'A') $('#serveA').classList.add('active');
-      else if(state.serving === 'B') $('#serveB').classList.add('active');
-      else $('#serveNone').classList.add('active');
-
-      // Highlight
-      for(const id of ['hlNone','hlSetA','hlSetB','hlMatchA','hlMatchB']){
-        $('#'+id).classList.remove('active');
-      }
-      if(state.highlight === 'none') $('#hlNone').classList.add('active');
-      if(state.highlight === 'setA') $('#hlSetA').classList.add('active');
-      if(state.highlight === 'setB') $('#hlSetB').classList.add('active');
-      if(state.highlight === 'matchA') $('#hlMatchA').classList.add('active');
-      if(state.highlight === 'matchB') $('#hlMatchB').classList.add('active');
-
-      // Resumen
-      $('#summaryOff').classList.toggle('active', !state.showSummary);
-      $('#summaryOn').classList.toggle('active', !!state.showSummary);
+    function buildState(){
+      return {
+        matchTitle: matchTitle.value || "",
+        highlight,
+        showSummary,
+        serving,
+        teamA:{
+          short:aShort.value || "A",
+          name:aName.value || "Team A",
+          logo:aLogo.value || ""
+        },
+        teamB:{
+          short:bShort.value || "B",
+          name:bName.value || "Team B",
+          logo:bLogo.value || ""
+        },
+        setsWonA: parseInt(aSets.value||"0",10),
+        setsWonB: parseInt(bSets.value||"0",10),
+        scoreA,
+        scoreB,
+        setScores: [] // para futuro
+      };
     }
-
-    function readBasics(){
-      state.room = $('#room').value.trim() || 'vb1';
-      state.matchTitle = $('#matchTitle').value.trim() || 'BRONZE MEDAL MATCH';
-
-      state.teamA.short = $('#teamA_short').value.trim() || 'A';
-      state.teamA.name  = $('#teamA_name').value.trim() || 'TEAM A';
-      const logoA = $('#teamA_logo').value.trim();
-      if(logoA) state.teamA.logo = logoA;
-
-      state.teamB.short = $('#teamB_short').value.trim() || 'B';
-      state.teamB.name  = $('#teamB_name').value.trim() || 'TEAM B';
-      const logoB = $('#teamB_logo').value.trim();
-      if(logoB) state.teamB.logo = logoB;
-
-      state.currentSet   = Math.max(1, Math.min(5, parseInt($('#currentSet').value || 1)));
-      state.targetPoints = Math.max(1, parseInt($('#targetPoints').value || 25));
-    }
-
-    function readFileAsDataUrl(file, cb){
-      const r = new FileReader();
-      r.onload = e => cb(e.target.result);
-      r.readAsDataURL(file);
-    }
-
-    $('#teamA_file').addEventListener('change', e=>{
-      const f = e.target.files[0];
-      if(!f) return;
-      readFileAsDataUrl(f, url=>{
-        state.teamA.logo = url;
-        $('#teamA_logo').value = url;
-        syncUI();
-        pushState();
-      });
-    });
-
-    $('#teamB_file').addEventListener('change', e=>{
-      const f = e.target.files[0];
-      if(!f) return;
-      readFileAsDataUrl(f, url=>{
-        state.teamB.logo = url;
-        $('#teamB_logo').value = url;
-        syncUI();
-        pushState();
-      });
-    });
 
     async function pushState(){
-      if(!online || !stateRef) return;
-      await set(stateRef, state);
+      if(!stateRef) return;
+      const data = buildState();
+      await set(stateRef, data);
     }
 
-    $('#connect').addEventListener('click', async ()=>{
-      readBasics();
-      stateRef = ref(db, `vb/${state.room}/state`);
-      await set(stateRef, state);
-      onValue(stateRef, snap=>{
-        if(!snap.exists()) return;
-        state = snap.val();
-        setStatus('Online', true);
-        online = true;
-        syncUI();
+    connectBtn.addEventListener("click", async ()=>{
+      const room = (roomInput.value || "vb1").trim();
+      stateRef = ref(db, `vb/${room}/state`);
+      statusEl.textContent = `Conectando a room "${room}"...`;
+
+      // intenta leer estado existente
+      const snap = await get(stateRef);
+      if(snap.exists()){
+        const s = snap.val();
+        scoreA = s.scoreA || 0;
+        scoreB = s.scoreB || 0;
+        serving = s.serving || "A";
+        highlight = s.highlight || "none";
+        showSummary = !!s.showSummary;
+
+        aShort.value = s.teamA?.short || aShort.value;
+        aName.value  = s.teamA?.name  || aName.value;
+        aLogo.value  = s.teamA?.logo  || aLogo.value;
+        bShort.value = s.teamB?.short || bShort.value;
+        bName.value  = s.teamB?.name  || bName.value;
+        bLogo.value  = s.teamB?.logo  || bLogo.value;
+        aSets.value  = s.setsWonA ?? aSets.value;
+        bSets.value  = s.setsWonB ?? bSets.value;
+        matchTitle.value = s.matchTitle || matchTitle.value;
+      } else {
+        // escribe estado inicial
+        await pushState();
+      }
+
+      updateLocalUI();
+      statusEl.textContent = `Conectado a room "${room}". URL overlay: ?room=${room}`;
+    });
+
+    resetBtn.addEventListener("click", ()=>{
+      scoreA = 0; scoreB = 0;
+      highlight = "none";
+      showSummary = false;
+      serving = "A";
+      updateLocalUI();
+      pushState();
+    });
+
+    aPlus.addEventListener("click", ()=>{ scoreA++; updateLocalUI(); pushState(); });
+    aMinus.addEventListener("click", ()=>{ scoreA = Math.max(0,scoreA-1); updateLocalUI(); pushState(); });
+    bPlus.addEventListener("click", ()=>{ scoreB++; updateLocalUI(); pushState(); });
+    bMinus.addEventListener("click", ()=>{ scoreB = Math.max(0,scoreB-1); updateLocalUI(); pushState(); });
+
+    serveA.addEventListener("click", ()=>{ serving="A"; updateLocalUI(); pushState(); });
+    serveB.addEventListener("click", ()=>{ serving="B"; updateLocalUI(); pushState(); });
+
+    // toggles highlight
+    document.querySelectorAll(".pill-toggle button[data-hl]").forEach(btn=>{
+      btn.addEventListener("click", ()=>{
+        document.querySelectorAll(".pill-toggle button[data-hl]").forEach(b=>b.classList.remove("active"));
+        btn.classList.add("active");
+        highlight = btn.dataset.hl;
+        pushState();
       });
-      setStatus('Connecting…', true);
     });
 
-    // Score helpers
-    function addPoint(team, delta){
-      if(delta === 0) return;
-      if(team === 'A'){
-        state.scoreA = Math.max(0, state.scoreA + delta);
-      }else{
-        state.scoreB = Math.max(0, state.scoreB + delta);
-      }
-      state.lastPoints.push({team,delta});
-      if(state.lastPoints.length > 50) state.lastPoints.shift();
-      syncUI();
+    liveViewBtn.addEventListener("click", ()=>{
+      showSummary = false;
+      liveViewBtn.classList.add("active");
+      summaryViewBtn.classList.remove("active");
       pushState();
+    });
+    summaryViewBtn.addEventListener("click", ()=>{
+      showSummary = true;
+      summaryViewBtn.classList.add("active");
+      liveViewBtn.classList.remove("active");
+      pushState();
+    });
+
+    // Si viene ?room= en la URL, úsalo
+    const url = new URL(location.href);
+    const initialRoom = url.searchParams.get("room");
+    if(initialRoom){
+      roomInput.value = initialRoom;
     }
-
-    $('#a_plus').addEventListener('click', ()=>addPoint('A', +1));
-    $('#a_minus').addEventListener('click', ()=>addPoint('A', -1));
-    $('#b_plus').addEventListener('click', ()=>addPoint('B', +1));
-    $('#b_minus').addEventListener('click', ()=>addPoint('B', -1));
-
-    $('#undoLast').addEventListener('click', ()=>{
-      const last = state.lastPoints.pop();
-      if(!last) return;
-      addPoint(last.team, -last.delta);
-      // addPoint ya hace sync y push, pero como empujamos otro registro en lastPoints,
-      // aquí lo corregimos manualmente:
-      state.lastPoints.pop();
-      pushState();
-    });
-
-    // Auto target: 25 pts sets 1-4, 15 pts set 5
-    $('#autoTarget').addEventListener('click', ()=>{
-      readBasics();
-      if(state.currentSet === 5) state.targetPoints = 15;
-      else state.targetPoints = 25;
-      syncUI();
-      pushState();
-    });
-
-    // Fin de set
-    $('#finishSet').addEventListener('click', ()=>{
-      readBasics();
-      const sA = state.scoreA;
-      const sB = state.scoreB;
-      const setNo = state.currentSet;
-
-      // Guarda resultado en historial
-      const existingIndex = state.setScores.findIndex(s=>s.set===setNo);
-      const entry = { set:setNo, a:sA, b:sB };
-      if(existingIndex >= 0) state.setScores[existingIndex] = entry;
-      else state.setScores.push(entry);
-
-      // Quién ganó el set
-      if(sA > sB) state.setsWonA++;
-      else if(sB > sA) state.setsWonB++;
-
-      // Resetea puntos
-      state.scoreA = 0;
-      state.scoreB = 0;
-      state.lastPoints = [];
-
-      // Siguiente set
-      if(state.currentSet < 5){
-        state.currentSet++;
-      }
-      // Target automático
-      if(state.currentSet === 5) state.targetPoints = 15;
-      else state.targetPoints = 25;
-
-      syncUI();
-      pushState();
-    });
-
-    // Reset match completo
-    $('#resetMatch').addEventListener('click', ()=>{
-      if(!confirm('Resetear partido completo?')) return;
-      state.scoreA = state.scoreB = 0;
-      state.setsWonA = state.setsWonB = 0;
-      state.currentSet = 1;
-      state.targetPoints = 25;
-      state.setScores = [];
-      state.highlight = 'none';
-      state.serving = null;
-      state.showSummary = false;
-      state.lastPoints = [];
-      syncUI();
-      pushState();
-    });
-
-    // Servicio
-    function setServe(val){
-      state.serving = val;
-      syncUI();
-      pushState();
-    }
-    $('#serveNone').addEventListener('click', ()=>setServe(null));
-    $('#serveA').addEventListener('click', ()=>setServe('A'));
-    $('#serveB').addEventListener('click', ()=>setServe('B'));
-
-    // Highlight
-    function setHighlight(val){
-      state.highlight = val;
-      syncUI();
-      pushState();
-    }
-    $('#hlNone').addEventListener('click', ()=>setHighlight('none'));
-    $('#hlSetA').addEventListener('click', ()=>setHighlight('setA'));
-    $('#hlSetB').addEventListener('click', ()=>setHighlight('setB'));
-    $('#hlMatchA').addEventListener('click', ()=>setHighlight('matchA'));
-    $('#hlMatchB').addEventListener('click', ()=>setHighlight('matchB'));
-
-    // Resumen
-    $('#summaryOff').addEventListener('click', ()=>{
-      state.showSummary = false;
-      syncUI();
-      pushState();
-    });
-    $('#summaryOn').addEventListener('click', ()=>{
-      state.showSummary = true;
-      syncUI();
-      pushState();
-    });
-
-    // Atajos de teclado
-    document.addEventListener('keydown', e=>{
-      if(['INPUT','TEXTAREA'].includes(e.target.tagName)) return;
-      if(e.key === 'q' || e.key === 'Q') addPoint('A', +1);
-      if(e.key === 'w' || e.key === 'W') addPoint('A', -1);
-      if(e.key === 'o' || e.key === 'O') addPoint('B', +1);
-      if(e.key === 'p' || e.key === 'P') addPoint('B', -1);
-      if(e.key === 's' || e.key === 'S'){
-        if(state.serving === 'A') setServe('B');
-        else if(state.serving === 'B') setServe('A');
-        else setServe('A');
-      }
-      if(e.key === 'f' || e.key === 'F') $('#finishSet').click();
-    });
-
-    // Init
-    (function init(){
-      $('#room').value = state.room;
-      syncUI();
-    })();
   </script>
 </body>
 </html>
-Add vb_score_control
