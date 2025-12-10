@@ -2,90 +2,76 @@
 <html lang="es">
 <head>
   <meta charset="utf-8" />
-  <title>Volleyball Scoreboard – Overlay</title>
+  <title>VB Score Overlay</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     :root{
-      --bg: rgba(0,0,0,0);
-      --panel:#020817;
-      --panel-soft:#020617ee;
-      --panel-summary:#020617f0;
+      --panel:#020617f5;
       --border:#0f172a;
       --accent:#0ea5e9;
-      --accent2:#22c55e;
-      --danger:#ef4444;
       --text:#f9fafb;
       --muted:#9ca3af;
-      --teamA:#0ea5e9;
-      --teamB:#f97373;
     }
-    *{box-sizing:border-box;font-family:system-ui,-apple-system,Inter,Roboto,Segoe UI,Arial;}
+    *{box-sizing:border-box;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;}
     html,body{
       margin:0;
       padding:0;
-      background:var(--bg);
-      color:var(--text);
       height:100%;
+      background:transparent;
       overflow:hidden;
     }
-
-    /* Contenedor general arriba a la izquierda */
     #root{
       position:absolute;
-      top:32px;
-      left:48px;
+      top:40px;
+      left:40px;
     }
-
     .card{
       border-radius:14px;
-      background:linear-gradient(to bottom, #0b1120f5, #020617f5);
+      background:linear-gradient(to bottom,#020617f5,#020617f0);
       border:1px solid #0f172a;
-      box-shadow:0 22px 60px #000c;
+      box-shadow:0 24px 60px #000c;
       min-width:520px;
       overflow:hidden;
     }
-
-    .title-bar{
+    .title{
       padding:6px 16px 4px;
-      font-size:14px;
+      font-size:13px;
       text-transform:uppercase;
-      letter-spacing:.14em;
+      letter-spacing:.16em;
       color:#e5e7eb;
-      background:linear-gradient(to right, #1f2937, #0b1120);
+      background:linear-gradient(to right,#1f2937,#020617);
       border-bottom:1px solid #111827;
       display:flex;
-      align-items:center;
       justify-content:space-between;
-      gap:8px;
+      align-items:center;
     }
-    .title-bar span.small{
+    .title span{
       font-size:11px;
       color:#9ca3af;
-      letter-spacing:.12em;
     }
-
     .rows{
       display:flex;
       flex-direction:column;
     }
-    .row-team{
+    .row{
       display:grid;
       grid-template-columns:auto auto 1fr auto auto;
-      column-gap:8px;
-      align-items:center;
+      gap:8px;
       padding:4px 14px;
+      align-items:center;
     }
-    .row-team:nth-child(1){
-      background:radial-gradient(circle at top left,#0f172a 0,#020617 55%,#020617 100%);
+    .row:nth-child(1){
+      background:radial-gradient(circle at top left,#0b1120 0,#020617 60%,#020617 100%);
     }
-    .row-team:nth-child(2){
+    .row:nth-child(2){
       background:radial-gradient(circle at bottom left,#020617 0,#020617 60%,#020617 100%);
     }
-
-    .seed-box{
-      width:50px;
+    .seed{
+      width:46px;
       height:40px;
       border-radius:10px;
+      background:#facc15;
+      color:#111827;
       display:flex;
       align-items:center;
       justify-content:center;
@@ -93,94 +79,88 @@
       font-size:16px;
       text-transform:uppercase;
       letter-spacing:.08em;
-      color:#111827;
-      background:#facc15;
-      box-shadow:0 4px 10px #0007;
+      box-shadow:0 4px 12px #0008;
     }
-
-    .logo-box{
+    .logo{
       width:40px;
       height:40px;
       border-radius:10px;
-      overflow:hidden;
-      border:1px solid #111827;
       background:#020617;
+      border:1px solid #111827;
       display:flex;
       align-items:center;
       justify-content:center;
+      overflow:hidden;
     }
-    .logo-box img{
+    .logo img{
       max-width:100%;
       max-height:100%;
       object-fit:contain;
     }
-
-    .team-info{
+    .info{
       display:flex;
       flex-direction:column;
-      justify-content:center;
       min-width:0;
     }
-    .team-short{
+    .short{
       font-size:11px;
-      letter-spacing:.18em;
       text-transform:uppercase;
-      color:#9ca3af;
+      letter-spacing:.16em;
+      color:var(--muted);
       white-space:nowrap;
     }
-    .team-name{
-      font-size:18px;
+    .name{
+      font-size:17px;
       font-weight:800;
       white-space:nowrap;
       overflow:hidden;
       text-overflow:ellipsis;
     }
-
-    .sets-pill{
-      min-width:46px;
+    .sets{
+      min-width:48px;
       padding:4px 8px;
       border-radius:999px;
       border:1px solid #111827;
-      text-align:center;
-      font-size:13px;
-      font-weight:700;
-      color:#e5e7eb;
       background:#020617;
+      text-align:center;
+      font-weight:700;
+      font-size:13px;
+      color:#e5e7eb;
     }
-    .sets-pill span{
-      font-size:11px;
-      text-transform:uppercase;
-      letter-spacing:.12em;
-      color:#6b7280;
+    .sets span{
       display:block;
+      font-size:10px;
+      letter-spacing:.16em;
+      text-transform:uppercase;
+      color:#6b7280;
       margin-bottom:-1px;
     }
-
-    .score-box{
+    .score{
       min-width:70px;
       padding:4px 10px;
       border-radius:10px;
+      background:#020617;
+      border:1px solid #111827;
       text-align:right;
       font-size:26px;
       font-weight:900;
-      background:#020617;
-      border:1px solid #111827;
-      box-shadow:0 4px 14px #0007 inset;
+      box-shadow:0 0 0 1px #020617 inset;
+      display:flex;
+      align-items:center;
+      justify-content:flex-end;
+      gap:6px;
     }
-
-    .serve-dot{
+    .serve{
       width:9px;
       height:9px;
       border-radius:999px;
       background:#22c55e;
-      box-shadow:0 0 0 5px #22c55e33,0 0 18px #22c55eaa;
-      margin-left:6px;
+      box-shadow:0 0 0 4px #22c55e33,0 0 18px #22c55eaa;
     }
-
-    .hl-row{
+    .highlight{
       position:relative;
     }
-    .hl-row::after{
+    .highlight::after{
       content:"";
       position:absolute;
       inset:2px;
@@ -188,26 +168,24 @@
       border:2px solid transparent;
       pointer-events:none;
     }
-    .hl-set::after{
-      border-color:#f97316;
-      box-shadow:0 0 18px #fb923c66;
+    .highlight.set::after{
+      border-color:#fb923c;
+      box-shadow:0 0 18px #fb923c80;
     }
-    .hl-match::after{
+    .highlight.match::after{
       border-color:#facc15;
-      box-shadow:0 0 22px #facc1588;
+      box-shadow:0 0 22px #facc1580;
     }
-
-    .right-badge{
+    .badge-wrap{
       position:absolute;
-      right:16px;
-      top:4px;
-      bottom:4px;
+      right:18px;
+      top:6px;
+      bottom:6px;
       display:flex;
       align-items:center;
-      justify-content:center;
       pointer-events:none;
     }
-    .right-pill{
+    .badge{
       padding:4px 14px;
       border-radius:999px;
       font-size:12px;
@@ -216,72 +194,15 @@
       letter-spacing:.16em;
       background:#f97316;
       color:#111827;
-      box-shadow:0 6px 20px #000b;
+      box-shadow:0 8px 24px #000b;
     }
-    .right-pill.match{
+    .badge.match{
       background:#facc15;
-    }
-
-    /* Summary */
-    .summary-card{
-      border-radius:14px;
-      background:var(--panel-summary);
-      border:1px solid #0f172a;
-      box-shadow:0 22px 60px #000c;
-      padding:10px 16px 12px;
-      min-width:420px;
-    }
-    .summary-header{
-      display:flex;
-      justify-content:space-between;
-      align-items:baseline;
-      margin-bottom:6px;
-    }
-    .summary-title{
-      font-size:13px;
-      text-transform:uppercase;
-      letter-spacing:.16em;
-      color:#e5e7eb;
-    }
-    .summary-sub{
-      font-size:11px;
-      color:#9ca3af;
-      letter-spacing:.12em;
-      text-transform:uppercase;
-    }
-    table.summary{
-      width:100%;
-      border-collapse:collapse;
-      font-size:13px;
-    }
-    table.summary th,
-    table.summary td{
-      padding:4px 4px;
-      text-align:center;
-    }
-    table.summary th{
-      font-size:11px;
-      text-transform:uppercase;
-      letter-spacing:.14em;
-      color:#9ca3af;
-    }
-    table.summary td.label{
-      text-align:left;
-      font-weight:600;
-      color:#e5e7eb;
-    }
-    table.summary tr:nth-child(odd) td{
-      background:#020617;
-    }
-    table.summary tr:nth-child(even) td{
-      background:#020617f5;
     }
   </style>
 </head>
 <body>
-  <div id="root">
-    <!-- Contenedor que vamos a llenar por JS -->
-  </div>
+  <div id="root"></div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
@@ -301,194 +222,95 @@
     const app = initializeApp(firebaseConfig);
     const db  = getDatabase(app);
 
+    const root = document.getElementById("root");
+
     const url  = new URL(location.href);
-    const room = url.searchParams.get('room') || 'vb1';
+    const room = url.searchParams.get("room") || "vb1";
     const stateRef = ref(db, `vb/${room}/state`);
 
-    const root = document.getElementById('root');
-
-    const pad = n => String(n).padStart(2, "0");
-
-    function makeLogo(url){
-      if(!url) return '';
-      return `<img src="${url}">`;
-    }
-
-    function renderSummary(state){
-      const a = state.teamA || {};
-      const b = state.teamB || {};
-      const sets = (state.setScores || [])
-        .slice()
-        .sort((x,y)=>x.set-y.set)
-        .slice(0,5);
-
-      if(!sets.length){
-        return `
-          <div class="summary-card">
-            <div class="summary-header">
-              <div>
-                <div class="summary-title">SET SUMMARY</div>
-                <div class="summary-sub">${(state.matchTitle||'').toUpperCase()}</div>
-              </div>
-              <div class="summary-sub">NO HAY SETS REGISTRADOS</div>
-            </div>
-          </div>
-        `;
-      }
-
-      let headerSets = '';
-      let rowA = '';
-      let rowB = '';
-      sets.forEach(s=>{
-        headerSets += `<th>SET ${s.set}</th>`;
-        rowA += `<td>${s.a ?? '-'}</td>`;
-        rowB += `<td>${s.b ?? '-'}</td>`;
-      });
-
-      return `
-        <div class="summary-card">
-          <div class="summary-header">
-            <div>
-              <div class="summary-title">SET SUMMARY</div>
-              <div class="summary-sub">${(state.matchTitle||'').toUpperCase()}</div>
-            </div>
-            <div class="summary-sub">${(a.short||'A')} vs ${(b.short||'B')}</div>
-          </div>
-          <table class="summary">
-            <thead>
-              <tr>
-                <th></th>
-                ${headerSets}
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td class="label">${a.short || 'A'}</td>
-                ${rowA}
-              </tr>
-              <tr>
-                <td class="label">${b.short || 'B'}</td>
-                ${rowB}
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      `;
-    }
-
-    function renderLive(state){
-      const a = state.teamA || {};
-      const b = state.teamB || {};
-      const matchTitle = (state.matchTitle || 'Volleyball Match').toUpperCase();
-
-      const seedA = a.seed || '';
-      const seedB = b.seed || '';
-
-      // highlight
-      const hl = state.highlight || 'none';
-      const hlRowA = (hl === 'setA' || hl === 'matchA');
-      const hlRowB = (hl === 'setB' || hl === 'matchB');
-      let hlLabel = '';
-      let hlClass = '';
-      if(hl === 'setA' || hl === 'setB'){
-        hlLabel = 'SET POINT';
-        hlClass = 'set';
-      }else if(hl === 'matchA' || hl === 'matchB'){
-        hlLabel = 'MATCH POINT';
-        hlClass = 'match';
-      }
-
-      const showServeA = state.serving === 'A';
-      const showServeB = state.serving === 'B';
-
-      return `
-        <div class="card">
-          <div class="title-bar">
-            <div>${matchTitle}</div>
-            <span class="small">BEST OF 5 · TO ${state.currentSet === 5 ? 15 : 25}</span>
-          </div>
-
-          <div class="rows">
-
-            <div class="row-team hl-row ${hlRowA ? (hlClass==='match'?'hl-match':'hl-set') : ''}">
-              <div style="display:flex;align-items:center;gap:6px;">
-                <div class="seed-box">${seedA || (a.short || 'A').slice(0,3)}</div>
-                <div class="logo-box">${makeLogo(a.logo)}</div>
-              </div>
-              <div class="team-info">
-                <div class="team-short">${(a.name || 'TEAM A').toUpperCase()}</div>
-                <div class="team-name">${state.teamALabel || ''}</div>
-              </div>
-              <div class="team-info">
-                <div class="team-short">${(a.short || 'A').toUpperCase()}</div>
-                <div class="team-name">${(a.displayName || a.name || 'TEAM A')}</div>
-              </div>
-              <div style="display:flex;align-items:center;justify-content:flex-end;gap:6px;">
-                <div class="sets-pill">
-                  <span>SETS</span>${state.setsWonA ?? 0}
-                </div>
-              </div>
-              <div style="display:flex;align-items:center;justify-content:flex-end;">
-                <div class="score-box">${state.scoreA ?? 0}</div>
-                ${showServeA ? '<div class="serve-dot"></div>' : ''}
-              </div>
-            </div>
-
-            <div class="row-team hl-row ${hlRowB ? (hlClass==='match'?'hl-match':'hl-set') : ''}">
-              <div style="display:flex;align-items:center;gap:6px;">
-                <div class="seed-box">${seedB || (b.short || 'B').slice(0,3)}</div>
-                <div class="logo-box">${makeLogo(b.logo)}</div>
-              </div>
-              <div class="team-info">
-                <div class="team-short">${(b.name || 'TEAM B').toUpperCase()}</div>
-                <div class="team-name">${state.teamBLabel || ''}</div>
-              </div>
-              <div class="team-info">
-                <div class="team-short">${(b.short || 'B').toUpperCase()}</div>
-                <div class="team-name">${(b.displayName || b.name || 'TEAM B')}</div>
-              </div>
-              <div style="display:flex;align-items:center;justify-content:flex-end;gap:6px;">
-                <div class="sets-pill">
-                  <span>SETS</span>${state.setsWonB ?? 0}
-                </div>
-              </div>
-              <div style="display:flex;align-items:center;justify-content:flex-end;">
-                <div class="score-box">${state.scoreB ?? 0}</div>
-                ${showServeB ? '<div class="serve-dot"></div>' : ''}
-              </div>
-            </div>
-
-          </div>
-
-          ${hlLabel ? `
-            <div class="right-badge">
-              <div class="right-pill ${hlClass==='match'?'match':''}">
-                ${hlLabel}
-              </div>
-            </div>` : ''}
-
-        </div>
-      `;
-    }
+    const makeLogo = url => url ? `<img src="${url}">` : "";
 
     function render(state){
       if(!state){
-        root.innerHTML = '';
+        root.innerHTML = "";
         return;
       }
-      if(state.showSummary){
-        root.innerHTML = renderSummary(state);
-      }else{
-        root.innerHTML = renderLive(state);
+      const a = state.teamA || {};
+      const b = state.teamB || {};
+
+      const hl = state.highlight || "none";
+      const hlRowA = (hl==="setA" || hl==="matchA");
+      const hlRowB = (hl==="setB" || hl==="matchB");
+      let hlLabel = "";
+      let hlClass = "";
+      if(hl==="setA" || hl==="setB"){
+        hlLabel = "Set point";
+        hlClass = "set";
+      }else if(hl==="matchA" || hl==="matchB"){
+        hlLabel = "Match point";
+        hlClass = "match";
       }
+
+      const serving = state.serving || "A";
+
+      root.innerHTML = `
+        <div class="card">
+          <div class="title">
+            <div>${(state.matchTitle || "Volleyball Match").toUpperCase()}</div>
+            <span>${state.showSummary ? "Set summary" : "Live score"}</span>
+          </div>
+          <div class="rows">
+            <div class="row ${hlRowA ? "highlight "+hlClass : ""}">
+              <div class="seed">${(a.short || "A").slice(0,3).toUpperCase()}</div>
+              <div class="logo">${makeLogo(a.logo)}</div>
+              <div class="info">
+                <div class="short">${(a.short || "A").toUpperCase()}</div>
+                <div class="name">${a.name || "TEAM A"}</div>
+              </div>
+              <div class="sets">
+                <span>Sets</span>${state.setsWonA ?? 0}
+              </div>
+              <div class="score">
+                <span>${state.scoreA ?? 0}</span>
+                ${serving==="A" ? '<div class="serve"></div>' : ""}
+              </div>
+            </div>
+
+            <div class="row ${hlRowB ? "highlight "+hlClass : ""}">
+              <div class="seed">${(b.short || "B").slice(0,3).toUpperCase()}</div>
+              <div class="logo">${makeLogo(b.logo)}</div>
+              <div class="info">
+                <div class="short">${(b.short || "B").toUpperCase()}</div>
+                <div class="name">${b.name || "TEAM B"}</div>
+              </div>
+              <div class="sets">
+                <span>Sets</span>${state.setsWonB ?? 0}
+              </div>
+              <div class="score">
+                <span>${state.scoreB ?? 0}</span>
+                ${serving==="B" ? '<div class="serve"></div>' : ""}
+              </div>
+            </div>
+          </div>
+
+          ${hlLabel ? `
+            <div class="badge-wrap">
+              <div class="badge ${hlClass==="match" ? "match" : ""}">
+                ${hlLabel}
+              </div>
+            </div>
+          ` : ""}
+        </div>
+      `;
     }
 
     onValue(stateRef, snap=>{
-      if(!snap.exists()){ render(null); return; }
-      const state = snap.val();
-      render(state);
+      if(!snap.exists()){
+        render(null);
+        return;
+      }
+      render(snap.val());
     });
   </script>
 </body>
 </html>
-Add vb_score_overlay
