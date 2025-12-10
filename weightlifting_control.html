@@ -2,182 +2,228 @@
 <html lang="es">
 <head>
   <meta charset="utf-8" />
-  <title>Weightlifting Control</title>
+  <title>VB Score Control</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
-    :root{
-      --bg:#020617;
-      --panel:#020617;
-      --border:#1f2937;
-      --accent:#0ea5e9;
-      --accent-soft:#0369a1;
-      --danger:#b91c1c;
-      --good:#16a34a;
-      --text:#f9fafb;
-      --muted:#9ca3af;
-      --input:#020617;
+    html,body{
+      margin:0;
+      padding:0;
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
+      background:#020617;
+      color:#e5e7eb;
     }
-    *{box-sizing:border-box;font-family:system-ui,-apple-system,Inter,Roboto,Segoe UI,Arial;}
-    html,body{margin:0;height:100%;background:var(--bg);color:var(--text);}
-    body{padding:16px;}
-    h1{margin:0 0 8px;font-size:20px;}
-    .card{
-      border-radius:12px;
-      background:radial-gradient(circle at top, #0b1120 0, #020617 55%, #000 100%);
-      border:1px solid var(--border);
-      padding:16px;
+    .wrap{
+      max-width:900px;
+      margin:24px auto;
+      padding:16px 20px 32px;
+      background:#020617;
+    }
+    h1{
+      margin:0 0 12px;
+      font-size:20px;
+    }
+    fieldset{
+      border:1px solid #111827;
+      border-radius:10px;
       margin-bottom:16px;
-      box-shadow:0 18px 40px #000a;
+      padding:12px 14px 10px;
     }
-    .row{
-      display:flex;
-      flex-wrap:wrap;
-      gap:8px 12px;
-      align-items:center;
-      margin-bottom:8px;
+    legend{
+      padding:0 6px;
+      font-size:13px;
+      text-transform:uppercase;
+      color:#9ca3af;
+      letter-spacing:.16em;
     }
     label{
       font-size:13px;
-      text-transform:uppercase;
-      letter-spacing:.08em;
-      color:var(--muted);
+      display:block;
+      margin-bottom:4px;
     }
-    input,select{
-      padding:6px 8px;
-      border-radius:8px;
-      border:1px solid var(--border);
-      background:var(--input);
-      color:var(--text);
-      min-width:0;
+    input,select,button{
+      font-family:inherit;
+      font-size:13px;
     }
-    input[readonly]{opacity:.7;}
+    input[type="text"],input[type="number"],select{
+      background:#020617;
+      border-radius:7px;
+      border:1px solid #1f2937;
+      padding:5px 8px;
+      color:#e5e7eb;
+      outline:none;
+      width:100%;
+      box-sizing:border-box;
+    }
+    input[type="number"]{
+      max-width:80px;
+    }
+    .row{
+      display:flex;
+      gap:12px;
+      margin-bottom:8px;
+      flex-wrap:wrap;
+    }
+    .col{
+      flex:1;
+      min-width:120px;
+    }
+    .buttons{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      margin-top:4px;
+    }
     button{
       border-radius:999px;
       border:none;
-      padding:8px 14px;
-      font-weight:600;
+      padding:5px 12px;
       cursor:pointer;
-      background:var(--accent-soft);
+      background:#1d4ed8;
       color:white;
-      transition:background .15s, transform .05s;
+      font-weight:500;
     }
-    button:hover{background:var(--accent);}
-    button:active{transform:scale(.97);}
-    .btn-line{display:flex;gap:8px;flex-wrap:wrap;}
-    .btn-good{background:var(--good);}
-    .btn-good:hover{background:#22c55e;}
-    .btn-bad{background:var(--danger);}
-    .btn-bad:hover{background:#ef4444;}
-    .btn-ghost{
-      background:transparent;
-      border:1px solid var(--border);
-      color:var(--muted);
+    button.secondary{
+      background:#111827;
+      color:#e5e7eb;
     }
-    .tag{
-      padding:2px 8px;
-      border-radius:999px;
-      font-size:11px;
-      text-transform:uppercase;
-      letter-spacing:.1em;
-      border:1px solid var(--border);
-      color:var(--muted);
+    button.danger{
+      background:#b91c1c;
     }
-    .section-title{
-      font-size:14px;
-      font-weight:700;
-      margin-bottom:4px;
+    small{
+      color:#9ca3af;
     }
-    .col{
-      flex:1 1 260px;
-      min-width:220px;
+    .status{
+      margin-top:4px;
+      font-size:12px;
+      color:#9ca3af;
     }
   </style>
 </head>
 <body>
-  <div class="card">
-    <h1>LAI Weightlifting – Control</h1>
-    <div class="row">
-      <label>Room</label>
-      <input id="room" style="max-width:90px" />
-      <label>Sesión</label>
-      <input id="sessionName" style="flex:1" />
-      <label>Reloj (seg)</label>
-      <input id="clockSec" type="number" min="1" value="120" style="max-width:90px" />
-      <div class="btn-line">
-        <button id="connect">Connect</button>
-        <button id="startStop">Start</button>
-        <button id="reset" class="btn-ghost">Reset</button>
-      </div>
-    </div>
-    <div style="font-size:12px;color:var(--muted);margin-top:4px">
-      Usa el mismo <code>?room=</code> que en el overlay. Atajos: barra espaciadora = Start/Stop, R = Reset, O = GOOD, N = NO, 1/2/3 = intento.
-    </div>
-  </div>
+  <div class="wrap">
+    <h1>VB Score Control</h1>
 
-  <div class="card">
-    <div class="row">
-      <div class="col">
-        <div class="section-title">Atleta</div>
-        <div class="row">
+    <fieldset>
+      <legend>Conexión</legend>
+      <div class="row">
+        <div class="col">
+          <label>Room</label>
+          <input id="room" type="text" value="vb1" />
+        </div>
+        <div class="col" style="flex:0 0 auto;align-self:flex-end;">
+          <button id="connect">Connect</button>
+        </div>
+      </div>
+      <div class="status" id="status">Sin conectar.</div>
+      <small>El overlay debe abrirse como: <code>.../vb_score_overlay.html?room=vb1</code></small>
+    </fieldset>
+
+    <fieldset>
+      <legend>Partido</legend>
+      <div class="row">
+        <div class="col">
+          <label>Título (ej. Bronze Medal Match)</label>
+          <input id="matchTitle" type="text" value="Bronze Medal Match">
+        </div>
+        <div class="col">
+          <label>Vista</label>
+          <select id="viewMode">
+            <option value="live">Live score</option>
+            <option value="summary">Set summary</option>
+          </select>
+        </div>
+        <div class="col">
+          <label>Resaltado</label>
+          <select id="highlight">
+            <option value="none">Ninguno</option>
+            <option value="setA">Set point Team A</option>
+            <option value="setB">Set point Team B</option>
+            <option value="matchA">Match point Team A</option>
+            <option value="matchB">Match point Team B</option>
+          </select>
+        </div>
+        <div class="col">
+          <label>Sirve</label>
+          <select id="serving">
+            <option value="A">Team A</option>
+            <option value="B">Team B</option>
+          </select>
+        </div>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Team A</legend>
+      <div class="row">
+        <div class="col">
+          <label>Código corto (ej. ITA)</label>
+          <input id="aShort" type="text" value="ITA">
+        </div>
+        <div class="col">
           <label>Nombre</label>
-          <input id="athleteName" style="flex:1" />
+          <input id="aName" type="text" value="ITALY">
         </div>
-        <div class="row">
-          <label>Foto (URL)</label>
-          <input id="athletePhoto" readonly style="flex:1" placeholder="Imagen cargada desde archivo" />
-        </div>
-        <div class="row">
-          <label>Foto desde archivo</label>
-          <input id="athleteFile" type="file" accept="image/*" />
+        <div class="col">
+          <label>Logo (URL, opcional)</label>
+          <input id="aLogo" type="text" placeholder="https://...png">
         </div>
       </div>
+      <div class="row">
+        <div class="col">
+          <label>Sets ganados</label>
+          <input id="aSets" type="number" value="0" min="0">
+        </div>
+        <div class="col">
+          <label>Puntos</label>
+          <input id="aScore" type="number" value="23" min="0">
+          <div class="buttons">
+            <button type="button" data-inc="aScore">+1</button>
+            <button type="button" data-dec="aScore" class="secondary">-1</button>
+          </div>
+        </div>
+      </div>
+    </fieldset>
 
-      <div class="col">
-        <div class="section-title">Institución</div>
-        <div class="row">
+    <fieldset>
+      <legend>Team B</legend>
+      <div class="row">
+        <div class="col">
+          <label>Código corto (ej. USA)</label>
+          <input id="bShort" type="text" value="USA">
+        </div>
+        <div class="col">
           <label>Nombre</label>
-          <input id="instName" style="flex:1" />
+          <input id="bName" type="text" value="UNITED STATES">
         </div>
-        <div class="row">
-          <label>Logo (URL)</label>
-          <input id="instLogo" readonly style="flex:1" placeholder="Logo cargado desde archivo" />
-        </div>
-        <div class="row">
-          <label>Logo institución desde archivo</label>
-          <input id="instFile" type="file" accept="image/*" />
+        <div class="col">
+          <label>Logo (URL, opcional)</label>
+          <input id="bLogo" type="text" placeholder="https://...png">
         </div>
       </div>
-    </div>
+      <div class="row">
+        <div class="col">
+          <label>Sets ganados</label>
+          <input id="bSets" type="number" value="1" min="0">
+        </div>
+        <div class="col">
+          <label>Puntos</label>
+          <input id="bScore" type="number" value="24" min="0">
+          <div class="buttons">
+            <button type="button" data-inc="bScore">+1</button>
+            <button type="button" data-dec="bScore" class="secondary">-1</button>
+          </div>
+        </div>
+      </div>
+    </fieldset>
 
-    <div class="row" style="margin-top:12px">
-      <label>Disciplina</label>
-      <select id="discipline">
-        <option>Snatch</option>
-        <option>Clean &amp; Jerk</option>
-      </select>
-      <label>Intento #</label>
-      <input id="attemptNo" type="number" min="1" max="3" value="1" style="max-width:80px" />
-      <label>Peso (kg)</label>
-      <input id="declaredWeight" type="number" step="1" value="100" style="max-width:100px" />
-      <label>Ranking</label>
-      <input id="rank" type="number" min="1" value="1" style="max-width:80px" />
+    <div class="buttons">
       <button id="save">Save / Push</button>
-    </div>
-
-    <div class="row" style="margin-top:8px">
-      <label>Resultado</label>
-      <div class="btn-line">
-        <button id="good" class="btn-good">GOOD LIFT</button>
-        <button id="bad" class="btn-bad">NO LIFT</button>
-        <button id="clearResult" class="btn-ghost">Borrar</button>
-      </div>
-      <span class="tag" id="resultTag">SIN RESULTADO</span>
     </div>
   </div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
-    import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
+    import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyD8r0rLCLLPJx3DsNGMuvVtFuwCMBXrR9M",
@@ -190,224 +236,77 @@
       measurementId: "G-CXBJCL86EM"
     };
 
-    const app  = initializeApp(firebaseConfig);
-    const db   = getDatabase(app);
-    const $    = s => document.querySelector(s);
+    const app = initializeApp(firebaseConfig);
+    const db  = getDatabase(app);
 
-    let state = {
-      room: "wl1",
-      sessionName: "LAI Weightlifting – Plataforma A",
-      clockMs: 120000,
-      running: false,
-      startedAt: null,
+    const $ = id => document.getElementById(id);
 
-      athleteName: "",
-      athletePhoto: "",
-
-      instName: "",
-      instLogo: "",
-
-      discipline: "Snatch",
-      attemptNo: 1,
-      declaredWeight: 100,
-      rank: 1,
-
-      attempts: [null,null,null],
-      result: null
-    };
+    const roomInput = $("room");
+    const statusEl  = $("status");
+    const connectBtn= $("connect");
+    const saveBtn   = $("save");
 
     let stateRef = null;
-    let isConnected = false;
 
-    function syncUI(){
-      $('#room').value = state.room;
-      $('#sessionName').value = state.sessionName;
-      $('#clockSec').value = Math.max(1, Math.round(state.clockMs/1000));
-
-      $('#athleteName').value = state.athleteName;
-      $('#athletePhoto').value = state.athletePhoto || "";
-      $('#instName').value = state.instName;
-      $('#instLogo').value = state.instLogo || "";
-
-      $('#discipline').value = state.discipline;
-      $('#attemptNo').value = state.attemptNo;
-      $('#declaredWeight').value = state.declaredWeight;
-      $('#rank').value = state.rank || 1;
-
-      $('#startStop').textContent = state.running ? "Stop" : "Start";
-
-      const tag = $('#resultTag');
-      if(state.result === 'ok'){
-        tag.textContent = 'GOOD LIFT';
-        tag.style.borderColor = '#16a34a';
-        tag.style.color = '#bbf7d0';
-      }else if(state.result === 'no'){
-        tag.textContent = 'NO LIFT';
-        tag.style.borderColor = '#b91c1c';
-        tag.style.color = '#fecaca';
-      }else{
-        tag.textContent = 'SIN RESULTADO';
-        tag.style.borderColor = 'var(--border)';
-        tag.style.color = 'var(--muted)';
-      }
+    function buildState(){
+      return {
+        matchTitle: $("matchTitle").value.trim() || "Volleyball Match",
+        showSummary: $("viewMode").value === "summary",
+        highlight: $("highlight").value,
+        serving: $("serving").value || "A",
+        teamA:{
+          short: $("aShort").value.trim() || "A",
+          name:  $("aName").value.trim()  || "TEAM A",
+          logo:  $("aLogo").value.trim()  || ""
+        },
+        teamB:{
+          short: $("bShort").value.trim() || "B",
+          name:  $("bName").value.trim()  || "TEAM B",
+          logo:  $("bLogo").value.trim()  || ""
+        },
+        setsWonA: Number($("aSets").value)  || 0,
+        setsWonB: Number($("bSets").value)  || 0,
+        scoreA:   Number($("aScore").value) || 0,
+        scoreB:   Number($("bScore").value) || 0
+      };
     }
-
-    function read(){
-      state.room = $('#room').value.trim() || 'wl1';
-      state.sessionName = $('#sessionName').value.trim() || 'LAI Weightlifting – Plataforma A';
-      state.discipline = $('#discipline').value;
-      state.attemptNo = Math.max(1, Math.min(3, parseInt($('#attemptNo').value || 1)));
-      state.declaredWeight = parseFloat($('#declaredWeight').value || 0);
-      state.rank = Math.max(1, parseInt($('#rank').value || 1));
-
-      state.athleteName = $('#athleteName').value.trim();
-      const urlPhoto = $('#athletePhoto').value.trim();
-      if(urlPhoto) state.athletePhoto = urlPhoto;
-
-      state.instName = $('#instName').value.trim();
-      const urlLogo = $('#instLogo').value.trim();
-      if(urlLogo) state.instLogo = urlLogo;
-
-      const secs = Math.max(1, parseInt($('#clockSec').value || 120));
-      if(!state.running){
-        state.clockMs = secs*1000;
-      }
-    }
-
-    function readFileAsDataUrl(file, cb){
-      const r = new FileReader();
-      r.onload = e => cb(e.target.result);
-      r.readAsDataURL(file);
-    }
-
-    $('#athleteFile').addEventListener('change', e=>{
-      const f = e.target.files[0];
-      if(!f) return;
-      readFileAsDataUrl(f, url=>{
-        state.athletePhoto = url;
-        $('#athletePhoto').value = url;
-        syncUI();
-        pushState();
-      });
-    });
-
-    $('#instFile').addEventListener('change', e=>{
-      const f = e.target.files[0];
-      if(!f) return;
-      readFileAsDataUrl(f, url=>{
-        state.instLogo = url;
-        $('#instLogo').value = url;
-        syncUI();
-        pushState();
-      });
-    });
 
     async function pushState(){
-      if(!isConnected || !stateRef) return;
+      if(!stateRef){
+        alert("Conéctate primero (botón Connect).");
+        return;
+      }
+      const state = buildState();
       await set(stateRef, state);
     }
 
-    $('#connect').addEventListener('click', async ()=>{
-      read();
-      stateRef = ref(db, `wl/${state.room}/state`);
-      await set(stateRef, state);
-      onValue(stateRef, snap=>{
-        if(!snap.exists()) return;
-        state = snap.val();
-        syncUI();
-      });
-      isConnected = true;
-      $('#connect').textContent = 'Connected';
+    connectBtn.addEventListener("click", ()=>{
+      const room = (roomInput.value || "vb1").trim();
+      stateRef = ref(db, `vb/${room}/state`);
+      statusEl.textContent = `Conectado a room "${room}". Overlay: ?room=${room}`;
+      // mandamos un estado inicial
+      pushState();
     });
 
-    $('#save').addEventListener('click', async ()=>{
-      read();
-      syncUI();
-      await pushState();
+    saveBtn.addEventListener("click", ()=>{
+      pushState();
     });
 
-    $('#startStop').addEventListener('click', async ()=>{
-      if(!stateRef) return;
-      read();
-      if(!state.running){
-        state.running = true;
-        state.startedAt = Date.now();
-      }else{
-        state.running = false;
-        state.clockMs = Math.max(0, state.clockMs - (Date.now() - state.startedAt));
-        state.startedAt = null;
+    // Botones +1 / -1
+    document.body.addEventListener("click",(e)=>{
+      const inc = e.target.getAttribute("data-inc");
+      const dec = e.target.getAttribute("data-dec");
+      if(inc){
+        const input = $(inc);
+        input.value = (Number(input.value)||0)+1;
+        pushState();
       }
-      syncUI();
-      await pushState();
-    });
-
-    $('#reset').addEventListener('click', async ()=>{
-      if(!stateRef) return;
-      read();
-      state.running = false;
-      state.startedAt = null;
-      state.result = null;
-      const secs = Math.max(1, parseInt($('#clockSec').value || 120));
-      state.clockMs = secs*1000;
-      syncUI();
-      await pushState();
-    });
-
-    $('#good').addEventListener('click', async ()=>{
-      if(!stateRef) return;
-      read();
-      state.result = 'ok';
-      const idx = state.attemptNo-1;
-      state.attempts[idx] = 'ok';
-      syncUI();
-      await pushState();
-    });
-
-    $('#bad').addEventListener('click', async ()=>{
-      if(!stateRef) return;
-      read();
-      state.result = 'no';
-      const idx = state.attemptNo-1;
-      state.attempts[idx] = 'no';
-      syncUI();
-      await pushState();
-    });
-
-    $('#clearResult').addEventListener('click', async ()=>{
-      if(!stateRef) return;
-      read();
-      state.result = null;
-      const idx = state.attemptNo-1;
-      state.attempts[idx] = null;
-      syncUI();
-      await pushState();
-    });
-
-    document.addEventListener('keydown', e=>{
-      if(['INPUT','TEXTAREA'].includes(e.target.tagName)) return;
-      if(e.code === 'Space'){
-        e.preventDefault();
-        $('#startStop').click();
-      }
-      if(e.key === 'r' || e.key === 'R') $('#reset').click();
-      if(e.key === 'o' || e.key === 'O') $('#good').click();
-      if(e.key === 'n' || e.key === 'N') $('#bad').click();
-      if(['1','2','3'].includes(e.key)){
-        $('#attemptNo').value = e.key;
-        state.attemptNo = parseInt(e.key);
-        syncUI();
+      if(dec){
+        const input = $(dec);
+        input.value = Math.max(0,(Number(input.value)||0)-1);
         pushState();
       }
     });
-
-    (function initFromUrl(){
-      const u = new URL(location.href);
-      const rm = u.searchParams.get('room');
-      if(rm){
-        state.room = rm;
-      }
-      syncUI();
-    })();
   </script>
 </body>
 </html>
