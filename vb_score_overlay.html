@@ -1,299 +1,327 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="utf-8" />
+  <meta charset="UTF-8" />
   <title>VB Score Overlay</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
-    html,body{
-      margin:0;
-      padding:0;
-      height:100%;
-      background:#020617;
-      font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
-      color:#f9fafb;
+    :root {
+      --bg: #050812;
+      --panel: #070b16;
+      --panel-soft: #0c1020;
+      --accent: #ffd54a;
+      --accent-soft: #ffec9c33;
+      --text-main: #f5f6fb;
+      --text-muted: #9aa4c7;
+      --green: #2fe27d;
+      --danger: #ff4b6b;
     }
-    #root{
-      position:absolute;
-      top:32px;
-      left:32px;
+    * {
+      box-sizing: border-box;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
+        Roboto, sans-serif;
     }
-    .card{
-      border-radius:16px;
-      background:radial-gradient(circle at top,#020617,#020617 35%,#020617);
-      border:1px solid #111827;
-      box-shadow:0 22px 60px #000d;
-      min-width:520px;
-      overflow:hidden;
+    body {
+      margin: 0;
+      padding: 24px;
+      background: transparent;
+      color: var(--text-main);
     }
-    .title{
-      padding:6px 18px 5px;
-      font-size:13px;
-      text-transform:uppercase;
-      letter-spacing:.16em;
-      color:#e5e7eb;
-      background:linear-gradient(to right,#020617,#0b1120);
-      border-bottom:1px solid #111827;
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
+    .wrap {
+      position: relative;
+      width: 620px;
+      border-radius: 18px;
+      padding: 10px 16px 12px;
+      background: radial-gradient(circle at top left, #28365f 0, #060712 55%);
+      box-shadow: 0 26px 80px rgba(0, 0, 0, 0.75);
+      border: 1px solid rgba(255, 255, 255, 0.02);
     }
-    .title span{
-      font-size:11px;
-      color:#9ca3af;
-      letter-spacing:.18em;
+    .topRow {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: var(--text-muted);
     }
-    .rows{
-      display:flex;
-      flex-direction:column;
+    .topRow span:first-child {
+      color: #e2e6ff;
     }
-    .row{
-      display:grid;
-      grid-template-columns:auto auto 1fr auto auto;
-      gap:8px;
-      padding:5px 16px;
-      align-items:center;
+    .liveLabel {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 3px 9px 4px;
+      border-radius: 999px;
+      background: rgba(5, 8, 20, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.08);
     }
-    .row:nth-child(1){
-      background:radial-gradient(circle at top left,#020617 0,#020617 60%,#020617 100%);
+    .liveDot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 0 4px rgba(47, 226, 125, 0.22);
     }
-    .row:nth-child(2){
-      background:radial-gradient(circle at bottom left,#020617 0,#020617 60%,#020617 100%);
+    .teams {
+      background: linear-gradient(135deg, #050812, #090e1c);
+      border-radius: 13px;
+      padding: 4px 6px 6px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
     }
-    .seed{
-      width:46px;
-      height:40px;
-      border-radius:12px;
-      background:#facc15;
-      color:#111827;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      font-weight:800;
-      font-size:16px;
-      text-transform:uppercase;
-      letter-spacing:.08em;
-      box-shadow:0 4px 14px #0009;
+    .teamRow {
+      display: grid;
+      grid-template-columns: auto 1fr auto auto;
+      align-items: center;
+      gap: 8px;
+      padding: 4px 7px;
+      border-radius: 10px;
     }
-    .logo{
-      width:40px;
-      height:40px;
-      border-radius:12px;
-      background:#020617;
-      border:1px solid #111827;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      overflow:hidden;
-      color:#9ca3af;
-      font-size:10px;
+    .teamRow + .teamRow {
+      margin-top: 2px;
     }
-    .logo img{
-      width:100%;
-      height:100%;
-      object-fit:contain;
+    .teamRow.serving {
+      background: radial-gradient(circle at right, #1a2a42 0, transparent 55%);
     }
-    .info{
-      display:flex;
-      flex-direction:column;
-      min-width:0;
+    .badge {
+      width: 42px;
+      height: 32px;
+      border-radius: 10px;
+      background: #ffcf4d;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 15px;
+      letter-spacing: 0.2em;
+      color: #272018;
+      text-transform: uppercase;
     }
-    /* solo siglas grandes */
-    .name{
-      font-size:20px;
-      font-weight:900;
-      letter-spacing:.16em;
-      text-transform:uppercase;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
+    .crest {
+      width: 32px;
+      height: 32px;
+      border-radius: 10px;
+      background: #060813;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
-    .sets{
-      min-width:56px;
-      padding:4px 10px 3px;
-      border-radius:999px;
-      border:1px solid #111827;
-      background:#020617;
-      text-align:center;
-      font-weight:700;
-      font-size:13px;
-      color:#e5e7eb;
+    .crest img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
     }
-    .sets span{
-      display:block;
-      font-size:10px;
-      letter-spacing:.16em;
-      text-transform:uppercase;
-      color:#6b7280;
-      margin-bottom:-1px;
+    .teamName {
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: #f5f7ff;
     }
-    .score{
-      min-width:74px;
-      padding:4px 12px 4px;
-      border-radius:12px;
-      background:#020617;
-      border:1px solid #111827;
-      text-align:right;
-      font-size:26px;
-      font-weight:900;
-      display:flex;
-      align-items:center;
-      justify-content:flex-end;
-      gap:6px;
+    .setsBox {
+      text-align: center;
+      padding: 0 10px;
     }
-    .serve{
-      width:9px;
-      height:9px;
-      border-radius:999px;
-      background:#22c55e;
-      box-shadow:0 0 0 4px #22c55e33,0 0 18px #22c55eaa;
+    .setsLabel {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: var(--text-muted);
     }
-    .row.highlight{
-      position:relative;
+    .setsVal {
+      margin-top: 2px;
+      font-size: 17px;
+      font-weight: 600;
     }
-    .row.highlight::after{
-      content:"";
-      position:absolute;
-      inset:3px;
-      border-radius:14px;
-      border:1px solid #22c55e66;
-      box-shadow:0 0 0 1px #22c55e22,0 0 22px #22c55e33;
-      pointer-events:none;
+    .scoreBox {
+      min-width: 82px;
+      padding: 6px 12px 5px;
+      border-radius: 13px;
+      text-align: right;
+      background: radial-gradient(circle at top right, #1d2d57 0, #050712 60%);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      position: relative;
+      overflow: hidden;
     }
-    .badge-wrap{
-      padding:4px 18px 9px;
-      display:flex;
-      justify-content:flex-end;
+    .scoreVal {
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
     }
-    .badge{
-      padding:3px 13px 4px;
-      border-radius:999px;
-      background:#facc15;
-      color:#111827;
-      font-size:11px;
-      text-transform:uppercase;
-      letter-spacing:.18em;
-      font-weight:800;
-      box-shadow:0 12px 26px #000b;
+    .scoreBox.setPoint::after,
+    .scoreBox.matchPoint::after {
+      content: "SET PT";
+      position: absolute;
+      left: 8px;
+      bottom: 4px;
+      font-size: 9px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--accent);
+      opacity: 0.9;
     }
-    .badge.match{
-      background:#ef4444;
-      color:#f9fafb;
+    .scoreBox.matchPoint::after {
+      content: "MATCH PT";
+      color: #ff9b7b;
+    }
+    .serveDot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 0 4px rgba(47, 226, 125, 0.22);
+      position: absolute;
+      top: 50%;
+      right: 7px;
+      transform: translateY(-50%);
+    }
+    .summary {
+      margin-top: 8px;
+      font-size: 11px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      opacity: 0;
+      transition: opacity 0.15s;
+    }
+    .summary.visible {
+      opacity: 1;
     }
   </style>
 </head>
 <body>
-  <div id="root"></div>
+  <div class="wrap" id="card">
+    <div class="topRow">
+      <span id="title">Bronze Medal Match</span>
+      <span class="liveLabel"
+        ><span class="liveDot"></span> Live score</span
+      >
+    </div>
+    <div class="teams">
+      <div class="teamRow" id="rowA">
+        <div class="badge" id="badgeA">A</div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div class="crest"><img id="logoA" /></div>
+          <div class="teamName" id="nameA">TEAM A</div>
+        </div>
+        <div class="setsBox">
+          <div class="setsLabel">Sets</div>
+          <div class="setsVal" id="setsA">0</div>
+        </div>
+        <div class="scoreBox" id="scoreBoxA">
+          <span class="scoreVal" id="scoreA">0</span>
+          <span class="serveDot" id="serveDotA" style="display:none;"></span>
+        </div>
+      </div>
+
+      <div class="teamRow" id="rowB">
+        <div class="badge" id="badgeB">B</div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div class="crest"><img id="logoB" /></div>
+          <div class="teamName" id="nameB">TEAM B</div>
+        </div>
+        <div class="setsBox">
+          <div class="setsLabel">Sets</div>
+          <div class="setsVal" id="setsB">0</div>
+        </div>
+        <div class="scoreBox" id="scoreBoxB">
+          <span class="scoreVal" id="scoreB">0</span>
+          <span class="serveDot" id="serveDotB" style="display:none;"></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="summary" id="summary">
+      <!-- más adelante: resumen de sets -->
+      Summary view (placeholder)
+    </div>
+  </div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
-    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
+    import {
+      getDatabase,
+      ref,
+      onValue,
+    } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
 
     const firebaseConfig = {
-      apiKey: "AIzaSyD8r0rLCLLPJx3DsNGMuvVtFuwCMBXrR9M",
+      apiKey: "AIzaSyDB0r0rLCLpJX3DsNGMuvvTFUwCMBXRPpM",
       authDomain: "tkd-overlay.firebaseapp.com",
       databaseURL: "https://tkd-overlay-default-rtdb.firebaseio.com",
       projectId: "tkd-overlay",
       storageBucket: "tkd-overlay.firebasestorage.app",
       messagingSenderId: "41501920835",
       appId: "1:41501920835:web:4ccecdf129cf20619d8ef6",
-      measurementId: "G-CXBJCL86EM"
+      measurementId: "G-CXBJCL86EM",
     };
 
     const app = initializeApp(firebaseConfig);
-    const db  = getDatabase(app);
+    const db = getDatabase(app);
 
-    const root = document.getElementById("root");
-    const url  = new URL(location.href);
-    const room = url.searchParams.get("room") || "vb1";
+    const params = new URL(location.href).searchParams;
+    const room = params.get("room") || "vb1";
     const stateRef = ref(db, `vb/${room}/state`);
 
-    const logoHtml = url =>
-      url ? `<img src="${url}" alt="">` : "";
+    const $ = (id) => document.getElementById(id);
 
-    function render(state){
-      if(!state){
-        state = {
-          matchTitle:"Bronze Medal Match",
-          view:"live",
-          highlight:"none",
-          serving:"A",
-          teamA:{ short:"ITA", logo:"" },
-          teamB:{ short:"USA", logo:"" },
-          setsWonA:0,
-          setsWonB:1,
-          scoreA:23,
-          scoreB:24
-        };
-      }
+    function applyState(s) {
+      $("title").textContent = s.matchTitle || "";
 
-      const a = state.teamA || {};
-      const b = state.teamB || {};
-      const hl = state.highlight || "none";
-      const serving = state.serving || "A";
+      // nombres: solo siglas en overlay
+      $("badgeA").textContent = (s.teamA?.short || "A").toUpperCase();
+      $("badgeB").textContent = (s.teamB?.short || "B").toUpperCase();
+      $("nameA").textContent = (s.teamA?.short || "A").toUpperCase();
+      $("nameB").textContent = (s.teamB?.short || "B").toUpperCase();
 
-      const hlRowA = (hl==="setA" || hl==="matchA");
-      const hlRowB = (hl==="setB" || hl==="matchB");
+      $("setsA").textContent = s.teamA?.sets ?? 0;
+      $("setsB").textContent = s.teamB?.sets ?? 0;
 
-      let badge = "";
-      if(hl==="setA" || hl==="setB"){
-        badge = "SET POINT";
-      }else if(hl==="matchA" || hl==="matchB"){
-        badge = "MATCH POINT";
-      }
+      $("scoreA").textContent = s.teamA?.score ?? 0;
+      $("scoreB").textContent = s.teamB?.score ?? 0;
 
-      root.innerHTML = `
-        <div class="card">
-          <div class="title">
-            <div>${(state.matchTitle || "Volleyball Match").toUpperCase()}</div>
-            <span>${state.view==="summary" ? "SET SUMMARY" : "LIVE SCORE"}</span>
-          </div>
-          <div class="rows">
-            <div class="row ${hlRowA ? "highlight" : ""}">
-              <div class="seed">${(a.short || "A").slice(0,3).toUpperCase()}</div>
-              <div class="logo">${logoHtml(a.logo)}</div>
-              <div class="info">
-                <div class="name">${(a.short || "TEAM A").toUpperCase()}</div>
-              </div>
-              <div class="sets">
-                <span>SETS</span>${state.setsWonA ?? 0}
-              </div>
-              <div class="score">
-                <span>${state.scoreA ?? 0}</span>
-                ${serving==="A" ? '<div class="serve"></div>' : ''}
-              </div>
-            </div>
+      // logos: primero dataURL, luego URL
+      const logoA =
+        s.teamA?.logoData || s.teamA?.logoUrl || "";
+      const logoB =
+        s.teamB?.logoData || s.teamB?.logoUrl || "";
+      $("logoA").src = logoA || "";
+      $("logoA").style.display = logoA ? "block" : "none";
+      $("logoB").src = logoB || "";
+      $("logoB").style.display = logoB ? "block" : "none";
 
-            <div class="row ${hlRowB ? "highlight" : ""}">
-              <div class="seed">${(b.short || "B").slice(0,3).toUpperCase()}</div>
-              <div class="logo">${logoHtml(b.logo)}</div>
-              <div class="info">
-                <div class="name">${(b.short || "TEAM B").toUpperCase()}</div>
-              </div>
-              <div class="sets">
-                <span>SETS</span>${state.setsWonB ?? 0}
-              </div>
-              <div class="score">
-                <span>${state.scoreB ?? 0}</span>
-                ${serving==="B" ? '<div class="serve"></div>' : ''}
-              </div>
-            </div>
-          </div>
-          ${badge ? `
-            <div class="badge-wrap">
-              <div class="badge ${badge==="MATCH POINT" ? "match" : ""}">
-                ${badge}
-              </div>
-            </div>` : ""}
-        </div>
-      `;
+      // serve highlight
+      const aServes = !!s.teamA?.serves;
+      const bServes = !!s.teamB?.serves;
+      $("rowA").classList.toggle("serving", aServes);
+      $("rowB").classList.toggle("serving", bServes);
+      $("serveDotA").style.display = aServes ? "block" : "none";
+      $("serveDotB").style.display = bServes ? "block" : "none";
+
+      // highlight set / match point
+      $("scoreBoxA").classList.remove("setPoint", "matchPoint");
+      $("scoreBoxB").classList.remove("setPoint", "matchPoint");
+      if (s.highlight === "setA") $("scoreBoxA").classList.add("setPoint");
+      if (s.highlight === "setB") $("scoreBoxB").classList.add("setPoint");
+      if (s.highlight === "matchA") $("scoreBoxA").classList.add("matchPoint");
+      if (s.highlight === "matchB") $("scoreBoxB").classList.add("matchPoint");
+
+      // vista – por ahora solo marcador / resumen placeholder
+      const showSummary = s.view === "sets";
+      $("summary").classList.toggle("visible", showSummary);
+      $("teams").style = showSummary ? "opacity:0.2" : "";
     }
 
-    render(null);
-
-    onValue(stateRef, snap=>{
-      if(!snap.exists()) return;
-      render(snap.val());
+    onValue(stateRef, (snap) => {
+      if (!snap.exists()) return;
+      const state = snap.val();
+      applyState(state);
     });
   </script>
 </body>
