@@ -1,331 +1,322 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <title>VB Score Overlay</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
-    :root {
-      --bg: #050812;
-      --panel: #070b16;
-      --panel-soft: #0c1020;
-      --accent: #ffd54a;
-      --accent-soft: #ffec9c33;
-      --text-main: #f5f6fb;
-      --text-muted: #9aa4c7;
-      --green: #2fe27d;
-      --danger: #ff4b6b;
+    :root{
+      --bg:#050814;
+      --card:#050814ee;
+      --card-inner:#0a0f23ee;
+      --accent:#f7c43a;
+      --accent-soft:#f7c43a22;
+      --text:#f5f7ff;
+      --muted:#8b92b3;
+      --serve:#45d56b;
+      --badge:#161d36;
+      --radius-lg:22px;
+      --radius-pill:999px;
+      --font:"SF Pro Display","Inter",-apple-system,BlinkMacSystemFont,system-ui,sans-serif;
     }
-    * {
-      box-sizing: border-box;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
-        Roboto, sans-serif;
+    *{box-sizing:border-box;margin:0;padding:0;font-family:var(--font);}
+    body{
+      background:transparent;
+      color:var(--text);
+      overflow:hidden;
     }
-    body {
-      margin: 0;
-      padding: 24px;
-      background: transparent;
-      color: var(--text-main);
+    .root{
+      position:fixed;
+      top:24px;
+      left:24px;
+      transform-origin:top left;
     }
-    .wrap {
-      position: relative;
-      width: 620px;
-      border-radius: 18px;
-      padding: 10px 16px 12px;
-      background: radial-gradient(circle at top left, #28365f 0, #060712 55%);
-      box-shadow: 0 26px 80px rgba(0, 0, 0, 0.75);
-      border: 1px solid rgba(255, 255, 255, 0.02);
+    .score-card{
+      background:var(--card);
+      border-radius:var(--radius-lg);
+      padding:6px;
+      box-shadow:0 18px 45px rgba(0,0,0,.85);
+      border:1px solid #141a30;
+      width:540px;
     }
-    .topRow {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 8px;
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 0.16em;
-      color: var(--text-muted);
+    .score-inner{
+      background:var(--card-inner);
+      border-radius:18px;
+      padding:10px 14px 10px 16px;
     }
-    .topRow span:first-child {
-      color: #e2e6ff;
+    .header{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin-bottom:8px;
+      font-size:13px;
+      letter-spacing:.18em;
+      text-transform:uppercase;
+      color:var(--muted);
     }
-    .liveLabel {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 3px 9px 4px;
-      border-radius: 999px;
-      background: rgba(5, 8, 20, 0.7);
-      border: 1px solid rgba(255, 255, 255, 0.08);
+    .header-title{font-weight:500;}
+    .header-right{
+      display:flex;
+      align-items:center;
+      gap:10px;
     }
-    .liveDot {
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      background: var(--green);
-      box-shadow: 0 0 0 4px rgba(47, 226, 125, 0.22);
+    .live-pill{
+      border-radius:var(--radius-pill);
+      padding:2px 10px;
+      border:1px solid #26314d;
+      font-size:11px;
+      letter-spacing:.16em;
+      text-transform:uppercase;
+      display:flex;
+      align-items:center;
+      gap:6px;
     }
-    .teams {
-      background: linear-gradient(135deg, #050812, #090e1c);
-      border-radius: 13px;
-      padding: 4px 6px 6px;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
+    .live-dot{
+      width:6px;
+      height:6px;
+      border-radius:50%;
+      background:#ff4949;
+      box-shadow:0 0 8px rgba(255,73,73,.9);
     }
-    .teamRow {
-      display: grid;
-      grid-template-columns: auto 1fr auto auto;
-      align-items: center;
-      gap: 8px;
-      padding: 4px 7px;
-      border-radius: 10px;
+    .teams{
+      display:flex;
+      flex-direction:column;
+      gap:6px;
     }
-    .teamRow + .teamRow {
-      margin-top: 2px;
+    .team-row{
+      display:grid;
+      grid-template-columns:auto 1fr auto auto;
+      align-items:center;
+      gap:10px;
+      padding:6px 8px;
+      border-radius:14px;
+      background:rgba(4,7,18,.9);
     }
-    .teamRow.serving {
-      background: radial-gradient(circle at right, #1a2a42 0, transparent 55%);
+    .pill-code{
+      width:48px;
+      height:36px;
+      border-radius:12px;
+      background:var(--accent);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:14px;
+      letter-spacing:.18em;
+      color:#111321;
+      font-weight:700;
     }
-    .badge {
-      width: 42px;
-      height: 32px;
-      border-radius: 10px;
-      background: #ffcf4d;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 700;
-      font-size: 15px;
-      letter-spacing: 0.2em;
-      color: #272018;
-      text-transform: uppercase;
+    .logo-box{
+      width:34px;
+      height:34px;
+      border-radius:11px;
+      background:#070b18;
+      border:1px solid #222840;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      overflow:hidden;
     }
-    .crest {
-      width: 32px;
-      height: 32px;
-      border-radius: 10px;
-      background: #060813;
-      overflow: hidden;
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      display: flex;
-      align-items: center;
-      justify-content: center;
+    .logo-box img{
+      max-width:100%;
+      max-height:100%;
+      object-fit:contain;
     }
-    .crest img {
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
+    .team-name{
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      padding-left:4px;
     }
-    .teamName {
-      font-size: 12px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.18em;
-      color: #f5f7ff;
+    .team-name-short{
+      font-size:15px;
+      letter-spacing:.22em;
+      text-transform:uppercase;
+      font-weight:700;
     }
-    .setsBox {
-      text-align: center;
-      padding: 0 10px;
+    .sets-pill{
+      border-radius:var(--radius-pill);
+      background:#070b18;
+      border:1px solid #20263c;
+      padding:4px 11px;
+      display:flex;
+      align-items:center;
+      gap:6px;
+      font-size:11px;
+      text-transform:uppercase;
+      color:var(--muted);
     }
-    .setsLabel {
-      font-size: 10px;
-      text-transform: uppercase;
-      letter-spacing: 0.18em;
-      color: var(--text-muted);
+    .sets-label{letter-spacing:.16em;}
+    .sets-value{
+      font-size:15px;
+      color:var(--text);
+      font-weight:600;
     }
-    .setsVal {
-      margin-top: 2px;
-      font-size: 17px;
-      font-weight: 600;
+    .score-box{
+      width:80px;
+      border-radius:16px;
+      background:#0b1226;
+      padding:4px 10px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:6px;
     }
-    .scoreBox {
-      min-width: 82px;
-      padding: 6px 12px 5px;
-      border-radius: 13px;
-      text-align: right;
-      background: radial-gradient(circle at top right, #1d2d57 0, #050712 60%);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      position: relative;
-      overflow: hidden;
+    .score-value{
+      font-size:26px;
+      font-weight:800;
+      letter-spacing:.03em;
     }
-    .scoreVal {
-      font-size: 28px;
-      font-weight: 700;
-      letter-spacing: 0.08em;
+    .serve-indicator{
+      width:14px;
+      height:14px;
+      border-radius:999px;
+      border:2px solid rgba(69,213,107,.28);
+      display:flex;
+      align-items:center;
+      justify-content:center;
     }
-    .scoreBox.setPoint::after,
-    .scoreBox.matchPoint::after {
-      content: "SET PT";
-      position: absolute;
-      left: 8px;
-      bottom: 4px;
-      font-size: 9px;
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-      color: var(--accent);
-      opacity: 0.9;
+    .serve-dot{
+      width:6px;
+      height:6px;
+      border-radius:50%;
+      background:var(--serve);
+      box-shadow:0 0 10px rgba(69,213,107,.9);
     }
-    .scoreBox.matchPoint::after {
-      content: "MATCH PT";
-      color: #ff9b7b;
+    .score-box.sp{
+      outline:2px solid var(--accent);
+      outline-offset:0;
     }
-    .serveDot {
-      width: 9px;
-      height: 9px;
-      border-radius: 50%;
-      background: var(--green);
-      box-shadow: 0 0 0 4px rgba(47, 226, 125, 0.22);
-      position: absolute;
-      top: 50%;
-      right: 7px;
-      transform: translateY(-50%);
+    .score-box.mp{
+      outline:2px solid #ff4b6a;
     }
-    .summary {
-      margin-top: 8px;
-      font-size: 11px;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.14em;
-      opacity: 0;
-      transition: opacity 0.15s;
+    .summary{
+      margin-top:6px;
+      padding:6px 8px 0;
+      font-size:11px;
+      color:var(--muted);
+      letter-spacing:.18em;
+      text-transform:uppercase;
+      display:none;
     }
-    .summary.visible {
-      opacity: 1;
-    }
+    .summary.visible{display:block;}
   </style>
 </head>
 <body>
-  <div class="wrap" id="card">
-    <div class="topRow">
-      <span id="title">Bronze Medal Match</span>
-      <span class="liveLabel"
-        ><span class="liveDot"></span> Live score</span
-      >
-    </div>
-    <div class="teams" id="teams">
-      <div class="teamRow" id="rowA">
-        <div class="badge" id="badgeA">A</div>
-        <div style="display:flex;align-items:center;gap:8px;">
-          <div class="crest"><img id="logoA" /></div>
-          <div class="teamName" id="nameA">TEAM A</div>
+  <div class="root">
+    <div class="score-card">
+      <div class="score-inner">
+        <div class="header">
+          <div class="header-title" id="title">BRONZE MEDAL MATCH</div>
+          <div class="header-right">
+            <div class="live-pill">
+              <span class="live-dot"></span>
+              <span>LIVE SCORE</span>
+            </div>
+          </div>
         </div>
-        <div class="setsBox">
-          <div class="setsLabel">Sets</div>
-          <div class="setsVal" id="setsA">0</div>
+        <div class="teams" id="teams">
+          <div class="team-row" id="rowA">
+            <div class="pill-code" id="codeA">ITA</div>
+            <div class="logo-box"><img id="logoA" /></div>
+            <div class="team-name">
+              <div class="team-name-short" id="shortA">ITA</div>
+            </div>
+            <div class="sets-pill">
+              <span class="sets-label">SETS</span>
+              <span class="sets-value" id="setsA">0</span>
+            </div>
+            <div class="score-box" id="scoreBoxA">
+              <div class="score-value" id="scoreA">23</div>
+              <div class="serve-indicator" id="serveA" style="visibility:hidden;">
+                <div class="serve-dot"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="team-row" id="rowB">
+            <div class="pill-code" id="codeB">USA</div>
+            <div class="logo-box"><img id="logoB" /></div>
+            <div class="team-name">
+              <div class="team-name-short" id="shortB">USA</div>
+            </div>
+            <div class="sets-pill">
+              <span class="sets-label">SETS</span>
+              <span class="sets-value" id="setsB">1</span>
+            </div>
+            <div class="score-box" id="scoreBoxB">
+              <div class="score-value" id="scoreB">24</div>
+              <div class="serve-indicator" id="serveB" style="visibility:hidden;">
+                <div class="serve-dot"></div>
+              </div>
+            </div>
+          </div>
         </div>
-        <div class="scoreBox" id="scoreBoxA">
-          <span class="scoreVal" id="scoreA">0</span>
-          <span class="serveDot" id="serveDotA" style="display:none;"></span>
+        <div class="summary" id="summary">
+          <span id="summaryText">SET 1 · 25–23 · TEAM B</span>
         </div>
       </div>
-
-      <div class="teamRow" id="rowB">
-        <div class="badge" id="badgeB">B</div>
-        <div style="display:flex;align-items:center;gap:8px;">
-          <div class="crest"><img id="logoB" /></div>
-          <div class="teamName" id="nameB">TEAM B</div>
-        </div>
-        <div class="setsBox">
-          <div class="setsLabel">Sets</div>
-          <div class="setsVal" id="setsB">0</div>
-        </div>
-        <div class="scoreBox" id="scoreBoxB">
-          <span class="scoreVal" id="scoreB">0</span>
-          <span class="serveDot" id="serveDotB" style="display:none;"></span>
-        </div>
-      </div>
-    </div>
-
-    <div class="summary" id="summary">
-      <!-- más adelante: resumen de sets -->
-      Summary view (placeholder)
     </div>
   </div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
-    import {
-      getDatabase,
-      ref,
-      onValue,
-    } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
+    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
 
     const firebaseConfig = {
-      apiKey: "AIzaSyDB0r0rLCLpJX3DsNGMuvvTFUwCMBXRPpM",
-      authDomain: "tkd-overlay.firebaseapp.com",
-      databaseURL: "https://tkd-overlay-default-rtdb.firebaseio.com",
-      projectId: "tkd-overlay",
-      storageBucket: "tkd-overlay.firebasestorage.app",
-      messagingSenderId: "41501920835",
-      appId: "1:41501920835:web:4ccecdf129cf20619d8ef6",
-      measurementId: "G-CXBJCL86EM",
+      // ⬇️ Pega aquí EL MISMO CONFIG que usas en weightlifting_control.html
     };
 
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
-    const params = new URL(location.href).searchParams;
+    const params = new URLSearchParams(location.search);
     const room = params.get("room") || "vb1";
-    const stateRef = ref(db, `vb/${room}/state`);
+    const stateRef = ref(db, `vb_score/${room}`);
 
-    const $ = (id) => document.getElementById(id);
+    const $ = s => document.querySelector(s);
 
-    function applyState(s) {
-      $("title").textContent = s.matchTitle || "";
+    function applyState(s){
+      $("#title").textContent = s.matchTitle || "";
+      $("#shortA").textContent = s.aShort || "";
+      $("#shortB").textContent = s.bShort || "";
+      $("#codeA").textContent = (s.aShort || "").toUpperCase();
+      $("#codeB").textContent = (s.bShort || "").toUpperCase();
+      $("#setsA").textContent = s.aSets ?? 0;
+      $("#setsB").textContent = s.bSets ?? 0;
+      $("#scoreA").textContent = s.aScore ?? 0;
+      $("#scoreB").textContent = s.bScore ?? 0;
 
-      // nombres: solo siglas en overlay
-      $("badgeA").textContent = (s.teamA?.short || "A").toUpperCase();
-      $("badgeB").textContent = (s.teamB?.short || "B").toUpperCase();
-      $("nameA").textContent = (s.teamA?.short || "A").toUpperCase();
-      $("nameB").textContent = (s.teamB?.short || "B").toUpperCase();
+      // logos: prioridad archivo (dataURL), si no URL
+      const aLogo = s.aLogoData || s.aLogoUrl || "";
+      const bLogo = s.bLogoData || s.bLogoUrl || "";
+      $("#logoA").src = aLogo;
+      $("#logoB").src = bLogo;
 
-      $("setsA").textContent = s.teamA?.sets ?? 0;
-      $("setsB").textContent = s.teamB?.sets ?? 0;
+      // serve
+      $("#serveA").style.visibility = s.serve === "A" ? "visible" : "hidden";
+      $("#serveB").style.visibility = s.serve === "B" ? "visible" : "hidden";
 
-      $("scoreA").textContent = s.teamA?.score ?? 0;
-      $("scoreB").textContent = s.teamB?.score ?? 0;
+      // highlight
+      $("#scoreBoxA").classList.remove("sp","mp");
+      $("#scoreBoxB").classList.remove("sp","mp");
+      const hl = s.highlight || "normal";
+      if(hl === "spA") $("#scoreBoxA").classList.add("sp");
+      if(hl === "spB") $("#scoreBoxB").classList.add("sp");
+      if(hl === "mpA") $("#scoreBoxA").classList.add("mp");
+      if(hl === "mpB") $("#scoreBoxB").classList.add("mp");
 
-      // logos: primero dataURL, luego URL
-      const logoA =
-        s.teamA?.logoData || s.teamA?.logoUrl || "";
-      const logoB =
-        s.teamB?.logoData || s.teamB?.logoUrl || "";
-      $("logoA").src = logoA || "";
-      $("logoA").style.display = logoA ? "block" : "none";
-      $("logoB").src = logoB || "";
-      $("logoB").style.display = logoB ? "block" : "none";
+      // vista resumen (por ahora solo opacidad / texto fijo)
+      const showSummary = s.view === "sets";
+      $("#summary").classList.toggle("visible", showSummary);
+      const teamsEl = $("#teams");
+      if(teamsEl) teamsEl.style.opacity = showSummary ? "0.25" : "1";
+    }
 
-      // serve highlight
-      const aServes = !!s.teamA?.serves;
-      const bServes = !!s.teamB?.serves;
-      $("rowA").classList.toggle("serving", aServes);
-      $("rowB").classList.toggle("serving", bServes);
-      $("serveDotA").style.display = aServes ? "block" : "none";
-      $("serveDotB").style.display = bServes ? "block" : "none";
-
-      // highlight set / match point
-      $("scoreBoxA").classList.remove("setPoint", "matchPoint");
-      $("scoreBoxB").classList.remove("setPoint", "matchPoint");
-      if (s.highlight === "setA") $("scoreBoxA").classList.add("setPoint");
-      if (s.highlight === "setB") $("scoreBoxB").classList.add("setPoint");
-      if (s.highlight === "matchA") $("scoreBoxA").classList.add("matchPoint");
-      if (s.highlight === "matchB") $("scoreBoxB").classList.add("matchPoint");
-
-      // vista – por ahora solo marcador / resumen placeholder
-const showSummary = s.view === "sets";
-$("summary").classList.toggle("visible", showSummary);
-
-const teamsEl = $("teams");
-if (teamsEl) {
-  teamsEl.style.opacity = showSummary ? "0.2" : "1";
-}
-
-
-    onValue(stateRef, (snap) => {
-      if (!snap.exists()) return;
-      const state = snap.val();
-      applyState(state);
+    let last = null;
+    onValue(stateRef, snap=>{
+      if(!snap.exists()) return;
+      last = snap.val();
+      applyState(last);
     });
   </script>
 </body>
