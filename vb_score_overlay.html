@@ -203,7 +203,7 @@
         ><span class="liveDot"></span> Live score</span
       >
     </div>
-    <div class="teams">
+    <div class="teams" id="teams">
       <div class="teamRow" id="rowA">
         <div class="badge" id="badgeA">A</div>
         <div style="display:flex;align-items:center;gap:8px;">
@@ -313,10 +313,14 @@
       if (s.highlight === "matchB") $("scoreBoxB").classList.add("matchPoint");
 
       // vista – por ahora solo marcador / resumen placeholder
-      const showSummary = s.view === "sets";
-      $("summary").classList.toggle("visible", showSummary);
-      $("teams").style = showSummary ? "opacity:0.2" : "";
-    }
+const showSummary = s.view === "sets";
+$("summary").classList.toggle("visible", showSummary);
+
+const teamsEl = $("teams");
+if (teamsEl) {
+  teamsEl.style.opacity = showSummary ? "0.2" : "1";
+}
+
 
     onValue(stateRef, (snap) => {
       if (!snap.exists()) return;
