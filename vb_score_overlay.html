@@ -9,30 +9,30 @@
       margin:0;
       padding:0;
       height:100%;
-      background:#0f172a;
+      background:#020617;
       font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
       color:#f9fafb;
     }
     #root{
       position:absolute;
-      top:40px;
-      left:40px;
+      top:32px;
+      left:32px;
     }
     .card{
-      border-radius:14px;
-      background:linear-gradient(to bottom,#020617f5,#020617f0);
+      border-radius:16px;
+      background:radial-gradient(circle at top,#020617,#020617 35%,#020617);
       border:1px solid #111827;
-      box-shadow:0 24px 60px #000c;
+      box-shadow:0 22px 60px #000d;
       min-width:520px;
       overflow:hidden;
     }
     .title{
-      padding:6px 16px 4px;
+      padding:6px 18px 5px;
       font-size:13px;
       text-transform:uppercase;
       letter-spacing:.16em;
       color:#e5e7eb;
-      background:linear-gradient(to right,#1f2937,#020617);
+      background:linear-gradient(to right,#020617,#0b1120);
       border-bottom:1px solid #111827;
       display:flex;
       justify-content:space-between;
@@ -51,11 +51,11 @@
       display:grid;
       grid-template-columns:auto auto 1fr auto auto;
       gap:8px;
-      padding:4px 14px;
+      padding:5px 16px;
       align-items:center;
     }
     .row:nth-child(1){
-      background:radial-gradient(circle at top left,#0b1120 0,#020617 60%,#020617 100%);
+      background:radial-gradient(circle at top left,#020617 0,#020617 60%,#020617 100%);
     }
     .row:nth-child(2){
       background:radial-gradient(circle at bottom left,#020617 0,#020617 60%,#020617 100%);
@@ -63,7 +63,7 @@
     .seed{
       width:46px;
       height:40px;
-      border-radius:10px;
+      border-radius:12px;
       background:#facc15;
       color:#111827;
       display:flex;
@@ -73,12 +73,12 @@
       font-size:16px;
       text-transform:uppercase;
       letter-spacing:.08em;
-      box-shadow:0 4px 12px #0008;
+      box-shadow:0 4px 14px #0009;
     }
     .logo{
       width:40px;
       height:40px;
-      border-radius:10px;
+      border-radius:12px;
       background:#020617;
       border:1px solid #111827;
       display:flex;
@@ -98,23 +98,19 @@
       flex-direction:column;
       min-width:0;
     }
-    .short{
-      font-size:11px;
-      text-transform:uppercase;
-      letter-spacing:.16em;
-      color:#9ca3af;
-      white-space:nowrap;
-    }
+    /* solo siglas grandes */
     .name{
-      font-size:17px;
-      font-weight:800;
+      font-size:20px;
+      font-weight:900;
+      letter-spacing:.16em;
+      text-transform:uppercase;
       white-space:nowrap;
       overflow:hidden;
       text-overflow:ellipsis;
     }
     .sets{
-      min-width:48px;
-      padding:4px 8px;
+      min-width:56px;
+      padding:4px 10px 3px;
       border-radius:999px;
       border:1px solid #111827;
       background:#020617;
@@ -132,9 +128,9 @@
       margin-bottom:-1px;
     }
     .score{
-      min-width:70px;
-      padding:4px 10px;
-      border-radius:10px;
+      min-width:74px;
+      padding:4px 12px 4px;
+      border-radius:12px;
       background:#020617;
       border:1px solid #111827;
       text-align:right;
@@ -158,27 +154,27 @@
     .row.highlight::after{
       content:"";
       position:absolute;
-      inset:0;
+      inset:3px;
       border-radius:14px;
       border:1px solid #22c55e66;
-      box-shadow:0 0 0 1px #22c55e22,0 0 20px #22c55e33;
+      box-shadow:0 0 0 1px #22c55e22,0 0 22px #22c55e33;
       pointer-events:none;
     }
     .badge-wrap{
-      padding:4px 16px 8px;
+      padding:4px 18px 9px;
       display:flex;
       justify-content:flex-end;
     }
     .badge{
-      padding:3px 12px 4px;
+      padding:3px 13px 4px;
       border-radius:999px;
       background:#facc15;
       color:#111827;
       font-size:11px;
       text-transform:uppercase;
-      letter-spacing:.16em;
+      letter-spacing:.18em;
       font-weight:800;
-      box-shadow:0 10px 25px #000a;
+      box-shadow:0 12px 26px #000b;
     }
     .badge.match{
       background:#ef4444;
@@ -187,14 +183,12 @@
   </style>
 </head>
 <body>
-  <!-- Contenedor donde pintaremos el marcador -->
   <div id="root"></div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
     import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
 
-    // ⚙️ Misma config que estás usando en los otros overlays
     const firebaseConfig = {
       apiKey: "AIzaSyD8r0rLCLLPJx3DsNGMuvVtFuwCMBXrR9M",
       authDomain: "tkd-overlay.firebaseapp.com",
@@ -214,18 +208,18 @@
     const room = url.searchParams.get("room") || "vb1";
     const stateRef = ref(db, `vb/${room}/state`);
 
-    const makeLogo = url => url ? `<img src="${url}">` : "";
+    const logoHtml = url =>
+      url ? `<img src="${url}" alt="">` : "";
 
     function render(state){
-      // Fallback: demo si aún no hay estado
       if(!state){
         state = {
           matchTitle:"Bronze Medal Match",
+          view:"live",
           highlight:"none",
-          showSummary:false,
           serving:"A",
-          teamA:{ short:"ITA", name:"ITALY", logo:"" },
-          teamB:{ short:"USA", name:"UNITED STATES", logo:"" },
+          teamA:{ short:"ITA", logo:"" },
+          teamB:{ short:"USA", logo:"" },
           setsWonA:0,
           setsWonB:1,
           scoreA:23,
@@ -236,76 +230,69 @@
       const a = state.teamA || {};
       const b = state.teamB || {};
       const hl = state.highlight || "none";
+      const serving = state.serving || "A";
+
       const hlRowA = (hl==="setA" || hl==="matchA");
       const hlRowB = (hl==="setB" || hl==="matchB");
-      let hlLabel = "";
-      let hlClass = "";
+
+      let badge = "";
       if(hl==="setA" || hl==="setB"){
-        hlLabel = "Set point";
-        hlClass = "set";
+        badge = "SET POINT";
       }else if(hl==="matchA" || hl==="matchB"){
-        hlLabel = "Match point";
-        hlClass = "match";
+        badge = "MATCH POINT";
       }
-      const serving = state.serving || "A";
 
       root.innerHTML = `
         <div class="card">
           <div class="title">
             <div>${(state.matchTitle || "Volleyball Match").toUpperCase()}</div>
-            <span>${state.showSummary ? "SET SUMMARY" : "LIVE SCORE"}</span>
+            <span>${state.view==="summary" ? "SET SUMMARY" : "LIVE SCORE"}</span>
           </div>
           <div class="rows">
             <div class="row ${hlRowA ? "highlight" : ""}">
               <div class="seed">${(a.short || "A").slice(0,3).toUpperCase()}</div>
-              <div class="logo">${makeLogo(a.logo)}</div>
+              <div class="logo">${logoHtml(a.logo)}</div>
               <div class="info">
-                <div class="short">${(a.short || "A").toUpperCase()}</div>
-                <div class="name">${a.name || "TEAM A"}</div>
+                <div class="name">${(a.short || "TEAM A").toUpperCase()}</div>
               </div>
               <div class="sets">
                 <span>SETS</span>${state.setsWonA ?? 0}
               </div>
               <div class="score">
                 <span>${state.scoreA ?? 0}</span>
-                ${serving==="A" ? '<div class="serve"></div>' : ""}
+                ${serving==="A" ? '<div class="serve"></div>' : ''}
               </div>
             </div>
 
             <div class="row ${hlRowB ? "highlight" : ""}">
               <div class="seed">${(b.short || "B").slice(0,3).toUpperCase()}</div>
-              <div class="logo">${makeLogo(b.logo)}</div>
+              <div class="logo">${logoHtml(b.logo)}</div>
               <div class="info">
-                <div class="short">${(b.short || "B").toUpperCase()}</div>
-                <div class="name">${b.name || "TEAM B"}</div>
+                <div class="name">${(b.short || "TEAM B").toUpperCase()}</div>
               </div>
               <div class="sets">
                 <span>SETS</span>${state.setsWonB ?? 0}
               </div>
               <div class="score">
                 <span>${state.scoreB ?? 0}</span>
-                ${serving==="B" ? '<div class="serve"></div>' : ""}
+                ${serving==="B" ? '<div class="serve"></div>' : ''}
               </div>
             </div>
           </div>
-          ${hlLabel ? `
-          <div class="badge-wrap">
-            <div class="badge ${hlClass==="match" ? "match" : ""}">
-              ${hlLabel}
-            </div>
-          </div>` : ""}
+          ${badge ? `
+            <div class="badge-wrap">
+              <div class="badge ${badge==="MATCH POINT" ? "match" : ""}">
+                ${badge}
+              </div>
+            </div>` : ""}
         </div>
       `;
     }
 
-    // Dibujar algo de entrada
     render(null);
 
-    // Escuchar cambios de Firebase
     onValue(stateRef, snap=>{
-      if(!snap.exists()){
-        return; // dejamos demo hasta que el control mande algo
-      }
+      if(!snap.exists()) return;
       render(snap.val());
     });
   </script>
