@@ -1,390 +1,605 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="utf-8" />
+  <meta charset="UTF-8" />
   <title>Volleyball Scoreboard – Control</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
-    html,body{
-      margin:0;
-      padding:0;
-      font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
-      background:#020617;
-      color:#e5e7eb;
+    :root {
+      --bg: #050812;
+      --panel: #0b101f;
+      --panel-alt: #121828;
+      --accent: #ffd54a;
+      --accent-soft: #ffec9c22;
+      --text-main: #f5f6fb;
+      --text-muted: #8590b3;
+      --danger: #ff4b6b;
+      --good: #3dd68c;
+      --border: #1b2236;
+      --btn-bg: #151b2b;
+      --btn-bg-active: #1e2638;
+      --btn-pill: 999px;
     }
-    .wrap{
-      max-width:920px;
-      margin:24px auto 40px;
-      padding:16px 20px 32px;
-      background:#020617;
+    * {
+      box-sizing: border-box;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
+        Roboto, sans-serif;
     }
-    h1{
-      margin:0 0 16px;
-      font-size:22px;
+    body {
+      margin: 0;
+      padding: 24px;
+      background: radial-gradient(circle at top, #151c33 0, #050812 55%);
+      color: var(--text-main);
     }
-    fieldset{
-      border:1px solid #111827;
-      border-radius:14px;
-      margin-bottom:16px;
-      padding:12px 14px 12px;
+    h1 {
+      margin: 0 0 12px;
+      font-size: 24px;
+      letter-spacing: 0.04em;
     }
-    legend{
-      padding:0 6px;
-      font-size:13px;
-      text-transform:uppercase;
-      color:#9ca3af;
-      letter-spacing:.16em;
+    .card {
+      max-width: 900px;
+      margin: 0 auto;
+      background: linear-gradient(145deg, #0b101f, #060815);
+      border-radius: 18px;
+      padding: 20px 22px 18px;
+      box-shadow: 0 24px 80px rgba(0, 0, 0, 0.65);
+      border: 1px solid var(--border);
     }
-    label{
-      font-size:13px;
-      display:block;
-      margin-bottom:4px;
+    .row {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
     }
-    input,select,button{
-      font-family:inherit;
-      font-size:13px;
+    .col {
+      flex: 1;
+      min-width: 160px;
     }
-    input[type="text"],input[type="number"],select{
-      background:#020617;
-      border-radius:9px;
-      border:1px solid #1f2937;
-      padding:6px 9px;
-      color:#e5e7eb;
-      outline:none;
-      width:100%;
-      box-sizing:border-box;
+    label {
+      display: block;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--text-muted);
+      margin-bottom: 4px;
     }
-    input[type="number"]{
-      max-width:80px;
+    input[type="text"],
+    input[type="number"] {
+      width: 100%;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: #050813;
+      color: var(--text-main);
+      padding: 7px 12px;
+      font-size: 13px;
+      outline: none;
     }
-    .row{
-      display:flex;
-      gap:12px;
-      margin-bottom:8px;
-      flex-wrap:wrap;
+    input[type="text"]:focus,
+    input[type="number"]:focus {
+      border-color: #4b9dff;
+      box-shadow: 0 0 0 1px #214573;
     }
-    .col{
-      flex:1;
-      min-width:150px;
+    .topbar {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 16px;
     }
-    .buttons{
-      display:flex;
-      gap:8px;
-      flex-wrap:wrap;
-      margin-top:6px;
+    .topbar .grow {
+      flex: 1;
     }
-    button{
-      border-radius:999px;
-      border:none;
-      padding:6px 14px;
-      cursor:pointer;
-      background:#1d4ed8;
-      color:white;
-      font-weight:500;
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 11px 6px;
+      border-radius: 999px;
+      background: var(--panel-alt);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--text-muted);
     }
-    button.secondary{
-      background:#111827;
-      color:#e5e7eb;
+    .chip-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #27e86c;
+      box-shadow: 0 0 0 4px #27e86c22;
     }
-    button.small{
-      padding:4px 10px;
-      font-size:12px;
+    button {
+      border-radius: 999px;
+      border: none;
+      cursor: pointer;
+      font-size: 13px;
+      padding: 8px 18px;
+      background: var(--btn-bg);
+      color: var(--text-main);
+      transition: background 0.15s, transform 0.05s, box-shadow 0.15s;
+      border: 1px solid transparent;
     }
-    small{
-      color:#9ca3af;
+    button:hover {
+      background: #20273a;
     }
-    .status{
-      margin-top:4px;
-      font-size:12px;
-      color:#9ca3af;
+    button:active {
+      transform: translateY(1px);
+      box-shadow: none;
     }
-    .badge-toggle button{
-      background:#111827;
+    .btn-accent {
+      background: var(--accent);
+      color: #11121a;
+      font-weight: 600;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
     }
-    .badge-toggle button.active{
-      background:#facc15;
-      color:#111827;
+    .btn-accent:hover {
+      background: #ffe177;
+    }
+    .btn-ghost {
+      background: transparent;
+      border-color: var(--border);
+      color: var(--text-muted);
+    }
+    .btn-pill {
+      border-radius: var(--btn-pill);
+      padding-inline: 16px;
+      font-size: 12px;
+    }
+    .btn-pill.active {
+      background: #1e2537;
+      border-color: #3b4764;
+      color: #fefefe;
+    }
+    .score-row {
+      display: grid;
+      grid-template-columns: auto auto auto auto;
+      align-items: center;
+      gap: 10px;
+      margin-top: 4px;
+    }
+    .score-label {
+      font-size: 13px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+    }
+    .score-value {
+      font-size: 22px;
+      text-align: center;
+      min-width: 32px;
+    }
+    .score-btn {
+      width: 28px;
+      height: 28px;
+      border-radius: 999px;
+      background: #13192a;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+    }
+    .score-btn:hover {
+      background: #222a40;
+    }
+    .serv-toggle {
+      display: inline-flex;
+      gap: 6px;
+      border-radius: 999px;
+      background: #050813;
+      border: 1px solid #242b40;
+      padding: 2px;
+    }
+    .serv-toggle button {
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+    }
+    .serv-toggle button.active {
+      background: #24e26a22;
+      color: var(--good);
+    }
+    .section-title {
+      margin: 10px 0 4px;
+      text-transform: uppercase;
+      font-size: 11px;
+      letter-spacing: 0.16em;
+      color: var(--text-muted);
+    }
+    .foot {
+      margin-top: 10px;
+      font-size: 11px;
+      color: var(--text-muted);
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      margin-right: 6px;
+    }
+    .status-ok {
+      background: var(--good);
+      box-shadow: 0 0 0 4px #3dd68c22;
+    }
+    .status-bad {
+      background: var(--danger);
+      box-shadow: 0 0 0 4px #ff4b6b22;
+    }
+    .file-note {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+    input[type="file"] {
+      display: block;
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 3px;
     }
   </style>
 </head>
 <body>
-  <div class="wrap">
+  <div class="card">
     <h1>Volleyball Scoreboard – Control</h1>
 
-    <fieldset>
-      <legend>Conexión</legend>
-      <div class="row">
-        <div class="col">
-          <label>Room</label>
-          <input id="room" type="text" value="vb1" />
-        </div>
-        <div class="col">
-          <label>Match Title</label>
-          <input id="matchTitle" type="text" value="Bronze Medal Match · LAI" />
-        </div>
-        <div class="col" style="flex:0 0 auto;align-self:flex-end;">
-          <div class="buttons">
-            <button id="connect">Connect</button>
-            <button id="reset" class="secondary">Reset</button>
-          </div>
-        </div>
+    <div class="topbar">
+      <div class="col" style="max-width: 120px">
+        <label>Room</label>
+        <input id="room" type="text" value="vb1" />
       </div>
-      <div class="status" id="status">Sin conectar.</div>
-      <small>Overlay: <code>.../vb_score_overlay.html?room=vb1</code></small>
-    </fieldset>
+      <div class="grow">
+        <label>Match title</label>
+        <input
+          id="matchTitle"
+          type="text"
+          value="Bronze Medal Match · LAI"
+        />
+      </div>
+      <div>
+        <button id="connect" class="btn-accent">Connect</button>
+      </div>
+      <div>
+        <button id="reset" class="btn-ghost">Reset</button>
+      </div>
+    </div>
 
-    <fieldset>
-      <legend>Equipos</legend>
-      <div class="row">
-        <div class="col">
-          <label>Equipo A – Siglas</label>
-          <input id="aShort" type="text" value="UAGM" />
-        </div>
-        <div class="col">
-          <label>Logo A (URL)</label>
-          <input id="aLogoUrl" type="text" placeholder="https://...png (opcional)" />
-        </div>
-        <div class="col">
-          <label>Logo A desde archivo</label>
-          <input id="aLogoFile" type="file" accept="image/*" />
-        </div>
+    <!-- EQUIPO A -->
+    <div class="section-title">Equipo A</div>
+    <div class="row">
+      <div class="col" style="max-width: 120px">
+        <label>Nombre corto (siglas)</label>
+        <input id="aShort" type="text" value="ITA" maxlength="4" />
       </div>
-      <div class="row">
-        <div class="col">
-          <label>Equipo B – Siglas</label>
-          <input id="bShort" type="text" value="UPRRP" />
-        </div>
-        <div class="col">
-          <label>Logo B (URL)</label>
-          <input id="bLogoUrl" type="text" placeholder="https://...png (opcional)" />
-        </div>
-        <div class="col">
-          <label>Logo B desde archivo</label>
-          <input id="bLogoFile" type="file" accept="image/*" />
-        </div>
+      <div class="col">
+        <label>Nombre completo</label>
+        <input id="aName" type="text" value="Team A" />
       </div>
-    </fieldset>
+      <div class="col">
+        <label>Logo (URL)</label>
+        <input id="aLogoUrl" type="text" placeholder="https://..." />
+        <input id="aLogoFile" type="file" accept="image/*" />
+        <div class="file-note">Usa archivo o URL (archivo tiene prioridad).</div>
+      </div>
+      <div class="col" style="max-width: 120px">
+        <label>Sets ganados</label>
+        <input id="aSets" type="number" min="0" max="5" value="0" />
+      </div>
+    </div>
 
-    <fieldset>
-      <legend>Marcador</legend>
-      <div class="row">
-        <div class="col">
-          <label>Score A</label>
-          <input id="aScore" type="number" value="0" min="0" />
-          <div class="buttons">
-            <button type="button" data-inc="aScore">+1</button>
-            <button type="button" data-dec="aScore" class="secondary">-1</button>
-          </div>
-        </div>
-        <div class="col">
-          <label>Score B</label>
-          <input id="bScore" type="number" value="0" min="0" />
-          <div class="buttons">
-            <button type="button" data-inc="bScore">+1</button>
-            <button type="button" data-dec="bScore" class="secondary">-1</button>
-          </div>
-        </div>
-        <div class="col">
-          <label>Sets ganados A</label>
-          <input id="aSets" type="number" value="0" min="0" />
-        </div>
-        <div class="col">
-          <label>Sets ganados B</label>
-          <input id="bSets" type="number" value="0" min="0" />
-        </div>
+    <!-- EQUIPO B -->
+    <div class="section-title">Equipo B</div>
+    <div class="row">
+      <div class="col" style="max-width: 120px">
+        <label>Nombre corto (siglas)</label>
+        <input id="bShort" type="text" value="USA" maxlength="4" />
       </div>
-      <div class="row">
-        <div class="col">
-          <label>Sirve</label>
-          <div class="buttons">
-            <button type="button" class="small secondary" data-serve="A" id="serveA">Serve A</button>
-            <button type="button" class="small secondary" data-serve="B" id="serveB">Serve B</button>
-          </div>
-        </div>
-        <div class="col badge-toggle">
-          <label>Highlight</label>
-          <div class="buttons">
-            <button type="button" class="small active" data-hl="none" id="hlNone">Normal</button>
-            <button type="button" class="small" data-hl="setA">Set point A</button>
-            <button type="button" class="small" data-hl="setB">Set point B</button>
-            <button type="button" class="small" data-hl="matchA">Match point A</button>
-            <button type="button" class="small" data-hl="matchB">Match point B</button>
-          </div>
-        </div>
-        <div class="col">
-          <label>Vista</label>
-          <div class="buttons">
-            <button type="button" class="small active" data-view="live" id="viewLive">Marcador</button>
-            <button type="button" class="small secondary" data-view="summary" id="viewSummary">Resumen sets</button>
-          </div>
-        </div>
+      <div class="col">
+        <label>Nombre completo</label>
+        <input id="bName" type="text" value="Team B" />
       </div>
-    </fieldset>
+      <div class="col">
+        <label>Logo (URL)</label>
+        <input id="bLogoUrl" type="text" placeholder="https://..." />
+        <input id="bLogoFile" type="file" accept="image/*" />
+        <div class="file-note">Usa archivo o URL (archivo tiene prioridad).</div>
+      </div>
+      <div class="col" style="max-width: 120px">
+        <label>Sets ganados</label>
+        <input id="bSets" type="number" min="0" max="5" value="0" />
+      </div>
+    </div>
 
-    <div class="buttons">
-      <button id="save">Save / Push</button>
+    <!-- MARCADOR ACTUAL -->
+    <div class="section-title">Marcador actual (set en juego)</div>
+    <div class="row">
+      <div class="col">
+        <div class="score-row">
+          <div class="score-label">A</div>
+          <button class="score-btn" data-score="-1" data-team="A">−</button>
+          <div id="scoreA" class="score-value">0</div>
+          <button class="score-btn" data-score="+1" data-team="A">+</button>
+        </div>
+      </div>
+      <div class="col">
+        <div class="score-row">
+          <div class="score-label">B</div>
+          <button class="score-btn" data-score="-1" data-team="B">−</button>
+          <div id="scoreB" class="score-value">0</div>
+          <button class="score-btn" data-score="+1" data-team="B">+</button>
+        </div>
+      </div>
+      <div class="col">
+        <label>Serve</label>
+        <div class="serv-toggle">
+          <button type="button" id="serveA" class="active">A</button>
+          <button type="button" id="serveB">B</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- HIGHLIGHT -->
+    <div class="section-title">Highlight</div>
+    <div class="row">
+      <div class="col">
+        <button class="btn-pill active" data-hl="normal">Normal</button>
+        <button class="btn-pill" data-hl="setA">Set point A</button>
+        <button class="btn-pill" data-hl="setB">Set point B</button>
+        <button class="btn-pill" data-hl="matchA">Match point A</button>
+        <button class="btn-pill" data-hl="matchB">Match point B</button>
+      </div>
+    </div>
+
+    <!-- VISTA -->
+    <div class="section-title">Vista</div>
+    <div class="row">
+      <div class="col">
+        <button class="btn-pill active" data-view="score">Marcador</button>
+        <button class="btn-pill" data-view="sets">Resumen sets</button>
+      </div>
+    </div>
+
+    <div class="foot">
+      <div id="status">
+        <span class="status-dot status-bad"></span>
+        Sin conectar.
+      </div>
+      <div>
+        Atajos: + / − para sumar/restar puntos luego 😉
+      </div>
     </div>
   </div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
-    import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
+    import {
+      getDatabase,
+      ref,
+      set,
+      onValue,
+    } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
 
+    // ⚙️ MISMA CONFIG QUE YA USAS EN LOS OTROS OVERLAYS
     const firebaseConfig = {
-      apiKey: "AIzaSyD8r0rLCLLPJx3DsNGMuvVtFuwCMBXrR9M",
+      apiKey: "AIzaSyDB0r0rLCLpJX3DsNGMuvvTFUwCMBXRPpM",
       authDomain: "tkd-overlay.firebaseapp.com",
       databaseURL: "https://tkd-overlay-default-rtdb.firebaseio.com",
       projectId: "tkd-overlay",
       storageBucket: "tkd-overlay.firebasestorage.app",
       messagingSenderId: "41501920835",
       appId: "1:41501920835:web:4ccecdf129cf20619d8ef6",
-      measurementId: "G-CXBJCL86EM"
+      measurementId: "G-CXBJCL86EM",
     };
 
     const app = initializeApp(firebaseConfig);
-    const db  = getDatabase(app);
+    const db = getDatabase(app);
 
-    const $ = id => document.getElementById(id);
+    // ----- estado local -----
+    let state = {
+      room: "vb1",
+      matchTitle: "Bronze Medal Match · LAI",
+      teamA: {
+        short: "ITA",
+        name: "Team A",
+        logoUrl: "",
+        logoData: "",
+        sets: 0,
+        score: 0,
+        serves: true,
+      },
+      teamB: {
+        short: "USA",
+        name: "Team B",
+        logoUrl: "",
+        logoData: "",
+        sets: 0,
+        score: 0,
+        serves: false,
+      },
+      highlight: "normal", // normal | setA | setB | matchA | matchB
+      view: "score", // score | sets (más adelante)
+    };
+
     let stateRef = null;
-    let serving = "A";
-    let highlight = "none";
-    let view = "live";
-    let logoA = "";
-    let logoB = "";
 
+    const $ = (id) => document.getElementById(id);
     const statusEl = $("status");
+    const connectBtn = $("connect");
+    const resetBtn = $("reset");
 
-    function buildState(){
-      return {
-        matchTitle: $("matchTitle").value.trim() || "Volleyball Match",
-        view,
-        highlight,
-        serving,
-        teamA:{
-          short: $("aShort").value.trim() || "A",
-          logo: logoA || $("aLogoUrl").value.trim() || ""
-        },
-        teamB:{
-          short: $("bShort").value.trim() || "B",
-          logo: logoB || $("bLogoUrl").value.trim() || ""
-        },
-        setsWonA: Number($("aSets").value) || 0,
-        setsWonB: Number($("bSets").value) || 0,
-        scoreA:   Number($("aScore").value) || 0,
-        scoreB:   Number($("bScore").value) || 0
-      };
+    // helpers
+    function updateFromForm() {
+      state.room = $("room").value.trim() || "vb1";
+      state.matchTitle = $("matchTitle").value || "";
+
+      state.teamA.short = $("aShort").value || "A";
+      state.teamA.name = $("aName").value || "";
+      state.teamA.logoUrl = $("aLogoUrl").value || "";
+      state.teamA.sets = Number($("aSets").value || 0);
+
+      state.teamB.short = $("bShort").value || "B";
+      state.teamB.name = $("bName").value || "";
+      state.teamB.logoUrl = $("bLogoUrl").value || "";
+      state.teamB.sets = Number($("bSets").value || 0);
     }
 
-    async function pushState(){
-      if(!stateRef){
-        alert("Primero dale a Connect.");
-        return;
-      }
-      const state = buildState();
-      await set(stateRef, state);
+    function renderScores() {
+      $("scoreA").textContent = state.teamA.score;
+      $("scoreB").textContent = state.teamB.score;
+      $("aSets").value = state.teamA.sets;
+      $("bSets").value = state.teamB.sets;
+
+      $("serveA").classList.toggle("active", state.teamA.serves);
+      $("serveB").classList.toggle("active", state.teamB.serves);
     }
 
-    $("connect").addEventListener("click", ()=>{
-      const room = ($("room").value || "vb1").trim();
+    function pushState() {
+      if (!stateRef) return;
+      updateFromForm();
+      set(stateRef, state).catch((err) => {
+        console.error(err);
+        statusEl.innerHTML =
+          '<span class="status-dot status-bad"></span>Error enviando al overlay.';
+      });
+    }
+
+    // logo desde archivo → dataURL
+    function wireLogoFile(inputEl, teamKey) {
+      inputEl.addEventListener("change", (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = () => {
+          state[teamKey].logoData = reader.result;
+          pushState();
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+    wireLogoFile($("aLogoFile"), "teamA");
+    wireLogoFile($("bLogoFile"), "teamB");
+
+    // botones score
+    document.querySelectorAll(".score-btn").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const team = btn.dataset.team;
+        const delta = btn.dataset.score === "+1" ? 1 : -1;
+        if (team === "A") {
+          state.teamA.score = Math.max(0, state.teamA.score + delta);
+        } else {
+          state.teamB.score = Math.max(0, state.teamB.score + delta);
+        }
+        renderScores();
+        pushState();
+      });
+    });
+
+    // serve
+    $("serveA").addEventListener("click", () => {
+      state.teamA.serves = true;
+      state.teamB.serves = false;
+      renderScores();
+      pushState();
+    });
+    $("serveB").addEventListener("click", () => {
+      state.teamA.serves = false;
+      state.teamB.serves = true;
+      renderScores();
+      pushState();
+    });
+
+    // highlight pills
+    document.querySelectorAll("[data-hl]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        document
+          .querySelectorAll("[data-hl]")
+          .forEach((b) => b.classList.remove("active"));
+        btn.classList.add("active");
+        state.highlight = btn.dataset.hl;
+        pushState();
+      });
+    });
+
+    // view pills
+    document.querySelectorAll("[data-view]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        document
+          .querySelectorAll("[data-view]")
+          .forEach((b) => b.classList.remove("active"));
+        btn.classList.add("active");
+        state.view = btn.dataset.view;
+        pushState();
+      });
+    });
+
+    // connect
+    connectBtn.addEventListener("click", () => {
+      updateFromForm();
+      const room = state.room;
       stateRef = ref(db, `vb/${room}/state`);
-      statusEl.textContent = `Conectado a room "${room}".`;
+      statusEl.innerHTML =
+        '<span class="status-dot status-ok"></span>Conectando a room "' +
+        room +
+        '"…';
+
+      // escribir estado inicial
+      set(stateRef, state)
+        .then(() => {
+          statusEl.innerHTML =
+            '<span class="status-dot status-ok"></span>Conectado a room "' +
+            room +
+            '"';
+          // opcional: escuchar cambios remotos
+          onValue(stateRef, (snap) => {
+            if (!snap.exists()) return;
+            state = snap.val();
+            $("room").value = state.room;
+            $("matchTitle").value = state.matchTitle;
+            $("aShort").value = state.teamA.short;
+            $("aName").value = state.teamA.name;
+            $("aLogoUrl").value = state.teamA.logoUrl || "";
+            $("aSets").value = state.teamA.sets;
+            $("bShort").value = state.teamB.short;
+            $("bName").value = state.teamB.name;
+            $("bLogoUrl").value = state.teamB.logoUrl || "";
+            $("bSets").value = state.teamB.sets;
+
+            document
+              .querySelectorAll("[data-hl]")
+              .forEach((b) =>
+                b.classList.toggle("active", b.dataset.hl === state.highlight),
+              );
+            document
+              .querySelectorAll("[data-view]")
+              .forEach((b) =>
+                b.classList.toggle("active", b.dataset.view === state.view),
+              );
+
+            renderScores();
+          });
+        })
+        .catch((err) => {
+          console.error(err);
+          statusEl.innerHTML =
+            '<span class="status-dot status-bad"></span>Error al conectar.';
+        });
+    });
+
+    // reset marcador actual (no resetea sets)
+    resetBtn.addEventListener("click", () => {
+      state.teamA.score = 0;
+      state.teamB.score = 0;
+      renderScores();
       pushState();
     });
 
-    $("reset").addEventListener("click", ()=>{
-      $("aScore").value = 0;
-      $("bScore").value = 0;
-      $("aSets").value  = 0;
-      $("bSets").value  = 0;
-      serving = "A";
-      highlight = "none";
-      view = "live";
-      updateServeButtons();
-      updateHighlightButtons();
-      updateViewButtons();
-      pushState();
-    });
-
-    $("save").addEventListener("click", pushState);
-
-    // +1 / -1
-    document.body.addEventListener("click",(e)=>{
-      const inc = e.target.getAttribute("data-inc");
-      const dec = e.target.getAttribute("data-dec");
-      const hl = e.target.getAttribute("data-hl");
-      const sv = e.target.getAttribute("data-serve");
-      const vw = e.target.getAttribute("data-view");
-
-      if(inc){
-        const input = $(inc);
-        input.value = (Number(input.value)||0)+1;
-        pushState();
-      }
-      if(dec){
-        const input = $(dec);
-        input.value = Math.max(0,(Number(input.value)||0)-1);
-        pushState();
-      }
-      if(hl){
-        highlight = hl;
-        updateHighlightButtons();
-        pushState();
-      }
-      if(sv){
-        serving = sv;
-        updateServeButtons();
-        pushState();
-      }
-      if(vw){
-        view = vw;
-        updateViewButtons();
-        pushState();
-      }
-    });
-
-    function updateServeButtons(){
-      ["serveA","serveB"].forEach(id=>{
-        $(id).classList.add("secondary");
-      });
-      if(serving==="A"){
-        $("serveA").classList.remove("secondary");
-      }else{
-        $("serveB").classList.remove("secondary");
-      }
-    }
-
-    function updateHighlightButtons(){
-      document.querySelectorAll('[data-hl]').forEach(btn=>{
-        btn.classList.remove("active");
-      });
-      const active = document.querySelector(`[data-hl="${highlight}"]`);
-      if(active) active.classList.add("active");
-    }
-
-    function updateViewButtons(){
-      $("viewLive").classList.toggle("active",view==="live");
-      $("viewSummary").classList.toggle("active",view==="summary");
-    }
-
-    // Cargar logos desde archivo como dataURL
-    function handleFile(input, setter){
-      const file = input.files[0];
-      if(!file) return;
-      const reader = new FileReader();
-      reader.onload = e=>{
-        setter(e.target.result); // base64
-        pushState();
-      };
-      reader.readAsDataURL(file);
-    }
-
-    $("aLogoFile").addEventListener("change", ()=>handleFile($("aLogoFile"), v=>logoA=v));
-    $("bLogoFile").addEventListener("change", ()=>handleFile($("bLogoFile"), v=>logoB=v));
-
-    // Estado inicial de botones
-    updateServeButtons();
-    updateHighlightButtons();
-    updateViewButtons();
+    // estado inicial UI
+    renderScores();
   </script>
 </body>
 </html>
