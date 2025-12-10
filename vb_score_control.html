@@ -2,223 +2,233 @@
 <html lang="es">
 <head>
   <meta charset="utf-8" />
-  <title>VB Score Control</title>
+  <title>Volleyball Scoreboard – Control</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
-    *{box-sizing:border-box;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;}
-    body{
+    html,body{
       margin:0;
-      padding:24px;
+      padding:0;
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
       background:#020617;
       color:#e5e7eb;
+    }
+    .wrap{
+      max-width:920px;
+      margin:24px auto 40px;
+      padding:16px 20px 32px;
+      background:#020617;
     }
     h1{
       margin:0 0 16px;
       font-size:22px;
     }
-    .card{
-      background:#020617;
-      border-radius:16px;
+    fieldset{
       border:1px solid #111827;
-      padding:16px 20px 20px;
-      max-width:780px;
-      box-shadow:0 18px 50px #000c;
+      border-radius:14px;
+      margin-bottom:16px;
+      padding:12px 14px 12px;
+    }
+    legend{
+      padding:0 6px;
+      font-size:13px;
+      text-transform:uppercase;
+      color:#9ca3af;
+      letter-spacing:.16em;
     }
     label{
-      font-size:12px;
-      text-transform:uppercase;
-      letter-spacing:.14em;
-      color:#9ca3af;
+      font-size:13px;
       display:block;
       margin-bottom:4px;
     }
-    input, select{
-      width:100%;
-      border-radius:10px;
-      border:1px solid #1f2937;
-      background:#020617;
-      color:#e5e7eb;
-      padding:8px 10px;
-      font-size:14px;
+    input,select,button{
+      font-family:inherit;
+      font-size:13px;
     }
-    input:focus, select:focus{
+    input[type="text"],input[type="number"],select{
+      background:#020617;
+      border-radius:9px;
+      border:1px solid #1f2937;
+      padding:6px 9px;
+      color:#e5e7eb;
       outline:none;
-      border-color:#0ea5e9;
-      box-shadow:0 0 0 1px #0ea5e9;
+      width:100%;
+      box-sizing:border-box;
+    }
+    input[type="number"]{
+      max-width:80px;
     }
     .row{
       display:flex;
       gap:12px;
-      margin-bottom:10px;
+      margin-bottom:8px;
+      flex-wrap:wrap;
     }
-    .row > div{
+    .col{
       flex:1;
+      min-width:150px;
+    }
+    .buttons{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      margin-top:6px;
     }
     button{
-      border:none;
       border-radius:999px;
-      padding:7px 14px;
-      font-size:13px;
-      font-weight:600;
-      text-transform:uppercase;
-      letter-spacing:.12em;
+      border:none;
+      padding:6px 14px;
       cursor:pointer;
+      background:#1d4ed8;
+      color:white;
+      font-weight:500;
     }
-    .btn-primary{
-      background:#0ea5e9;
-      color:#0b1120;
-    }
-    .btn-danger{
-      background:#ef4444;
-      color:#0b1120;
-    }
-    .btn-ghost{
-      background:transparent;
-      border:1px solid #1f2937;
+    button.secondary{
+      background:#111827;
       color:#e5e7eb;
     }
-    .section-title{
-      font-size:13px;
-      text-transform:uppercase;
-      letter-spacing:.18em;
+    button.small{
+      padding:4px 10px;
+      font-size:12px;
+    }
+    small{
       color:#9ca3af;
-      margin:18px 0 6px;
-    }
-    .score-row{
-      display:flex;
-      gap:10px;
-      align-items:center;
-      margin-bottom:6px;
-    }
-    .score-row span{
-      font-size:13px;
-      min-width:60px;
-    }
-    .score-box{
-      min-width:46px;
-      text-align:center;
-      font-size:18px;
-      font-weight:800;
     }
     .status{
-      margin-top:10px;
+      margin-top:4px;
       font-size:12px;
       color:#9ca3af;
     }
-    .pill-toggle{
-      display:flex;
-      gap:8px;
-      margin-top:6px;
+    .badge-toggle button{
+      background:#111827;
     }
-    .pill-toggle button{
-      border-radius:999px;
-      padding:5px 10px;
-      font-size:11px;
-    }
-    .pill-toggle button.active{
+    .badge-toggle button.active{
       background:#facc15;
       color:#111827;
     }
   </style>
 </head>
 <body>
-  <h1>Volleyball Scoreboard – Control</h1>
+  <div class="wrap">
+    <h1>Volleyball Scoreboard – Control</h1>
 
-  <div class="card">
-    <div class="row">
-      <div style="flex:0.7">
-        <label>Room</label>
-        <input id="roomInput" value="vb1" />
+    <fieldset>
+      <legend>Conexión</legend>
+      <div class="row">
+        <div class="col">
+          <label>Room</label>
+          <input id="room" type="text" value="vb1" />
+        </div>
+        <div class="col">
+          <label>Match Title</label>
+          <input id="matchTitle" type="text" value="Bronze Medal Match · LAI" />
+        </div>
+        <div class="col" style="flex:0 0 auto;align-self:flex-end;">
+          <div class="buttons">
+            <button id="connect">Connect</button>
+            <button id="reset" class="secondary">Reset</button>
+          </div>
+        </div>
       </div>
-      <div style="flex:1.3">
-        <label>Match title</label>
-        <input id="matchTitle" placeholder="Bronze Medal Match · LAI" />
-      </div>
-      <div style="flex:0.7;display:flex;align-items:flex-end;gap:8px;">
-        <button id="connectBtn" class="btn-primary" style="flex:1;">Connect</button>
-        <button id="resetBtn" class="btn-ghost" style="flex:0.8;">Reset</button>
-      </div>
-    </div>
+      <div class="status" id="status">Sin conectar.</div>
+      <small>Overlay: <code>.../vb_score_overlay.html?room=vb1</code></small>
+    </fieldset>
 
-    <div class="section-title">Equipo A</div>
-    <div class="row">
-      <div>
-        <label>Nombre corto (ITA)</label>
-        <input id="aShort" value="A" />
+    <fieldset>
+      <legend>Equipos</legend>
+      <div class="row">
+        <div class="col">
+          <label>Equipo A – Siglas</label>
+          <input id="aShort" type="text" value="UAGM" />
+        </div>
+        <div class="col">
+          <label>Logo A (URL)</label>
+          <input id="aLogoUrl" type="text" placeholder="https://...png (opcional)" />
+        </div>
+        <div class="col">
+          <label>Logo A desde archivo</label>
+          <input id="aLogoFile" type="file" accept="image/*" />
+        </div>
       </div>
-      <div>
-        <label>Nombre completo</label>
-        <input id="aName" value="Team A" />
+      <div class="row">
+        <div class="col">
+          <label>Equipo B – Siglas</label>
+          <input id="bShort" type="text" value="UPRRP" />
+        </div>
+        <div class="col">
+          <label>Logo B (URL)</label>
+          <input id="bLogoUrl" type="text" placeholder="https://...png (opcional)" />
+        </div>
+        <div class="col">
+          <label>Logo B desde archivo</label>
+          <input id="bLogoFile" type="file" accept="image/*" />
+        </div>
       </div>
-      <div>
-        <label>Logo (URL)</label>
-        <input id="aLogo" placeholder="https://..." />
-      </div>
-      <div style="flex:0.5">
-        <label>Sets ganados</label>
-        <input id="aSets" type="number" value="0" />
-      </div>
-    </div>
+    </fieldset>
 
-    <div class="section-title">Equipo B</div>
-    <div class="row">
-      <div>
-        <label>Nombre corto (USA)</label>
-        <input id="bShort" value="B" />
+    <fieldset>
+      <legend>Marcador</legend>
+      <div class="row">
+        <div class="col">
+          <label>Score A</label>
+          <input id="aScore" type="number" value="0" min="0" />
+          <div class="buttons">
+            <button type="button" data-inc="aScore">+1</button>
+            <button type="button" data-dec="aScore" class="secondary">-1</button>
+          </div>
+        </div>
+        <div class="col">
+          <label>Score B</label>
+          <input id="bScore" type="number" value="0" min="0" />
+          <div class="buttons">
+            <button type="button" data-inc="bScore">+1</button>
+            <button type="button" data-dec="bScore" class="secondary">-1</button>
+          </div>
+        </div>
+        <div class="col">
+          <label>Sets ganados A</label>
+          <input id="aSets" type="number" value="0" min="0" />
+        </div>
+        <div class="col">
+          <label>Sets ganados B</label>
+          <input id="bSets" type="number" value="0" min="0" />
+        </div>
       </div>
-      <div>
-        <label>Nombre completo</label>
-        <input id="bName" value="Team B" />
+      <div class="row">
+        <div class="col">
+          <label>Sirve</label>
+          <div class="buttons">
+            <button type="button" class="small secondary" data-serve="A" id="serveA">Serve A</button>
+            <button type="button" class="small secondary" data-serve="B" id="serveB">Serve B</button>
+          </div>
+        </div>
+        <div class="col badge-toggle">
+          <label>Highlight</label>
+          <div class="buttons">
+            <button type="button" class="small active" data-hl="none" id="hlNone">Normal</button>
+            <button type="button" class="small" data-hl="setA">Set point A</button>
+            <button type="button" class="small" data-hl="setB">Set point B</button>
+            <button type="button" class="small" data-hl="matchA">Match point A</button>
+            <button type="button" class="small" data-hl="matchB">Match point B</button>
+          </div>
+        </div>
+        <div class="col">
+          <label>Vista</label>
+          <div class="buttons">
+            <button type="button" class="small active" data-view="live" id="viewLive">Marcador</button>
+            <button type="button" class="small secondary" data-view="summary" id="viewSummary">Resumen sets</button>
+          </div>
+        </div>
       </div>
-      <div>
-        <label>Logo (URL)</label>
-        <input id="bLogo" placeholder="https://..." />
-      </div>
-      <div style="flex:0.5">
-        <label>Sets ganados</label>
-        <input id="bSets" type="number" value="0" />
-      </div>
-    </div>
+    </fieldset>
 
-    <div class="section-title">Marcador actual</div>
-    <div class="score-row">
-      <span>A</span>
-      <button id="aMinus" class="btn-ghost">-</button>
-      <div id="aScore" class="score-box">0</div>
-      <button id="aPlus" class="btn-primary">+</button>
-      <span style="margin-left:8px;">Serve</span>
-      <button id="serveA" class="btn-ghost">A</button>
+    <div class="buttons">
+      <button id="save">Save / Push</button>
     </div>
-    <div class="score-row">
-      <span>B</span>
-      <button id="bMinus" class="btn-ghost">-</button>
-      <div id="bScore" class="score-box">0</div>
-      <button id="bPlus" class="btn-primary">+</button>
-      <span style="margin-left:8px;">Serve</span>
-      <button id="serveB" class="btn-ghost">B</button>
-    </div>
-
-    <div class="section-title">Highlight</div>
-    <div class="pill-toggle">
-      <button data-hl="none"   class="btn-ghost active">Normal</button>
-      <button data-hl="setA"   class="btn-ghost">Set point A</button>
-      <button data-hl="setB"   class="btn-ghost">Set point B</button>
-      <button data-hl="matchA" class="btn-ghost">Match point A</button>
-      <button data-hl="matchB" class="btn-ghost">Match point B</button>
-    </div>
-
-    <div class="section-title">Vista</div>
-    <div class="pill-toggle">
-      <button id="liveViewBtn" class="btn-ghost active">Marcador</button>
-      <button id="summaryViewBtn" class="btn-ghost">Resumen sets</button>
-    </div>
-
-    <div class="status" id="status">Sin conectar.</div>
   </div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
-    import { getDatabase, ref, get, set, onValue } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
+    import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyD8r0rLCLLPJx3DsNGMuvVtFuwCMBXrR9M",
@@ -235,160 +245,146 @@
     const db  = getDatabase(app);
 
     const $ = id => document.getElementById(id);
-
-    // Inputs
-    const roomInput = $("roomInput");
-    const matchTitle = $("matchTitle");
-
-    const aShort = $("aShort");
-    const aName  = $("aName");
-    const aLogo  = $("aLogo");
-    const aSets  = $("aSets");
-
-    const bShort = $("bShort");
-    const bName  = $("bName");
-    const bLogo  = $("bLogo");
-    const bSets  = $("bSets");
-
-    const aScoreBox = $("aScore");
-    const bScoreBox = $("bScore");
-    const statusEl  = $("status");
-
-    // Botones
-    const connectBtn = $("connectBtn");
-    const resetBtn   = $("resetBtn");
-    const aPlus      = $("aPlus");
-    const aMinus     = $("aMinus");
-    const bPlus      = $("bPlus");
-    const bMinus     = $("bMinus");
-    const serveA     = $("serveA");
-    const serveB     = $("serveB");
-    const liveViewBtn    = $("liveViewBtn");
-    const summaryViewBtn = $("summaryViewBtn");
-
-    let highlight = "none";
-    let showSummary = false;
-    let serving = "A";
-    let scoreA = 0;
-    let scoreB = 0;
     let stateRef = null;
+    let serving = "A";
+    let highlight = "none";
+    let view = "live";
+    let logoA = "";
+    let logoB = "";
 
-    function updateLocalUI(){
-      aScoreBox.textContent = scoreA;
-      bScoreBox.textContent = scoreB;
-      serveA.classList.toggle("btn-primary", serving==="A");
-      serveB.classList.toggle("btn-primary", serving==="B");
-    }
+    const statusEl = $("status");
 
     function buildState(){
       return {
-        matchTitle: matchTitle.value || "",
+        matchTitle: $("matchTitle").value.trim() || "Volleyball Match",
+        view,
         highlight,
-        showSummary,
         serving,
         teamA:{
-          short:aShort.value || "A",
-          name:aName.value || "Team A",
-          logo:aLogo.value || ""
+          short: $("aShort").value.trim() || "A",
+          logo: logoA || $("aLogoUrl").value.trim() || ""
         },
         teamB:{
-          short:bShort.value || "B",
-          name:bName.value || "Team B",
-          logo:bLogo.value || ""
+          short: $("bShort").value.trim() || "B",
+          logo: logoB || $("bLogoUrl").value.trim() || ""
         },
-        setsWonA: parseInt(aSets.value||"0",10),
-        setsWonB: parseInt(bSets.value||"0",10),
-        scoreA,
-        scoreB,
-        setScores: [] // para futuro
+        setsWonA: Number($("aSets").value) || 0,
+        setsWonB: Number($("bSets").value) || 0,
+        scoreA:   Number($("aScore").value) || 0,
+        scoreB:   Number($("bScore").value) || 0
       };
     }
 
     async function pushState(){
-      if(!stateRef) return;
-      const data = buildState();
-      await set(stateRef, data);
-    }
-
-    connectBtn.addEventListener("click", async ()=>{
-      const room = (roomInput.value || "vb1").trim();
-      stateRef = ref(db, `vb/${room}/state`);
-      statusEl.textContent = `Conectando a room "${room}"...`;
-
-      // intenta leer estado existente
-      const snap = await get(stateRef);
-      if(snap.exists()){
-        const s = snap.val();
-        scoreA = s.scoreA || 0;
-        scoreB = s.scoreB || 0;
-        serving = s.serving || "A";
-        highlight = s.highlight || "none";
-        showSummary = !!s.showSummary;
-
-        aShort.value = s.teamA?.short || aShort.value;
-        aName.value  = s.teamA?.name  || aName.value;
-        aLogo.value  = s.teamA?.logo  || aLogo.value;
-        bShort.value = s.teamB?.short || bShort.value;
-        bName.value  = s.teamB?.name  || bName.value;
-        bLogo.value  = s.teamB?.logo  || bLogo.value;
-        aSets.value  = s.setsWonA ?? aSets.value;
-        bSets.value  = s.setsWonB ?? bSets.value;
-        matchTitle.value = s.matchTitle || matchTitle.value;
-      } else {
-        // escribe estado inicial
-        await pushState();
+      if(!stateRef){
+        alert("Primero dale a Connect.");
+        return;
       }
-
-      updateLocalUI();
-      statusEl.textContent = `Conectado a room "${room}". URL overlay: ?room=${room}`;
-    });
-
-    resetBtn.addEventListener("click", ()=>{
-      scoreA = 0; scoreB = 0;
-      highlight = "none";
-      showSummary = false;
-      serving = "A";
-      updateLocalUI();
-      pushState();
-    });
-
-    aPlus.addEventListener("click", ()=>{ scoreA++; updateLocalUI(); pushState(); });
-    aMinus.addEventListener("click", ()=>{ scoreA = Math.max(0,scoreA-1); updateLocalUI(); pushState(); });
-    bPlus.addEventListener("click", ()=>{ scoreB++; updateLocalUI(); pushState(); });
-    bMinus.addEventListener("click", ()=>{ scoreB = Math.max(0,scoreB-1); updateLocalUI(); pushState(); });
-
-    serveA.addEventListener("click", ()=>{ serving="A"; updateLocalUI(); pushState(); });
-    serveB.addEventListener("click", ()=>{ serving="B"; updateLocalUI(); pushState(); });
-
-    // toggles highlight
-    document.querySelectorAll(".pill-toggle button[data-hl]").forEach(btn=>{
-      btn.addEventListener("click", ()=>{
-        document.querySelectorAll(".pill-toggle button[data-hl]").forEach(b=>b.classList.remove("active"));
-        btn.classList.add("active");
-        highlight = btn.dataset.hl;
-        pushState();
-      });
-    });
-
-    liveViewBtn.addEventListener("click", ()=>{
-      showSummary = false;
-      liveViewBtn.classList.add("active");
-      summaryViewBtn.classList.remove("active");
-      pushState();
-    });
-    summaryViewBtn.addEventListener("click", ()=>{
-      showSummary = true;
-      summaryViewBtn.classList.add("active");
-      liveViewBtn.classList.remove("active");
-      pushState();
-    });
-
-    // Si viene ?room= en la URL, úsalo
-    const url = new URL(location.href);
-    const initialRoom = url.searchParams.get("room");
-    if(initialRoom){
-      roomInput.value = initialRoom;
+      const state = buildState();
+      await set(stateRef, state);
     }
+
+    $("connect").addEventListener("click", ()=>{
+      const room = ($("room").value || "vb1").trim();
+      stateRef = ref(db, `vb/${room}/state`);
+      statusEl.textContent = `Conectado a room "${room}".`;
+      pushState();
+    });
+
+    $("reset").addEventListener("click", ()=>{
+      $("aScore").value = 0;
+      $("bScore").value = 0;
+      $("aSets").value  = 0;
+      $("bSets").value  = 0;
+      serving = "A";
+      highlight = "none";
+      view = "live";
+      updateServeButtons();
+      updateHighlightButtons();
+      updateViewButtons();
+      pushState();
+    });
+
+    $("save").addEventListener("click", pushState);
+
+    // +1 / -1
+    document.body.addEventListener("click",(e)=>{
+      const inc = e.target.getAttribute("data-inc");
+      const dec = e.target.getAttribute("data-dec");
+      const hl = e.target.getAttribute("data-hl");
+      const sv = e.target.getAttribute("data-serve");
+      const vw = e.target.getAttribute("data-view");
+
+      if(inc){
+        const input = $(inc);
+        input.value = (Number(input.value)||0)+1;
+        pushState();
+      }
+      if(dec){
+        const input = $(dec);
+        input.value = Math.max(0,(Number(input.value)||0)-1);
+        pushState();
+      }
+      if(hl){
+        highlight = hl;
+        updateHighlightButtons();
+        pushState();
+      }
+      if(sv){
+        serving = sv;
+        updateServeButtons();
+        pushState();
+      }
+      if(vw){
+        view = vw;
+        updateViewButtons();
+        pushState();
+      }
+    });
+
+    function updateServeButtons(){
+      ["serveA","serveB"].forEach(id=>{
+        $(id).classList.add("secondary");
+      });
+      if(serving==="A"){
+        $("serveA").classList.remove("secondary");
+      }else{
+        $("serveB").classList.remove("secondary");
+      }
+    }
+
+    function updateHighlightButtons(){
+      document.querySelectorAll('[data-hl]').forEach(btn=>{
+        btn.classList.remove("active");
+      });
+      const active = document.querySelector(`[data-hl="${highlight}"]`);
+      if(active) active.classList.add("active");
+    }
+
+    function updateViewButtons(){
+      $("viewLive").classList.toggle("active",view==="live");
+      $("viewSummary").classList.toggle("active",view==="summary");
+    }
+
+    // Cargar logos desde archivo como dataURL
+    function handleFile(input, setter){
+      const file = input.files[0];
+      if(!file) return;
+      const reader = new FileReader();
+      reader.onload = e=>{
+        setter(e.target.result); // base64
+        pushState();
+      };
+      reader.readAsDataURL(file);
+    }
+
+    $("aLogoFile").addEventListener("change", ()=>handleFile($("aLogoFile"), v=>logoA=v));
+    $("bLogoFile").addEventListener("change", ()=>handleFile($("bLogoFile"), v=>logoB=v));
+
+    // Estado inicial de botones
+    updateServeButtons();
+    updateHighlightButtons();
+    updateViewButtons();
   </script>
 </body>
 </html>
