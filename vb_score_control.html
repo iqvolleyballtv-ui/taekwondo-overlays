@@ -150,28 +150,6 @@
       border:1px solid var(--border-subtle);
       color:var(--text-muted);
     }
-    .chip{
-      border-radius:var(--pill-radius);
-      border:none;
-      background:var(--chip-bg);
-      color:var(--text-muted);
-      padding:6px 12px;
-      font-size:12px;
-      cursor:pointer;
-      transition:all .15s ease-out;
-      letter-spacing:0.12em;
-      text-transform:uppercase;
-    }
-    .chip.active{
-      background:var(--chip-active);
-      color:var(--chip-active-text);
-    }
-    .chip-row{
-      display:flex;
-      flex-wrap:wrap;
-      gap:8px;
-      margin-top:8px;
-    }
     .field-row{
       display:grid;
       grid-template-columns:120px minmax(0,1fr);
@@ -197,24 +175,19 @@
     .sets-bar{
       margin-top:6px;
     }
-    .sets-bar-display{
-      margin-top:4px;
-      background:linear-gradient(90deg,#151c3c,#070b18);
-      border-radius:999px;
-      height:24px;
-      display:flex;
-      align-items:center;
-      padding:0 14px;
-      font-size:12px;
-      color:var(--accent-soft);
-      letter-spacing:0.18em;
-    }
     .score-card{
       margin-top:6px;
       background:linear-gradient(135deg,#151c3e,#070a18);
       border-radius:24px;
       padding:14px 18px 10px;
       border:1px solid rgba(255,255,255,0.02);
+    }
+    .tag-small{
+      font-size:11px;
+      text-transform:uppercase;
+      letter-spacing:0.18em;
+      color:var(--text-muted);
+      margin-bottom:10px;
     }
     .score-row{
       display:grid;
@@ -293,34 +266,27 @@
       background:var(--accent);
       color:var(--chip-active-text);
     }
-    .footer-row{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      margin-top:10px;
+    .chip{
+      border-radius:var(--pill-radius);
+      border:none;
+      background:var(--chip-bg);
+      color:var(--text-muted);
+      padding:6px 12px;
       font-size:12px;
-      color:var(--text-muted);
-    }
-    .status{
-      min-height:18px;
-    }
-    .status.error{
-      color:var(--danger);
-    }
-    .view-row{
-      margin-top:10px;
-      display:flex;
-      align-items:center;
-      gap:10px;
-    }
-    .view-row span{
-      font-size:11px;
+      cursor:pointer;
+      transition:all .15s ease-out;
+      letter-spacing:0.12em;
       text-transform:uppercase;
-      letter-spacing:0.18em;
-      color:var(--text-muted);
     }
-    .view-row .chip-row{
-      margin-top:0;
+    .chip.active{
+      background:var(--chip-active);
+      color:var(--chip-active-text);
+    }
+    .chip-row{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      margin-top:8px;
     }
     .bottom-actions{
       margin-top:10px;
@@ -335,6 +301,20 @@
       margin-top:6px;
       font-size:11px;
       color:var(--text-muted);
+    }
+    .footer-row{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin-top:10px;
+      font-size:12px;
+      color:var(--text-muted);
+    }
+    .status{
+      min-height:18px;
+    }
+    .status.error{
+      color:var(--danger);
     }
   </style>
 </head>
@@ -423,14 +403,14 @@
 
         <div class="sets-bar">
           <label for="bSets">Sets ganados</label>
-          <input id="bSets" type="number" min="0" value="0" />
+          <input id="bSets" type="number" min="0" value="1" />
         </div>
       </div>
     </div>
 
     <!-- Marcador actual -->
     <div class="card score-card">
-      <div class="tag" style="margin-bottom:10px;">Marcador actual (set en juego)</div>
+      <div class="tag-small">Marcador actual (set en juego)</div>
       <div class="score-row">
         <div>
           <div class="team-label">A</div>
@@ -462,21 +442,13 @@
         </div>
       </div>
 
-      <div class="chip-row" style="margin-top:14px;">
+      <div class="chip-row">
         <span style="font-size:11px;text-transform:uppercase;letter-spacing:0.18em;color:var(--text-muted);margin-right:6px;">Highlight</span>
         <button class="chip" data-hl="normal">Normal</button>
         <button class="chip" data-hl="spA">Set point A</button>
         <button class="chip" data-hl="spB">Set point B</button>
         <button class="chip" data-hl="mpA">Match point A</button>
         <button class="chip" data-hl="mpB">Match point B</button>
-      </div>
-
-      <div class="view-row">
-        <span>Vista</span>
-        <div class="chip-row">
-          <button class="chip" data-view="score">Marcador</button>
-          <button class="chip" data-view="summary">Resumen sets</button>
-        </div>
       </div>
 
       <div class="bottom-actions">
@@ -498,18 +470,17 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
     import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
 
-    // 🔐 Pega aquí el MISMO config que usas en weightlifting_control.html
+    // ⚠️ Tu config real de Firebase
     const firebaseConfig = {
-  apiKey: "AIzaSyD8r0rLLcLPJx3DsNGMuvVTfuwCMBxRPpM",
-  authDomain: "tkd-overlay.firebaseapp.com",
-  databaseURL: "https://tkd-overlay-default-rtdb.firebaseio.com",
-  projectId: "tkd-overlay",
-  storageBucket: "tkd-overlay.firebasestorage.app",
-  messagingSenderId: "41501920835",
-  appId: "1:41501920835:web:4ccecdf129cf20619d8ef6",
-  measurementId: "G-CXBJCL86EM"
-};
-
+      apiKey: "AIzaSyD8r0rLLcLPJx3DsNGMuvVTfuwCMBxRPpM",
+      authDomain: "tkd-overlay.firebaseapp.com",
+      databaseURL: "https://tkd-overlay-default-rtdb.firebaseio.com",
+      projectId: "tkd-overlay",
+      storageBucket: "tkd-overlay.firebasestorage.app",
+      messagingSenderId: "41501920835",
+      appId: "1:41501920835:web:4ccecdf129cf20619d8ef6",
+      measurementId: "G-CXBJCL86EM"
+    };
 
     const app = initializeApp(firebaseConfig);
     const db  = getDatabase(app);
@@ -534,7 +505,6 @@
       scoreB: 0,
       serve: "A",
       highlight: "normal",
-      view: "score",
       summary: []   // {set, scoreA, scoreB, winner}
     };
 
@@ -552,8 +522,9 @@
       state.bName      = $("#bName").value.trim();
       state.aSets      = parseInt($("#aSets").value || "0", 10);
       state.bSets      = parseInt($("#bSets").value || "0", 10);
-      const aUrl       = $("#aLogoUrl").value.trim();
-      const bUrl       = $("#bLogoUrl").value.trim();
+
+      const aUrl = $("#aLogoUrl").value.trim();
+      const bUrl = $("#bLogoUrl").value.trim();
       if (aUrl && !state._aFileOverride) state.aLogoUrl = aUrl;
       if (bUrl && !state._bFileOverride) state.bLogoUrl = bUrl;
     }
@@ -578,10 +549,6 @@
       $$(".chip[data-hl]").forEach(ch => {
         ch.classList.toggle("active", ch.dataset.hl === state.highlight);
       });
-
-      $$(".chip[data-view]").forEach(ch => {
-        ch.classList.toggle("active", ch.dataset.view === state.view);
-      });
     }
 
     async function publishState(){
@@ -589,7 +556,6 @@
       await set(stateRef, state);
     }
 
-    // Carga inicial cuando conectamos (por si hay otro control / overlay escribiendo)
     function attachListener(){
       if (!stateRef) return;
       onValue(stateRef, (snap) => {
@@ -652,7 +618,7 @@
     bindLogoFile("#aLogoFile","A");
     bindLogoFile("#bLogoFile","B");
 
-    // Inputs texto / number: al cambiar, leemos y enviamos
+    // Inputs texto / number
     ["#matchTitle","#aShort","#aName","#bShort","#bName","#aSets","#bSets","#aLogoUrl","#bLogoUrl"].forEach(sel=>{
       $(sel).addEventListener("change", async ()=>{
         readInputsToState();
@@ -692,15 +658,6 @@
     $$(".chip[data-hl]").forEach(ch=>{
       ch.addEventListener("click", async ()=>{
         state.highlight = ch.dataset.hl;
-        renderFromState();
-        await publishState();
-      });
-    });
-
-    // Vista (Marcador / Resumen)
-    $$(".chip[data-view]").forEach(ch=>{
-      ch.addEventListener("click", async ()=>{
-        state.view = ch.dataset.view;
         renderFromState();
         await publishState();
       });
