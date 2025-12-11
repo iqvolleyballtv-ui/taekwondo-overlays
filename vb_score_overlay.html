@@ -9,9 +9,6 @@
       --bg: rgba(0,0,0,0);
       --card-bg: rgba(5,10,30,0.96);
       --card-border: rgba(255,255,255,0.04);
-      --row-bg: #050818;
-      --pill-bg: #f9c74f;
-      --pill-text: #11101a;
       --text-main: #f8f9ff;
       --text-muted: #8f95b5;
       --accent: #f9c74f;
@@ -34,7 +31,6 @@
       top:40px;
       width:480px;
       color:var(--text-main);
-      font-smoothing:antialiased;
     }
     .score-card{
       background:radial-gradient(circle at top left,#141b3d 0,#050818 55%);
@@ -83,7 +79,7 @@
     }
     .team-row{
       display:grid;
-      grid-template-columns:54px minmax(0,1fr) 76px;
+      grid-template-columns:minmax(0,1fr) 76px;
       align-items:center;
       padding:5px 0;
     }
@@ -92,18 +88,10 @@
       margin-top:2px;
       padding-top:7px;
     }
-    .pill-code{
-      width:46px;
-      height:30px;
-      border-radius:999px;
-      background:var(--pill-bg);
-      color:var(--pill-text);
+    .team-name{
       display:flex;
       align-items:center;
-      justify-content:center;
-      font-size:13px;
-      font-weight:700;
-      letter-spacing:0.16em;
+      gap:8px;
     }
     .logo-box{
       width:32px;
@@ -114,22 +102,16 @@
       align-items:center;
       justify-content:center;
       overflow:hidden;
-      margin-right:8px;
     }
     .logo-box img{
       max-width:100%;
       max-height:100%;
       display:block;
     }
-    .team-name{
-      display:flex;
-      align-items:center;
-      gap:8px;
-    }
     .team-name-short{
-      font-size:14px;
+      font-size:15px;
       font-weight:700;
-      letter-spacing:0.14em;
+      letter-spacing:0.16em;
       text-transform:uppercase;
     }
     .sets-pill{
@@ -229,16 +211,11 @@
       margin-left:4px;
       color:var(--accent);
     }
-    /* Vista */
-    .view-score .score-section{display:block;}
-    .view-score .summary-row{display:flex;}
-    .view-summary .score-section{display:none;}
-    .view-summary .summary-row{display:flex;}
   </style>
 </head>
 <body>
-  <div id="overlayRoot" class="overlay-root view-score">
-    <div class="score-card score-section">
+  <div id="overlayRoot" class="overlay-root">
+    <div class="score-card">
       <div class="score-top">
         <div class="score-top-left">
           <span id="matchTitle">BRONZE MEDAL MATCH · LAI</span>
@@ -251,16 +228,15 @@
 
       <div class="teams" id="teams">
         <div class="team-row" id="rowA" data-team="A">
-          <div class="pill-code" id="codeA">ITA</div>
           <div class="team-name">
             <div class="logo-box"><img id="logoA" alt="" /></div>
             <div class="team-name-short" id="shortA">ITA</div>
           </div>
-          <div class="sets-pill">
-            <span class="sets-label">SETS</span>
-            <span class="sets-value" id="setsA">0</span>
-          </div>
           <div class="score-box" id="scoreBoxA">
+            <div class="sets-pill">
+              <span>SETS</span>
+              <span class="sets-value" id="setsA">0</span>
+            </div>
             <div class="score-value" id="scoreA">23</div>
             <div class="serve-indicator off" id="serveA">
               <div class="serve-dot"></div>
@@ -269,16 +245,15 @@
         </div>
 
         <div class="team-row" id="rowB" data-team="B">
-          <div class="pill-code" id="codeB">USA</div>
           <div class="team-name">
             <div class="logo-box"><img id="logoB" alt="" /></div>
             <div class="team-name-short" id="shortB">USA</div>
           </div>
-          <div class="sets-pill">
-            <span class="sets-label">SETS</span>
-            <span class="sets-value" id="setsB">1</span>
-          </div>
           <div class="score-box" id="scoreBoxB">
+            <div class="sets-pill">
+              <span>SETS</span>
+              <span class="sets-value" id="setsB">1</span>
+            </div>
             <div class="score-value" id="scoreB">24</div>
             <div class="serve-indicator off" id="serveB">
               <div class="serve-dot"></div>
@@ -290,7 +265,7 @@
       <div class="summary-row">
         <div class="summary-label">Resumen sets</div>
         <div class="summary-items" id="summaryItems">
-          <!-- Ejemplo: SET 1 · 25–23 · TEAM B -->
+          <!-- Aquí se llenan los sets -->
         </div>
       </div>
     </div>
@@ -300,38 +275,36 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
     import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
 
-    // 🔐 Pega aquí el MISMO config que en weightlifting_control.html
+    // ⚠️ Misma config real
     const firebaseConfig = {
-  apiKey: "AIzaSyD8r0rLLcLPJx3DsNGMuvVTfuwCMBxRPpM",
-  authDomain: "tkd-overlay.firebaseapp.com",
-  databaseURL: "https://tkd-overlay-default-rtdb.firebaseio.com",
-  projectId: "tkd-overlay",
-  storageBucket: "tkd-overlay.firebasestorage.app",
-  messagingSenderId: "41501920835",
-  appId: "1:41501920835:web:4ccecdf129cf20619d8ef6",
-  measurementId: "G-CXBJCL86EM"
-};
-
+      apiKey: "AIzaSyD8r0rLLcLPJx3DsNGMuvVTfuwCMBxRPpM",
+      authDomain: "tkd-overlay.firebaseapp.com",
+      databaseURL: "https://tkd-overlay-default-rtdb.firebaseio.com",
+      projectId: "tkd-overlay",
+      storageBucket: "tkd-overlay.firebasestorage.app",
+      messagingSenderId: "41501920835",
+      appId: "1:41501920835:web:4ccecdf129cf20619d8ef6",
+      measurementId: "G-CXBJCL86EM"
+    };
 
     const app = initializeApp(firebaseConfig);
     const db  = getDatabase(app);
 
     const $  = (s) => document.querySelector(s);
-    const $$ = (s) => Array.from(document.querySelectorAll(s));
 
     function getRoomFromQuery(){
       const params = new URLSearchParams(window.location.search);
       return params.get("room") || "vb1";
     }
 
-    function setText(id, value){
-      const el = $(id);
+    function setText(selector, value){
+      const el = $(selector);
       if (!el) return;
       el.textContent = value ?? "";
     }
 
-    function setLogo(id, url){
-      const img = $(id);
+    function setLogo(selector, url){
+      const img = $(selector);
       if (!img) return;
       if (url){
         img.src = url;
@@ -344,9 +317,8 @@
 
     function renderOverlay(state){
       setText("#matchTitle", state.matchTitle || "");
-      setText("#codeA", state.aShort || "");
+
       setText("#shortA", state.aShort || "");
-      setText("#codeB", state.bShort || "");
       setText("#shortB", state.bShort || "");
 
       setLogo("#logoA", state.aLogoUrl || "");
@@ -357,27 +329,16 @@
       setText("#scoreA", state.scoreA ?? 0);
       setText("#scoreB", state.scoreB ?? 0);
 
-      // Serve indicator
       const serve = state.serve || "A";
       $("#serveA").classList.toggle("off", serve !== "A");
       $("#serveB").classList.toggle("off", serve !== "B");
 
-      // Highlight
       const root = $("#overlayRoot");
       root.classList.remove("highlight-spA","highlight-spB","highlight-mpA","highlight-mpB");
       if (state.highlight && state.highlight !== "normal"){
         root.classList.add("highlight-" + state.highlight);
       }
 
-      // Vista
-      root.classList.remove("view-score","view-summary");
-      if (state.view === "summary"){
-        root.classList.add("view-summary");
-      }else{
-        root.classList.add("view-score");
-      }
-
-      // Resumen de sets
       const summary = Array.isArray(state.summary) ? state.summary : [];
       const container = $("#summaryItems");
       container.innerHTML = "";
@@ -387,9 +348,10 @@
         const setNum = item.set ?? "?";
         const a = item.scoreA ?? 0;
         const b = item.scoreB ?? 0;
-        const winner = item.winner === "A" ? (state.aShort || "A")
-                      : item.winner === "B" ? (state.bShort || "B")
-                      : "";
+        const winner =
+          item.winner === "A" ? (state.aShort || "A") :
+          item.winner === "B" ? (state.bShort || "B") : "";
+
         pill.textContent = `Set ${setNum} · ${a}–${b}`;
         if (winner){
           const span = document.createElement("span");
