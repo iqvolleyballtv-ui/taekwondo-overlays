@@ -367,9 +367,17 @@
     import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
 
     // 🔥 Usa EXACTAMENTE el mismo config que en weightlifting_control.html
-    const firebaseConfig = {
-      /* Pega aquí tu config de Firebase */
-    };
+  const firebaseConfig = {
+  apiKey: "TU_API_KEY",
+  authDomain: "tkd-overlay.firebaseapp.com",
+  databaseURL: "https://tkd-overlay-default-rtdb.firebaseio.com",
+  projectId: "tkd-overlay",
+  storageBucket: "tkd-overlay.appspot.com",
+  messagingSenderId: "41501920835",
+  appId: "1:41501920835:web:4ccecdf129cf20619d8ef6",
+  measurementId: "G-CXBJCL86EM"
+};
+
 
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
