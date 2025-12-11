@@ -134,6 +134,9 @@
       text-transform:uppercase;
       display:none;
     }
+    .pill-code {
+  display: none !important;
+}
     .summary.visible{display:block;}
   </style>
 </head>
@@ -153,38 +156,59 @@
 
         <div class="teams" id="teams">
           <div class="team-row" id="rowA">
-            <div class="logo-box"><img id="logoA" /></div>
-            <div class="team-name">
-              <div class="team-name-short" id="shortA">ITA</div>
-            </div>
-            <div class="sets-pill">
-              <span class="sets-label">SETS</span>
-              <span class="sets-value" id="setsA">0</span>
-            </div>
-            <div class="score-box" id="scoreBoxA">
-              <div class="score-value" id="scoreA">23</div>
-              <div class="serve-indicator" id="serveA" style="visibility:hidden;">
-                <div class="serve-dot"></div>
-              </div>
-            </div>
-          </div>
 
-          <div class="team-row" id="rowB">
-            <div class="logo-box"><img id="logoB" /></div>
-            <div class="team-name">
-              <div class="team-name-short" id="shortB">USA</div>
-            </div>
-            <div class="sets-pill">
-              <span class="sets-label">SETS</span>
-              <span class="sets-value" id="setsB">1</span>
-            </div>
-            <div class="score-box" id="scoreBoxB">
-              <div class="score-value" id="scoreB">24</div>
-              <div class="serve-indicator" id="serveB" style="visibility:hidden;">
-                <div class="serve-dot"></div>
-              </div>
-            </div>
-          </div>
+  <!-- Volvemos a poner el codeA, pero lo vamos a ocultar con CSS -->
+  <div class="pill-code" id="codeA">ITA</div>
+
+  <div class="logo-box">
+    <img id="logoA" />
+  </div>
+
+  <div class="team-name">
+    <div class="team-name-short" id="shortA">ITA</div>
+  </div>
+
+  <div class="sets-pill">
+    <span class="sets-label">SETS</span>
+    <span class="sets-value" id="setsA">0</span>
+  </div>
+
+  <div class="score-box" id="scoreBoxA">
+    <div class="score-value" id="scoreA">23</div>
+    <div class="serve-indicator" id="serveA" style="visibility:hidden;">
+      <div class="serve-dot"></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="team-row" id="rowB">
+
+  <!-- Volvemos a poner el codeB -->
+  <div class="pill-code" id="codeB">USA</div>
+
+  <div class="logo-box">
+    <img id="logoB" />
+  </div>
+
+  <div class="team-name">
+    <div class="team-name-short" id="shortB">USA</div>
+  </div>
+
+  <div class="sets-pill">
+    <span class="sets-label">SETS</span>
+    <span class="sets-value" id="setsB">1</span>
+  </div>
+
+  <div class="score-box" id="scoreBoxB">
+    <div class="score-value" id="scoreB">24</div>
+    <div class="serve-indicator" id="serveB" style="visibility:hidden;">
+      <div class="serve-dot"></div>
+    </div>
+  </div>
+
+</div>
+
         </div>
 
         <div class="summary" id="summary">
