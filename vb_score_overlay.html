@@ -2,22 +2,19 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <title>Volleyball Scoreboard – Control</title>
+  <title>VB Score Overlay</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
     :root {
-      --bg: #050918;
-      --card: #080f24;
-      --card-soft: #0c1429;
+      --bg: transparent;
+      --panel-bg: rgba(5, 9, 24, 0.96);
+      --panel-inner: rgba(7, 13, 32, 0.98);
       --accent: #fbc94a;
       --accent-soft: rgba(251, 201, 74, 0.16);
-      --danger: #ff4b6a;
+      --live: #fb4b67;
       --text: #f7f7ff;
-      --text-soft: #97a0c3;
-      --border: #151c34;
-      --pill-bg: #11182e;
-      --chip-bg: #10172c;
-      --chip-active: #1f293b;
+      --text-soft: #9aa3c6;
+      --border: rgba(27, 35, 69, 0.9);
     }
 
     * {
@@ -28,494 +25,331 @@
 
     body {
       margin: 0;
-      padding: 24px;
-      background: radial-gradient(circle at top, #101936 0, #050918 55%);
-      color: var(--text);
-    }
-
-    h1 {
-      font-size: 28px;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      margin: 0 0 6px;
-    }
-
-    .subtitle {
-      color: var(--text-soft);
-      font-size: 13px;
-      margin-bottom: 24px;
-    }
-
-    .layout {
-      max-width: 1080px;
-      margin: 0 auto;
-      background: radial-gradient(circle at top left, #131b36 0, #050918 60%);
-      border-radius: 24px;
-      padding: 24px 24px 16px;
-      box-shadow: 0 32px 80px rgba(0, 0, 0, 0.65);
-      border: 1px solid #151b30;
-    }
-
-    .top-row {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 20px;
-    }
-
-    .top-row .field {
-      flex: 1;
-    }
-
-    label {
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 0.14em;
-      color: var(--text-soft);
-      display: block;
-      margin-bottom: 4px;
-    }
-
-    input[type="text"],
-    input[type="number"] {
-      width: 100%;
-      padding: 10px 11px;
-      border-radius: 999px;
-      border: 1px solid var(--border);
-      background: #060b1a;
-      color: var(--text);
-      font-size: 14px;
-      outline: none;
-    }
-
-    input[type="text"]:focus,
-    input[type="number"]:focus {
-      border-color: #3b82f6;
-      box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.45);
-    }
-
-    .pill-btn {
-      border-radius: 999px;
-      border: none;
-      padding: 10px 22px;
-      font-size: 13px;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      cursor: pointer;
-      transition: all 0.15s ease;
-    }
-
-    .pill-btn.primary {
-      background: var(--accent);
-      color: #121212;
-      box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.4), 0 8px 18px rgba(0, 0, 0, 0.65);
-    }
-
-    .pill-btn.primary:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.75);
-    }
-
-    .pill-btn.danger {
-      background: rgba(255, 75, 106, 0.1);
-      color: var(--danger);
-      border: 1px solid rgba(255, 75, 106, 0.65);
-    }
-
-    .pill-btn.secondary {
-      background: #060b19;
-      color: var(--text-soft);
-      border: 1px solid var(--border);
-    }
-
-    .pill-btn.secondary.on {
-      background: var(--accent-soft);
-      color: var(--accent);
-      border-color: var(--accent);
-    }
-
-    .pill-btn + .pill-btn {
-      margin-left: 8px;
-    }
-
-    .card-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
-      margin-bottom: 16px;
-    }
-
-    .card {
-      background: var(--card);
-      border-radius: 18px;
-      border: 1px solid var(--border);
-      padding: 16px 18px 14px;
-    }
-
-    .card-title {
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 0.14em;
-      color: var(--text-soft);
-      margin-bottom: 10px;
-    }
-
-    .two-col {
-      display: grid;
-      grid-template-columns: minmax(0, 1.4fr) minmax(0, 2fr);
-      gap: 10px 14px;
-      align-items: flex-end;
-    }
-
-    .file-note {
-      font-size: 11px;
-      color: var(--text-soft);
-      margin-top: 3px;
-    }
-
-    input[type="file"] {
-      font-size: 11px;
-      color: var(--text-soft);
-    }
-
-    .sets-display {
-      margin-top: 8px;
-    }
-
-    .sets-display div {
-      width: 100%;
-      padding: 7px 12px;
-      border-radius: 999px;
-      border: 1px dashed var(--border);
-      background: #050918;
-      font-size: 13px;
-      color: var(--text-soft);
-    }
-
-    .sets-display span.value {
-      float: right;
-      color: var(--text);
-      font-weight: 600;
-    }
-
-    .score-card {
-      background: var(--card-soft);
-      border-radius: 18px;
-      border: 1px solid var(--border);
-      padding: 16px 18px 12px;
-      margin-bottom: 12px;
-    }
-
-    .score-header {
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 0.14em;
-      color: var(--text-soft);
-      margin-bottom: 10px;
-    }
-
-    .score-main-row {
-      display: grid;
-      grid-template-columns: minmax(0, 1.3fr) 130px;
-      gap: 8px 20px;
-      align-items: center;
-    }
-
-    .score-team-block {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) auto;
-      gap: 6px 10px;
-      align-items: center;
-    }
-
-    .score-team-block label {
-      margin-bottom: 2px;
-    }
-
-    .score-control {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      border-radius: 999px;
-      border: 1px solid var(--border);
-      padding: 4px 10px;
-      background: #050918;
-    }
-
-    .score-control button {
-      border-radius: 999px;
-      border: none;
-      width: 26px;
-      height: 26px;
-      font-size: 18px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
+      padding: 0;
       background: transparent;
-      color: var(--text-soft);
-      transition: background 0.12s ease, color 0.12s ease, transform 0.08s ease;
-    }
-
-    .score-control button:hover {
-      background: #10172f;
       color: var(--text);
-      transform: translateY(-1px);
-    }
-
-    .score-value {
-      font-size: 18px;
-      font-weight: 600;
-      min-width: 32px;
-      text-align: center;
-    }
-
-    .serve-toggle {
-      display: inline-flex;
-      border-radius: 999px;
-      border: 1px solid var(--border);
-      background: #050918;
       overflow: hidden;
     }
 
-    .serve-toggle button {
-      border: none;
-      padding: 5px 14px;
-      font-size: 12px;
-      color: var(--text-soft);
-      background: transparent;
-      cursor: pointer;
-      text-transform: uppercase;
-      letter-spacing: 0.12em;
+    #overlayRoot {
+      position: absolute;
+      left: 32px;
+      top: 32px;
+      width: 640px;
+      max-width: 96vw;
+      border-radius: 24px;
+      background: radial-gradient(circle at top left, #161f3f 0, #050918 60%);
+      box-shadow: 0 26px 60px rgba(0, 0, 0, 0.85);
+      border: 1px solid rgba(71, 85, 132, 0.7);
+      overflow: hidden;
+      opacity: 1;
+      transform: translateY(0);
+      transition: opacity 0.3s ease, transform 0.3s ease;
     }
 
-    .serve-toggle button.active {
-      background: var(--accent-soft);
-      color: var(--accent);
+    #overlayRoot.hidden {
+      opacity: 0;
+      transform: translateY(-24px);
+      pointer-events: none;
     }
 
-    .highlight-row,
-    .view-row,
-    .overlay-row {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin: 6px 0;
-    }
-
-    .chip {
-      border-radius: 999px;
-      padding: 6px 14px;
-      font-size: 12px;
-      border: 1px solid var(--chip-bg);
-      background: var(--chip-bg);
-      color: var(--text-soft);
-      cursor: pointer;
-      text-transform: uppercase;
-      letter-spacing: 0.12em;
-    }
-
-    .chip.active {
-      background: var(--chip-active);
-      border-color: #3b82f6;
-      color: #bfdbfe;
-    }
-
-    .chip.highlight-normal.active {
-      border-color: var(--accent);
-      color: var(--accent);
-    }
-
-    .chip-view.active {
-      border-color: #22c55e;
-      color: #a7f3d0;
-    }
-
-    .status {
-      margin-top: 8px;
-      font-size: 12px;
-      color: var(--text-soft);
-    }
-
-    .status.error {
-      color: var(--danger);
-    }
-
-    .footer-note {
-      margin-top: 4px;
-      font-size: 11px;
-      color: var(--text-soft);
+    .header {
       display: flex;
       justify-content: space-between;
+      align-items: center;
+      padding: 10px 18px 6px;
+      background: linear-gradient(
+        to right,
+        rgba(7, 12, 32, 0.9),
+        rgba(6, 10, 26, 0.95)
+      );
+      border-bottom: 1px solid rgba(24, 33, 72, 0.9);
+    }
+
+    .header-title {
+      font-size: 13px;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: var(--text-soft);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      padding-right: 12px;
+    }
+
+    .header-title span {
+      color: var(--text);
+    }
+
+    .live-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 5px 12px 5px 10px;
+      border-radius: 999px;
+      background: rgba(7, 12, 32, 0.9);
+      border: 1px solid rgba(46, 56, 110, 0.9);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: var(--text-soft);
+    }
+
+    .live-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: var(--live);
+      box-shadow: 0 0 12px rgba(251, 75, 103, 0.9);
+    }
+
+    .live-pill span {
+      font-weight: 500;
+    }
+
+    .body {
+      background: radial-gradient(circle at top left, #070c1b 0, #050918 55%);
+      padding: 10px 14px 12px;
+    }
+
+    .teams {
+      display: flex;
+      flex-direction: column;
       gap: 8px;
     }
 
-    .footer-note strong {
-      color: var(--accent);
+    .team-row {
+      display: grid;
+      grid-template-columns: auto 1fr auto auto;
+      align-items: center;
+      gap: 10px;
+      padding: 6px 10px;
+      border-radius: 18px;
+      background: linear-gradient(
+        to right,
+        rgba(7, 13, 32, 0.9),
+        rgba(7, 15, 40, 0.65)
+      );
+      border: 1px solid rgba(26, 36, 76, 0.85);
     }
 
-    @media (max-width: 900px) {
-      .card-row {
-        grid-template-columns: 1fr;
-      }
-      .score-main-row {
-        grid-template-columns: 1fr;
-      }
+    .logo-shell {
+      width: 40px;
+      height: 40px;
+      border-radius: 16px;
+      background: radial-gradient(circle at top, #0b1328 0, #020617 60%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid rgba(31, 41, 90, 0.9);
+      overflow: hidden;
+    }
+
+    .logo-shell img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: none;
+    }
+
+    .logo-shell.has-logo img {
+      display: block;
+    }
+
+    .team-name {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      min-width: 0;
+    }
+
+    .team-short {
+      font-size: 16px;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      white-space: nowrap;
+      color: var(--text);
+    }
+
+    .sets-pill {
+      justify-self: flex-end;
+      border-radius: 999px;
+      padding: 5px 12px;
+      background: rgba(12, 20, 51, 0.95);
+      border: 1px solid rgba(35, 45, 94, 0.95);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: var(--text-soft);
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      min-width: 82px;
+      justify-content: center;
+    }
+
+    .sets-pill span.value {
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    .score-box {
+      width: 72px;
+      text-align: center;
+      border-radius: 18px;
+      background: radial-gradient(circle at top, #111827 0, #020617 70%);
+      border: 1px solid rgba(35, 44, 91, 0.95);
+      padding: 7px 4px 6px;
+      position: relative;
+    }
+
+    .score-value {
+      font-size: 26px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+    }
+
+    .serve-indicator {
+      position: absolute;
+      right: 6px;
+      top: 6px;
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(56, 189, 248, 0.5);
+      box-shadow: 0 0 8px rgba(56, 189, 248, 0.8);
+      background: radial-gradient(circle, #22d3ee 0, #0369a1 55%);
+      opacity: 0;
+      transition: opacity 0.18s ease;
+    }
+
+    .serve-indicator.on {
+      opacity: 1;
+    }
+
+    /* Highlight glow */
+    .team-row.set-point {
+      box-shadow: 0 0 20px rgba(251, 191, 36, 0.35);
+      border-color: rgba(251, 191, 36, 0.85);
+    }
+
+    .team-row.match-point {
+      box-shadow: 0 0 26px rgba(251, 113, 133, 0.5);
+      border-color: rgba(248, 113, 113, 0.9);
+    }
+
+    /* Summary view */
+    .summary {
+      margin-top: 8px;
+      padding-top: 6px;
+      border-top: 1px solid rgba(30, 41, 91, 0.8);
+      font-size: 11px;
+      color: var(--text-soft);
+    }
+
+    .summary-title {
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      margin-bottom: 4px;
+    }
+
+    .summary-list {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .summary-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+
+    .summary-item .set-label {
+      color: var(--text);
+      font-weight: 500;
+    }
+
+    .summary-item .score {
+      color: var(--text);
+    }
+
+    .summary-item .winner {
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      font-size: 10px;
+    }
+
+    .hidden-block {
+      display: none !important;
     }
   </style>
 </head>
 <body>
-  <div class="layout">
-    <h1>Volleyball Scoreboard – Control</h1>
-    <div class="subtitle">
-      Usa el mismo <strong>room</strong> que en el overlay. Conecta una vez y
-      luego controla todo desde aquí.
-    </div>
-
-    <div class="top-row">
-      <div class="field">
-        <label for="room">Room</label>
-        <input id="room" type="text" value="vb1" />
+  <div id="overlayRoot">
+    <div class="header">
+      <div class="header-title">
+        <span id="matchTitle">MATCH TITLE</span>
       </div>
-      <div class="field">
-        <label for="matchTitle">Match Title</label>
-        <input
-          id="matchTitle"
-          type="text"
-          value="Bronze Medal Match · LAI"
-        />
-      </div>
-      <div style="display:flex; gap:8px; align-items:flex-end;">
-        <button id="connect" class="pill-btn primary">Connect</button>
-        <button id="reset" class="pill-btn danger">Reset</button>
+      <div class="live-pill">
+        <div class="live-dot"></div>
+        <span>Live score</span>
       </div>
     </div>
 
-    <div class="card-row">
-      <!-- Equipo A -->
-      <div class="card">
-        <div class="card-title">Equipo A</div>
-        <div class="two-col">
-          <div>
-            <label for="aShort">Nombre corto (siglas)</label>
-            <input id="aShort" type="text" value="ITA" />
+    <div class="body" id="viewScore">
+      <div class="teams">
+        <div class="team-row" id="rowA">
+          <div class="logo-shell" id="logoShellA">
+            <img id="logoA" alt="" />
           </div>
-          <div>
-            <label for="aLogoUrl">Logo (URL)</label>
-            <input id="aLogoUrl" type="text" placeholder="https://..." />
-            <div class="file-note">Usa archivo o URL (archivo tiene prioridad).</div>
-            <input id="aLogoFile" type="file" accept="image/*" />
+          <div class="team-name">
+            <div class="team-short" id="shortA">TEAM A</div>
           </div>
-          <div class="sets-display">
-            <label>Sets ganados</label>
-            <div>Equipo A <span class="value" id="aSetsLabel">0</span></div>
+          <div class="sets-pill">
+            <span>Sets</span>
+            <span class="value" id="setsA">0</span>
+          </div>
+          <div class="score-box" id="scoreBoxA">
+            <div class="score-value" id="scoreA">0</div>
+            <div class="serve-indicator" id="serveDotA"></div>
+          </div>
+        </div>
+
+        <div class="team-row" id="rowB">
+          <div class="logo-shell" id="logoShellB">
+            <img id="logoB" alt="" />
+          </div>
+          <div class="team-name">
+            <div class="team-short" id="shortB">TEAM B</div>
+          </div>
+          <div class="sets-pill">
+            <span>Sets</span>
+            <span class="value" id="setsB">0</span>
+          </div>
+          <div class="score-box" id="scoreBoxB">
+            <div class="score-value" id="scoreB">0</div>
+            <div class="serve-indicator" id="serveDotB"></div>
           </div>
         </div>
       </div>
 
-      <!-- Equipo B -->
-      <div class="card">
-        <div class="card-title">Equipo B</div>
-        <div class="two-col">
-          <div>
-            <label for="bShort">Nombre corto (siglas)</label>
-            <input id="bShort" type="text" value="USA" />
-          </div>
-          <div>
-            <label for="bLogoUrl">Logo (URL)</label>
-            <input id="bLogoUrl" type="text" placeholder="https://..." />
-            <div class="file-note">Usa archivo o URL (archivo tiene prioridad).</div>
-            <input id="bLogoFile" type="file" accept="image/*" />
-          </div>
-          <div class="sets-display">
-            <label>Sets ganados</label>
-            <div>Equipo B <span class="value" id="bSetsLabel">0</span></div>
-          </div>
-        </div>
+      <div class="summary" id="summaryBlock">
+        <div class="summary-title">Resumen sets</div>
+        <div class="summary-list" id="summaryList"></div>
       </div>
-    </div>
-
-    <!-- Marcador -->
-    <div class="score-card">
-      <div class="score-header">Marcador actual (set en juego)</div>
-      <div class="score-main-row">
-        <div class="score-team-block">
-          <div>
-            <label for="scoreA">A</label>
-            <div class="score-control">
-              <button id="aMinus">−</button>
-              <div id="scoreA" class="score-value">0</div>
-              <button id="aPlus">+</button>
-            </div>
-          </div>
-          <div>
-            <label for="scoreB">B</label>
-            <div class="score-control">
-              <button id="bMinus">−</button>
-              <div id="scoreB" class="score-value">0</div>
-              <button id="bPlus">+</button>
-            </div>
-          </div>
-        </div>
-
-        <div style="display:flex; flex-direction:column; gap:8px; align-items:flex-start;">
-          <label>Serve</label>
-          <div class="serve-toggle">
-            <button id="serveA" class="active">A</button>
-            <button id="serveB">B</button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Highlight -->
-    <div class="highlight-row">
-      <label>Highlight</label>
-      <button class="chip chip-highlight highlight-normal active" data-hl="normal">
-        Normal
-      </button>
-      <button class="chip chip-highlight" data-hl="spA">Set point A</button>
-      <button class="chip chip-highlight" data-hl="spB">Set point B</button>
-      <button class="chip chip-highlight" data-hl="mpA">Match point A</button>
-      <button class="chip chip-highlight" data-hl="mpB">Match point B</button>
-    </div>
-
-    <!-- Vista -->
-    <div class="view-row">
-      <label>Vista</label>
-      <button class="chip chip-view active" data-view="score">Marcador</button>
-      <button class="chip chip-view" data-view="summary">Resumen sets</button>
-      <button id="saveSet" class="pill-btn secondary">
-        Guardar set
-      </button>
-    </div>
-
-    <!-- Overlay ON/OFF -->
-    <div class="overlay-row">
-      <label>Overlay</label>
-      <button id="toggleOverlay" class="pill-btn secondary on">
-        Ocultar overlay
-      </button>
-    </div>
-
-    <div id="status" class="status">Sin conectar.</div>
-    <div class="footer-note">
-      <div>Atajos: <strong>+ / −</strong> para sumar/restar puntos luego 😉</div>
-      <div>Vista: usa “Marcador / Resumen sets” para cambiar lo que ve el overlay.</div>
     </div>
   </div>
 
-  <!-- Firebase + lógica -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
     import {
       getDatabase,
       ref,
-      set,
+      onValue,
     } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
 
-    // ⚠️ CONFIG de tu proyecto
     const firebaseConfig = {
       apiKey: "AIzaSyD8r0rLLcLPJx3DsNGMuvVTfuwCMBxRPpM",
       authDomain: "tkd-overlay.firebaseapp.com",
@@ -531,258 +365,121 @@
     const db = getDatabase(app);
 
     const $ = (s) => document.querySelector(s);
-    const $$ = (s) => Array.from(document.querySelectorAll(s));
 
-    let stateRef = null;
+    const params = new URLSearchParams(window.location.search);
+    const room = (params.get("room") || "vb1").trim();
+    const scoreRef = ref(db, `tkd/${room}/vbScore`);
 
-    const state = {
-      matchTitle: "Bronze Medal Match · LAI",
-      aShort: "ITA",
-      bShort: "USA",
-      aSets: 0,
-      bSets: 0,
-      aLogoUrl: "",
-      bLogoUrl: "",
-      aLogoData: "",
-      bLogoData: "",
-      scoreA: 0,
-      scoreB: 0,
-      serve: "A",
-      highlight: "normal", // normal | spA | spB | mpA | mpB
-      view: "score",       // score | summary
-      summary: [],         // historial de sets
-      visible: true,       // 👈 overlay visible
-    };
+    function applyState(data) {
+      if (!data) return;
 
-    function setStatus(msg, isError = false) {
-      const el = $("#status");
-      el.textContent = msg;
-      el.classList.toggle("error", isError);
-    }
+      $("#matchTitle").textContent = data.matchTitle || "";
 
-    function renderFromState() {
-      $("#matchTitle").value = state.matchTitle;
-      $("#aShort").value = state.aShort;
-      $("#bShort").value = state.bShort;
-      $("#aLogoUrl").value = state.aLogoUrl;
-      $("#bLogoUrl").value = state.bLogoUrl;
-      $("#aSetsLabel").textContent = state.aSets;
-      $("#bSetsLabel").textContent = state.bSets;
-      $("#scoreA").textContent = state.scoreA;
-      $("#scoreB").textContent = state.scoreB;
+      $("#shortA").textContent = data.aShort || "TEAM A";
+      $("#shortB").textContent = data.bShort || "TEAM B";
+
+      $("#setsA").textContent = data.aSets ?? 0;
+      $("#setsB").textContent = data.bSets ?? 0;
+      $("#scoreA").textContent = data.scoreA ?? 0;
+      $("#scoreB").textContent = data.scoreB ?? 0;
+
+      // Logos
+      const aLogoSrc = data.aLogoData || data.aLogoUrl || "";
+      const bLogoSrc = data.bLogoData || data.bLogoUrl || "";
+
+      const logoShellA = $("#logoShellA");
+      const logoShellB = $("#logoShellB");
+      const logoA = $("#logoA");
+      const logoB = $("#logoB");
+
+      if (aLogoSrc) {
+        logoA.src = aLogoSrc;
+        logoShellA.classList.add("has-logo");
+      } else {
+        logoA.removeAttribute("src");
+        logoShellA.classList.remove("has-logo");
+      }
+
+      if (bLogoSrc) {
+        logoB.src = bLogoSrc;
+        logoShellB.classList.add("has-logo");
+      } else {
+        logoB.removeAttribute("src");
+        logoShellB.classList.remove("has-logo");
+      }
 
       // Serve
-      $("#serveA").classList.toggle("active", state.serve === "A");
-      $("#serveB").classList.toggle("active", state.serve === "B");
+      $("#serveDotA").classList.toggle("on", data.serve === "A");
+      $("#serveDotB").classList.toggle("on", data.serve === "B");
 
-      // Highlight chips
-      $$(".chip-highlight").forEach((chip) => {
-        chip.classList.toggle(
-          "active",
-          chip.dataset.hl === state.highlight
-        );
-      });
+      // Highlight
+      const rowA = $("#rowA");
+      const rowB = $("#rowB");
+      rowA.classList.remove("set-point", "match-point");
+      rowB.classList.remove("set-point", "match-point");
 
-      // View chips
-      $$(".chip-view").forEach((chip) => {
-        chip.classList.toggle("active", chip.dataset.view === state.view);
-      });
+      switch (data.highlight) {
+        case "spA":
+          rowA.classList.add("set-point");
+          break;
+        case "spB":
+          rowB.classList.add("set-point");
+          break;
+        case "mpA":
+          rowA.classList.add("match-point");
+          break;
+        case "mpB":
+          rowB.classList.add("match-point");
+          break;
+      }
 
-      // Overlay toggle button
-      const toggleBtn = $("#toggleOverlay");
-      if (state.visible) {
-        toggleBtn.textContent = "Ocultar overlay";
-        toggleBtn.classList.add("on");
+      // Vista: score vs summary
+      const summaryBlock = $("#summaryBlock");
+      if (data.view === "summary") {
+        summaryBlock.classList.remove("hidden-block");
       } else {
-        toggleBtn.textContent = "Mostrar overlay";
-        toggleBtn.classList.remove("on");
+        summaryBlock.classList.add("hidden-block");
       }
-    }
 
-    async function pushState() {
-      if (!stateRef) return;
-      await set(stateRef, state);
-    }
+      // Resumen sets
+      const list = $("#summaryList");
+      list.innerHTML = "";
+      if (Array.isArray(data.summary) && data.summary.length > 0) {
+        data.summary.forEach((setInfo) => {
+          const div = document.createElement("div");
+          div.className = "summary-item";
 
-    // Leer inputs básicos al cambiar algo
-    function syncInputsToState() {
-      state.matchTitle = $("#matchTitle").value || "";
-      state.aShort = $("#aShort").value || "";
-      state.bShort = $("#bShort").value || "";
-      state.aLogoUrl = $("#aLogoUrl").value.trim();
-      state.bLogoUrl = $("#bLogoUrl").value.trim();
-    }
+          const label = document.createElement("div");
+          label.className = "set-label";
+          label.textContent = `Set ${setInfo.n}`;
 
-    // Botón CONNECT
-    $("#connect").addEventListener("click", async () => {
-      const room = ($("#room").value || "vb1").trim();
-      stateRef = ref(db, `tkd/${room}/vbScore`);
-      try {
-        syncInputsToState();
-        await set(stateRef, state);
-        setStatus(`Conectado a room "${room}".`);
-      } catch (e) {
-        console.error(e);
-        setStatus("Error al conectar: " + (e.message || e), true);
+          const score = document.createElement("div");
+          score.className = "score";
+          score.textContent = `· ${setInfo.aScore ?? 0}–${setInfo.bScore ?? 0}`;
+
+          const winner = document.createElement("div");
+          winner.className = "winner";
+          let winnerName = "";
+          if (setInfo.winner === "A") winnerName = data.aShort || "A";
+          else if (setInfo.winner === "B") winnerName = data.bShort || "B";
+          winner.textContent = winnerName ? `· ${winnerName}` : "";
+
+          div.appendChild(label);
+          div.appendChild(score);
+          div.appendChild(winner);
+          list.appendChild(div);
+        });
       }
-    });
 
-    // Botón RESET
-    $("#reset").addEventListener("click", async () => {
-      state.aSets = 0;
-      state.bSets = 0;
-      state.scoreA = 0;
-      state.scoreB = 0;
-      state.serve = "A";
-      state.highlight = "normal";
-      state.summary = [];
-      state.visible = true;
-      syncInputsToState();
-      renderFromState();
-      await pushState();
-    });
-
-    // Score handlers
-    $("#aPlus").addEventListener("click", async () => {
-      state.scoreA++;
-      renderFromState();
-      await pushState();
-    });
-    $("#aMinus").addEventListener("click", async () => {
-      if (state.scoreA > 0) state.scoreA--;
-      renderFromState();
-      await pushState();
-    });
-    $("#bPlus").addEventListener("click", async () => {
-      state.scoreB++;
-      renderFromState();
-      await pushState();
-    });
-    $("#bMinus").addEventListener("click", async () => {
-      if (state.scoreB > 0) state.scoreB--;
-      renderFromState();
-      await pushState();
-    });
-
-    // Atajos teclado (+ / -)
-    document.addEventListener("keydown", async (e) => {
-      if (state.view !== "score") return;
-      if (e.key === "+") {
-        state.scoreA++;
-        renderFromState();
-        await pushState();
-      } else if (e.key === "-") {
-        state.scoreB++;
-        renderFromState();
-        await pushState();
-      }
-    });
-
-    // Serve
-    $("#serveA").addEventListener("click", async () => {
-      state.serve = "A";
-      renderFromState();
-      await pushState();
-    });
-
-    $("#serveB").addEventListener("click", async () => {
-      state.serve = "B";
-      renderFromState();
-      await pushState();
-    });
-
-    // Highlight
-    $$(".chip-highlight").forEach((chip) => {
-      chip.addEventListener("click", async () => {
-        state.highlight = chip.dataset.hl;
-        renderFromState();
-        await pushState();
-      });
-    });
-
-    // View
-    $$(".chip-view").forEach((chip) => {
-      chip.addEventListener("click", async () => {
-        state.view = chip.dataset.view;
-        renderFromState();
-        await pushState();
-      });
-    });
-
-    // Toggle Overlay ON/OFF
-    $("#toggleOverlay").addEventListener("click", async () => {
-      state.visible = !state.visible;
-      renderFromState();
-      await pushState();
-    });
-
-    // Guardar set en summary
-    function saveCurrentSet() {
-      if (!Array.isArray(state.summary)) state.summary = [];
-
-      const n = state.summary.length + 1;
-      const aScore = state.scoreA || 0;
-      const bScore = state.scoreB || 0;
-      let winner = "";
-      if (aScore > bScore) winner = "A";
-      else if (bScore > aScore) winner = "B";
-
-      state.summary.push({
-        n,
-        aScore,
-        bScore,
-        winner,
-      });
-
-      if (winner === "A") state.aSets++;
-      if (winner === "B") state.bSets++;
-
-      state.scoreA = 0;
-      state.scoreB = 0;
-      state.highlight = "normal";
+      // Visible toggle (ON/OFF overlay). Default = true para evitar parpadeos
+      const visible = data.visible !== false;
+      const root = $("#overlayRoot");
+      root.classList.toggle("hidden", !visible);
     }
 
-    $("#saveSet").addEventListener("click", async () => {
-      saveCurrentSet();
-      renderFromState();
-      await pushState();
+    onValue(scoreRef, (snap) => {
+      applyState(snap.val());
     });
-
-    // Logo desde archivo
-    function setupLogoFile(inputId, key) {
-      const input = $("#" + inputId);
-      input.addEventListener("change", async (e) => {
-        const file = e.target.files[0];
-        if (!file) {
-          state[key] = "";
-          renderFromState();
-          await pushState();
-          return;
-        }
-        const reader = new FileReader();
-        reader.onload = async (ev) => {
-          state[key] = ev.target.result;
-          renderFromState();
-          await pushState();
-        };
-        reader.readAsDataURL(file);
-      });
-    }
-
-    setupLogoFile("aLogoFile", "aLogoData");
-    setupLogoFile("bLogoFile", "bLogoData");
-
-    // Inputs básicos al escribir
-    ["matchTitle", "aShort", "bShort", "aLogoUrl", "bLogoUrl"].forEach((id) => {
-      $("#" + id).addEventListener("input", async () => {
-        syncInputsToState();
-        renderFromState();
-        await pushState();
-      });
-    });
-
-    // Render inicial
-    renderFromState();
   </script>
 </body>
 </html>
