@@ -6,617 +6,739 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     :root{
-      --bg:#050814;
-      --panel:#0b1020;
-      --accent:#f7c43a;
-      --accent-soft:#f7c43a22;
-      --text:#f5f7ff;
-      --muted:#8b92b3;
-      --danger:#ff4b6a;
-      --pill:#20263a;
-      --pill-active:#f7c43a;
-      --input:#111729;
-      --shadow:0 18px 45px rgba(0,0,0,.7);
-      --radius-lg:18px;
-      --radius-pill:999px;
-      --font:"SF Pro Display","Inter",-apple-system,BlinkMacSystemFont,system-ui,sans-serif;
+      --bg: #050819;
+      --panel: #0b1024;
+      --panel-soft: #11172f;
+      --accent: #f9c74f;
+      --accent-soft: #f4d37f;
+      --text-main: #f5f6ff;
+      --text-muted: #8d93b2;
+      --danger: #ff4d67;
+      --chip-bg: #161c35;
+      --chip-active: #f9c74f;
+      --chip-active-text: #050819;
+      --border-subtle: #1b223b;
+      --input-bg: #11172f;
+      --input-border: #232b4d;
+      --pill-radius: 999px;
+      --shadow-soft: 0 22px 40px rgba(0,0,0,0.60);
     }
-    *{box-sizing:border-box;margin:0;padding:0;font-family:var(--font);}
+    *{
+      box-sizing:border-box;
+      font-family: system-ui,-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display",sans-serif;
+    }
     body{
-      background:radial-gradient(circle at top,#141b33 0,#050814 55%,#02030a 100%);
-      color:var(--text);
-      min-height:100vh;
-      padding:32px 16px 24px;
-      display:flex;
-      justify-content:center;
-    }
-    .wrap{
-      width:min(960px,100%);
-      background:linear-gradient(135deg,#080c1b 0,#060916 45%,#050814 100%);
-      border-radius:24px;
-      padding:24px 26px 18px;
-      box-shadow:var(--shadow);
-      border:1px solid #171b2e;
-      position:relative;
-      overflow:hidden;
+      margin:0;
+      padding:24px;
+      background: radial-gradient(circle at top,#151b3d 0,#050819 55%);
+      color:var(--text-main);
     }
     h1{
-      font-size:26px;
-      letter-spacing:.06em;
+      margin:0 0 4px;
+      font-size:28px;
+      letter-spacing:0.18em;
       text-transform:uppercase;
-      margin-bottom:18px;
     }
     .subtitle{
-      font-size:13px;
-      color:var(--muted);
-      margin-bottom:16px;
+      margin-bottom:24px;
+      color:var(--text-muted);
+      font-size:14px;
     }
-    .grid{
-      display:grid;
-      grid-template-columns:repeat(2,minmax(0,1fr));
-      gap:18px 22px;
-      margin-bottom:18px;
+    .app-shell{
+      max-width:1200px;
+      margin:0 auto;
     }
-    .field-group{
-      background:rgba(8,12,28,.85);
-      border-radius:18px;
-      padding:14px 14px 12px;
-      border:1px solid #151a30;
-    }
-    .field-group h2{
-      font-size:13px;
-      text-transform:uppercase;
-      letter-spacing:.14em;
-      color:var(--muted);
-      margin-bottom:8px;
-    }
-    .field-row{
+    .top-bar{
       display:flex;
-      gap:10px;
-      margin-bottom:8px;
+      align-items:center;
+      justify-content:space-between;
+      margin-bottom:16px;
+      gap:16px;
+    }
+    .top-bar-left{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      flex:1;
     }
     label{
       font-size:11px;
       text-transform:uppercase;
-      letter-spacing:.13em;
-      color:var(--muted);
+      letter-spacing:0.18em;
+      color:var(--text-muted);
       display:block;
-      margin-bottom:3px;
+      margin-bottom:4px;
     }
     input[type="text"], input[type="number"]{
       width:100%;
-      border-radius:999px;
-      border:none;
-      background:var(--input);
-      padding:8px 12px;
-      font-size:13px;
-      color:var(--text);
+      padding:8px 10px;
+      border-radius:10px;
+      border:1px solid var(--input-border);
+      background:var(--input-bg);
+      color:var(--text-main);
+      font-size:14px;
       outline:none;
     }
-    input[type="number"]{text-align:center;}
-    input[type="file"]{
-      font-size:11px;
-      color:var(--muted);
+    input[type="text"]:focus, input[type="number"]:focus{
+      border-color:var(--accent);
+      box-shadow:0 0 0 1px rgba(249,199,79,0.4);
     }
-    .top-row{
+    .room-title-row{
+      display:grid;
+      grid-template-columns:140px minmax(0,1fr);
+      gap:16px;
+      align-items:flex-end;
+    }
+    .top-bar-right{
       display:flex;
-      gap:18px;
-      margin-bottom:18px;
-      align-items:center;
-    }
-    .top-row .field{
-      flex:1;
+      gap:10px;
+      align-items:flex-end;
     }
     .pill-btn{
-      border-radius:var(--radius-pill);
-      border:none;
-      padding:8px 18px;
+      border-radius:var(--pill-radius);
+      padding:9px 20px;
       font-size:13px;
+      font-weight:600;
+      letter-spacing:0.14em;
       text-transform:uppercase;
-      letter-spacing:.13em;
+      border:none;
       cursor:pointer;
-      background:var(--pill);
-      color:var(--muted);
+      transition:all .16s ease-out;
     }
     .pill-btn.primary{
       background:var(--accent);
-      color:#111321;
+      color:#11101a;
+      box-shadow:0 10px 24px rgba(249,199,79,0.35);
+    }
+    .pill-btn.primary:hover{
+      transform:translateY(-1px);
+      box-shadow:0 14px 30px rgba(249,199,79,0.45);
     }
     .pill-btn.danger{
-      background:#1f1020;
-      color:#ff7ca0;
-      border:1px solid var(--danger);
+      background:transparent;
+      color:var(--danger);
+      border:1px solid rgba(255,77,103,0.7);
+    }
+    .pill-btn.danger:hover{
+      background:rgba(255,77,103,0.12);
+    }
+    .grid-2{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:18px;
+      margin-bottom:18px;
+    }
+    .card{
+      background:radial-gradient(circle at top left,#171e3f 0,#060a1a 55%);
+      border-radius:24px;
+      padding:18px 18px 14px;
+      box-shadow:var(--shadow-soft);
+      border:1px solid rgba(255,255,255,0.02);
+    }
+    .card-header{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin-bottom:10px;
+    }
+    .tag{
+      padding:4px 10px;
+      border-radius:999px;
+      font-size:11px;
+      letter-spacing:0.18em;
+      text-transform:uppercase;
+      border:1px solid var(--border-subtle);
+      color:var(--text-muted);
+    }
+    .chip{
+      border-radius:var(--pill-radius);
+      border:none;
+      background:var(--chip-bg);
+      color:var(--text-muted);
+      padding:6px 12px;
+      font-size:12px;
+      cursor:pointer;
+      transition:all .15s ease-out;
+      letter-spacing:0.12em;
+      text-transform:uppercase;
+    }
+    .chip.active{
+      background:var(--chip-active);
+      color:var(--chip-active-text);
+    }
+    .chip-row{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      margin-top:8px;
+    }
+    .field-row{
+      display:grid;
+      grid-template-columns:120px minmax(0,1fr);
+      gap:10px;
+      margin-bottom:8px;
+      align-items:center;
+    }
+    .field-row > div:nth-child(1){
+      font-size:12px;
+      color:var(--text-muted);
+      text-transform:uppercase;
+      letter-spacing:0.16em;
+    }
+    .file-note{
+      margin-top:2px;
+      font-size:11px;
+      color:var(--text-muted);
+    }
+    input[type="file"]{
+      font-size:11px;
+      color:var(--text-muted);
+    }
+    .sets-bar{
+      margin-top:6px;
+    }
+    .sets-bar-display{
+      margin-top:4px;
+      background:linear-gradient(90deg,#151c3c,#070b18);
+      border-radius:999px;
+      height:24px;
+      display:flex;
+      align-items:center;
+      padding:0 14px;
+      font-size:12px;
+      color:var(--accent-soft);
+      letter-spacing:0.18em;
+    }
+    .score-card{
+      margin-top:6px;
+      background:linear-gradient(135deg,#151c3e,#070a18);
+      border-radius:24px;
+      padding:14px 18px 10px;
+      border:1px solid rgba(255,255,255,0.02);
     }
     .score-row{
-      display:flex;
-      gap:18px;
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:14px;
       align-items:center;
-      margin:10px 0 14px;
     }
-    .score-team{
-      flex:1;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      padding:10px 12px;
-      border-radius:16px;
-      background:#090e1d;
-      border:1px solid #171b2e;
-    }
-    .score-team-name{
-      font-size:13px;
-      letter-spacing:.2em;
+    .team-label{
+      font-size:11px;
       text-transform:uppercase;
-      color:var(--muted);
+      letter-spacing:0.18em;
+      color:var(--text-muted);
+      margin-bottom:4px;
     }
-    .score-controls{
+    .score-side{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      justify-content:space-between;
+    }
+    .score-side-left{
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+    .score-btn{
+      width:32px;
+      height:32px;
+      border-radius:999px;
+      border:none;
+      background:var(--chip-bg);
+      color:var(--text-main);
+      font-size:18px;
+      cursor:pointer;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      transition:background .15s ease-out, transform .1s ease-out;
+    }
+    .score-btn:hover{
+      background:#222949;
+      transform:translateY(-1px);
+    }
+    .score-value{
+      font-size:22px;
+      font-weight:700;
+      min-width:28px;
+      text-align:center;
+    }
+    .serve-toggle{
+      margin-top:10px;
+      display:flex;
+      align-items:center;
+      gap:10px;
+      font-size:13px;
+    }
+    .serve-pill{
+      display:inline-flex;
+      border-radius:999px;
+      background:var(--chip-bg);
+      padding:3px;
+      gap:4px;
+    }
+    .serve-pill button{
+      border-radius:999px;
+      border:none;
+      padding:4px 14px;
+      background:transparent;
+      color:var(--text-muted);
+      font-size:12px;
+      text-transform:uppercase;
+      letter-spacing:0.16em;
+      cursor:pointer;
+    }
+    .serve-pill button.active{
+      background:var(--accent);
+      color:var(--chip-active-text);
+    }
+    .footer-row{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin-top:10px;
+      font-size:12px;
+      color:var(--text-muted);
+    }
+    .status{
+      min-height:18px;
+    }
+    .status.error{
+      color:var(--danger);
+    }
+    .view-row{
+      margin-top:10px;
       display:flex;
       align-items:center;
       gap:10px;
     }
-    .score-btn{
-      width:26px;
-      height:26px;
-      border-radius:999px;
-      border:none;
-      font-size:16px;
-      background:#111729;
-      color:var(--text);
-      cursor:pointer;
-    }
-    .score-value{
-      width:28px;
-      text-align:center;
-      font-size:18px;
-      font-weight:600;
-    }
-    .serve-toggle{
-      display:flex;
-      gap:6px;
-      margin-top:6px;
-    }
-    .serve-toggle button{
-      border-radius:999px;
-      border:none;
-      padding:3px 12px;
-      font-size:11px;
-      letter-spacing:.12em;
-      text-transform:uppercase;
-      cursor:pointer;
-      background:var(--pill);
-      color:var(--muted);
-    }
-    .serve-toggle button.active{
-      background:var(--accent);
-      color:#111321;
-    }
-    .highlight-row, .view-row{
-      display:flex;
-      align-items:center;
-      gap:8px;
-      margin-top:4px;
-      flex-wrap:wrap;
-    }
-    .highlight-row span,
     .view-row span{
       font-size:11px;
-      color:var(--muted);
       text-transform:uppercase;
-      letter-spacing:.13em;
-      margin-right:6px;
+      letter-spacing:0.18em;
+      color:var(--text-muted);
     }
-    .chip{
-      border-radius:999px;
-      border:1px solid #262b41;
-      padding:6px 14px;
-      font-size:11px;
-      text-transform:uppercase;
-      letter-spacing:.12em;
-      background:#0b1020;
-      color:var(--muted);
-      cursor:pointer;
+    .view-row .chip-row{
+      margin-top:0;
     }
-    .chip.active{
-      background:var(--accent-soft);
-      border-color:var(--accent);
-      color:var(--accent);
-    }
-    .status{
-      margin-top:14px;
-      font-size:12px;
-      color:var(--muted);
-    }
-    .status.error{color:var(--danger);}
-    .footer-note{
-      margin-top:8px;
-      font-size:11px;
-      color:var(--muted);
+    .bottom-actions{
+      margin-top:10px;
       display:flex;
-      justify-content:flex-end;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+    .chip.warning{
+      border:1px solid rgba(249,199,79,0.6);
+    }
+    .summary-hint{
+      margin-top:6px;
+      font-size:11px;
+      color:var(--text-muted);
     }
   </style>
 </head>
 <body>
-  <div class="wrap">
+  <div class="app-shell">
     <h1>Volleyball Scoreboard – Control</h1>
-    <div class="subtitle">
-      Usa el mismo <strong>room</strong> que en el overlay. Conecta una vez, luego controla todo desde aquí.
-    </div>
+    <div class="subtitle">Usa el mismo <strong>room</strong> que en el overlay. Conecta una vez, luego controlas todo desde aquí.</div>
 
-    <div class="top-row">
-      <div class="field">
-        <label>Room</label>
-        <input type="text" id="room" value="vb1" />
-      </div>
-      <div class="field">
-        <label>Match title</label>
-        <input type="text" id="matchTitle" value="Bronze Medal Match · LAI" />
-      </div>
-      <button id="connect" class="pill-btn primary">Connect</button>
-      <button id="reset" class="pill-btn danger">Reset</button>
-    </div>
-
-    <div class="grid">
-      <div class="field-group">
-        <h2>Equipo A</h2>
-        <div class="field-row">
-          <div style="flex:1;">
-            <label>Nombre corto (siglas)</label>
-            <input type="text" id="aShort" value="ITA" />
+    <div class="top-bar">
+      <div class="top-bar-left">
+        <div class="room-title-row">
+          <div>
+            <label for="room">Room</label>
+            <input id="room" type="text" value="vb1" />
           </div>
-        </div>
-        <div class="field-row">
-          <div style="flex:1;">
-            <label>Logo (URL)</label>
-            <input type="text" id="aLogoUrl" placeholder="https://..." />
-          </div>
-        </div>
-        <div class="field-row">
-          <div style="flex:1;">
-            <label>Logo desde archivo</label>
-            <input type="file" id="aLogoFile" accept="image/*" />
-          </div>
-        </div>
-        <div class="field-row">
-          <div style="flex:1;">
-            <label>Sets ganados</label>
-            <input type="number" id="aSets" value="0" min="0" />
+          <div>
+            <label for="matchTitle">Match title</label>
+            <input id="matchTitle" type="text" value="Bronze Medal Match · LAI" />
           </div>
         </div>
       </div>
-
-      <div class="field-group">
-        <h2>Equipo B</h2>
-        <div class="field-row">
-          <div style="flex:1;">
-            <label>Nombre corto (siglas)</label>
-            <input type="text" id="bShort" value="USA" />
-          </div>
-        </div>
-        <div class="field-row">
-          <div style="flex:1;">
-            <label>Logo (URL)</label>
-            <input type="text" id="bLogoUrl" placeholder="https://..." />
-          </div>
-        </div>
-        <div class="field-row">
-          <div style="flex:1;">
-            <label>Logo desde archivo</label>
-            <input type="file" id="bLogoFile" accept="image/*" />
-          </div>
-        </div>
-        <div class="field-row">
-          <div style="flex:1;">
-            <label>Sets ganados</label>
-            <input type="number" id="bSets" value="1" min="0" />
-          </div>
-        </div>
+      <div class="top-bar-right">
+        <button id="connect" class="pill-btn primary">Connect</button>
+        <button id="reset" class="pill-btn danger">Reset</button>
       </div>
     </div>
 
-    <div class="field-group">
-      <h2>Marcador actual (set en juego)</h2>
+    <div class="grid-2">
+      <!-- Equipo A -->
+      <div class="card">
+        <div class="card-header">
+          <div class="tag">Equipo A</div>
+        </div>
 
+        <div class="field-row">
+          <div>Nombre corto (siglas)</div>
+          <input id="aShort" type="text" value="ITA" />
+        </div>
+        <div class="field-row">
+          <div>Nombre completo</div>
+          <input id="aName" type="text" value="Team A" />
+        </div>
+        <div class="field-row">
+          <div>Logo (URL)</div>
+          <input id="aLogoUrl" type="text" placeholder="https://..." />
+        </div>
+        <div class="field-row">
+          <div>Logo desde archivo</div>
+          <div>
+            <input id="aLogoFile" type="file" accept="image/*" />
+            <div class="file-note">Usa archivo o URL (archivo tiene prioridad).</div>
+          </div>
+        </div>
+
+        <div class="sets-bar">
+          <label for="aSets">Sets ganados</label>
+          <input id="aSets" type="number" min="0" value="0" />
+        </div>
+      </div>
+
+      <!-- Equipo B -->
+      <div class="card">
+        <div class="card-header">
+          <div class="tag">Equipo B</div>
+        </div>
+
+        <div class="field-row">
+          <div>Nombre corto (siglas)</div>
+          <input id="bShort" type="text" value="USA" />
+        </div>
+        <div class="field-row">
+          <div>Nombre completo</div>
+          <input id="bName" type="text" value="Team B" />
+        </div>
+        <div class="field-row">
+          <div>Logo (URL)</div>
+          <input id="bLogoUrl" type="text" placeholder="https://..." />
+        </div>
+        <div class="field-row">
+          <div>Logo desde archivo</div>
+          <div>
+            <input id="bLogoFile" type="file" accept="image/*" />
+            <div class="file-note">Usa archivo o URL (archivo tiene prioridad).</div>
+          </div>
+        </div>
+
+        <div class="sets-bar">
+          <label for="bSets">Sets ganados</label>
+          <input id="bSets" type="number" min="0" value="0" />
+        </div>
+      </div>
+    </div>
+
+    <!-- Marcador actual -->
+    <div class="card score-card">
+      <div class="tag" style="margin-bottom:10px;">Marcador actual (set en juego)</div>
       <div class="score-row">
-        <div class="score-team">
-          <div class="score-team-name">A</div>
-          <div class="score-controls">
-            <button class="score-btn" data-team="A" data-delta="-1">−</button>
-            <div class="score-value" id="scoreA">23</div>
-            <button class="score-btn" data-team="A" data-delta="1">+</button>
+        <div>
+          <div class="team-label">A</div>
+          <div class="score-side">
+            <div class="score-side-left">
+              <button class="score-btn" data-score="a" data-delta="-1">−</button>
+              <div id="scoreA" class="score-value">0</div>
+              <button class="score-btn" data-score="a" data-delta="1">+</button>
+            </div>
           </div>
         </div>
-        <div class="score-team">
-          <div class="score-team-name">B</div>
-          <div class="score-controls">
-            <button class="score-btn" data-team="B" data-delta="-1">−</button>
-            <div class="score-value" id="scoreB">24</div>
-            <button class="score-btn" data-team="B" data-delta="1">+</button>
+        <div>
+          <div class="team-label">B</div>
+          <div class="score-side">
+            <div class="score-side-left">
+              <button class="score-btn" data-score="b" data-delta="-1">−</button>
+              <div id="scoreB" class="score-value">0</div>
+              <button class="score-btn" data-score="b" data-delta="1">+</button>
+            </div>
           </div>
         </div>
       </div>
 
       <div class="serve-toggle">
         <span>Serve</span>
-        <button id="serveA" class="active">A</button>
-        <button id="serveB">B</button>
+        <div class="serve-pill">
+          <button type="button" id="serveA" data-serve="A">A</button>
+          <button type="button" id="serveB" data-serve="B">B</button>
+        </div>
       </div>
 
-      <div class="highlight-row">
-    <span>Highlight</span>
-    <button class="chip active" data-hl="normal">Normal</button>
-    <button class="chip" data-hl="spA">Set point A</button>
-    <button class="chip" data-hl="spB">Set point B</button>
-    <button class="chip" data-hl="mpA">Match point A</button>
-    <button class="chip" data-hl="mpB">Match point B</button>
-
-    <!--🔥 Nuevo botón para guardar el set -->
-    <button id="saveSet" class="chip warning">Guardar Set</button>
-</div>
+      <div class="chip-row" style="margin-top:14px;">
+        <span style="font-size:11px;text-transform:uppercase;letter-spacing:0.18em;color:var(--text-muted);margin-right:6px;">Highlight</span>
+        <button class="chip" data-hl="normal">Normal</button>
+        <button class="chip" data-hl="spA">Set point A</button>
+        <button class="chip" data-hl="spB">Set point B</button>
+        <button class="chip" data-hl="mpA">Match point A</button>
+        <button class="chip" data-hl="mpB">Match point B</button>
+      </div>
 
       <div class="view-row">
         <span>Vista</span>
-        <button class="chip active" data-view="score">Marcador</button>
-        <button class="chip" data-view="sets">Resumen sets</button>
+        <div class="chip-row">
+          <button class="chip" data-view="score">Marcador</button>
+          <button class="chip" data-view="summary">Resumen sets</button>
+        </div>
+      </div>
+
+      <div class="bottom-actions">
+        <button id="saveSet" class="chip warning">Guardar set</button>
+      </div>
+      <div class="summary-hint">
+        Cuando termines un set, presiona <strong>Guardar set</strong>.  
+        Se actualizará el resumen y los sets ganados, y el marcador se reinicia a 0–0.
       </div>
     </div>
 
-    <div class="status" id="status">Sin conectar.</div>
-    <div class="footer-note">Atajos: + / − para sumar/restar puntos luego 😉</div>
+    <div class="footer-row">
+      <div id="status" class="status">Sin conectar.</div>
+      <div>Atajos: <strong>+ / −</strong> para sumar/restar puntos luego 😉</div>
+    </div>
   </div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
-    import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
+    import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
 
-    // 🔥 Usa EXACTAMENTE el mismo config que en weightlifting_control.html
-  const firebaseConfig = {
-  apiKey: "AIzaSyD8r0rLLcLPJx3DsNGMuvVTfuwCMBxRPpM",
-  authDomain: "tkd-overlay.firebaseapp.com",
-  databaseURL: "https://tkd-overlay-default-rtdb.firebaseio.com",
-  projectId: "tkd-overlay",
-  storageBucket: "tkd-overlay.firebasestorage.app",
-  messagingSenderId: "41501920835",
-  appId: "1:41501920835:web:4ccecdf129cf20619d8ef6",
-  measurementId: "G-CXBJCL86EM"
-};
+    // 🔐 Pega aquí el MISMO config que usas en weightlifting_control.html
+    const firebaseConfig = {
+      apiKey: "TU_API_KEY",
+      authDomain: "tu-proyecto.firebaseapp.com",
+      databaseURL: "https://tu-proyecto-default-rtdb.firebaseio.com",
+      projectId: "tu-proyecto",
+      storageBucket: "tu-proyecto.appspot.com",
+      messagingSenderId: "1234567890",
+      appId: "1:1234567890:web:xxxxxxxxxxxxxx"
+    };
 
     const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
+    const db  = getDatabase(app);
 
-    const $ = s => document.querySelector(s);
-    const $$ = s => Array.from(document.querySelectorAll(s));
-
-    const state = {
-      matchTitle: "Bronze Medal Match · LAI",
-      aShort: "ITA",
-      bShort: "USA",
-      aSets: 0,
-      bSets: 1,
-      aScore: 23,
-      bScore: 24,
-      serve: "A",
-      highlight: "normal",
-      view: "score",
-      aLogoUrl: "",
-      bLogoUrl: "",
-      aLogoData: "",
-      bLogoData: ""
-    };
+    const $  = (s) => document.querySelector(s);
+    const $$ = (s) => Array.from(document.querySelectorAll(s));
 
     let room = "vb1";
     let stateRef = null;
 
-    function setStatus(msg, isError=false){
+    const state = {
+      matchTitle: "Bronze Medal Match · LAI",
+      aShort: "ITA",
+      aName: "Team A",
+      aLogoUrl: "",
+      bShort: "USA",
+      bName: "Team B",
+      bLogoUrl: "",
+      aSets: 0,
+      bSets: 0,
+      scoreA: 0,
+      scoreB: 0,
+      serve: "A",
+      highlight: "normal",
+      view: "score",
+      summary: []   // {set, scoreA, scoreB, winner}
+    };
+
+    function setStatus(msg, isError = false){
       const el = $("#status");
       el.textContent = msg;
       el.classList.toggle("error", isError);
     }
-let state = {
-  matchTitle: "",
-  aShort: "",
-  bShort: "",
-  aSets: 0,
-  bSets: 0,
-  aLogoUrl: "",
-  bLogoUrl: "",
-  scoreA: 0,
-  scoreB: 0,
-  serve: "A",
-  highlight: "normal",
-  view: "score",
-  summary: []  // 🔥 el historial de sets
-};
 
     function readInputsToState(){
-  state.matchTitle = $("#matchTitle").value || "";
-  state.aShort = $("#aShort").value || "";
-  state.bShort = $("#bShort").value || "";
-  state.aSets = parseInt($("#aSets").value || "0",10);
-  state.bSets = parseInt($("#bSets").value || "0",10);
-  state.aLogoUrl = $("#aLogoUrl").value.trim();
-  state.bLogoUrl = $("#bLogoUrl").value.trim();
-}
-function finishSet(winner) {
-
-  // Guardar el set actual en summary
-  const entry = {
-    n: state.summary.length + 1,
-    a: state.scoreA,
-    b: state.scoreB,
-    winner
-  };
-
-  state.summary.push(entry);
-
-  // Sumar set ganado
-  if (winner === "A") {
-    state.aSets++;
-  } else {
-    state.bSets++;
-  }
-
-  // Resetear marcador
-  state.scoreA = 0;
-  state.scoreB = 0;
-
-  // Reset highlight
-  state.highlight = "normal";
-
-  // Enviar a Firebase
-  publishState();
-}
-function saveCurrentSet() {
-  // Asegurarnos de que summary es un array
-  if (!Array.isArray(state.summary)) {
-    state.summary = [];
-  }
-
-  const n = state.summary.length + 1;
-
-  const aScore = state.scoreA || 0;
-  const bScore = state.scoreB || 0;
-
-  let winner = "";
-  if (aScore > bScore) winner = "A";
-  else if (bScore > aScore) winner = "B";
-
-  const entry = {
-    n,         // número de set
-    aScore,
-    bScore,
-    winner     // "A", "B" o "" si empatan
-  };
-
-  state.summary = [...state.summary, entry];
-
-  // 👇 Usa la MISMA función que ya usas para enviar el state al overlay
-  // (si se llama publish(), push(), syncUIAndSend()… pon ese nombre aquí)
-  publishState();
-
-  setStatus(`Set ${n} guardado en el resumen.`);
-}
+      state.matchTitle = $("#matchTitle").value.trim();
+      state.aShort     = $("#aShort").value.trim();
+      state.aName      = $("#aName").value.trim();
+      state.bShort     = $("#bShort").value.trim();
+      state.bName      = $("#bName").value.trim();
+      state.aSets      = parseInt($("#aSets").value || "0", 10);
+      state.bSets      = parseInt($("#bSets").value || "0", 10);
+      const aUrl       = $("#aLogoUrl").value.trim();
+      const bUrl       = $("#bLogoUrl").value.trim();
+      if (aUrl && !state._aFileOverride) state.aLogoUrl = aUrl;
+      if (bUrl && !state._bFileOverride) state.bLogoUrl = bUrl;
+    }
 
     function renderFromState(){
+      $("#room").value       = room;
       $("#matchTitle").value = state.matchTitle;
-      $("#aShort").value = state.aShort;
-      $("#bShort").value = state.bShort;
-      $("#aSets").value = state.aSets;
-      $("#bSets").value = state.bSets;
-      $("#scoreA").textContent = state.aScore;
-      $("#scoreB").textContent = state.bScore;
-      $("#aLogoUrl").value = state.aLogoUrl;
-      $("#bLogoUrl").value = state.bLogoUrl;
+      $("#aShort").value     = state.aShort;
+      $("#aName").value      = state.aName;
+      $("#bShort").value     = state.bShort;
+      $("#bName").value      = state.bName;
+      $("#aSets").value      = state.aSets;
+      $("#bSets").value      = state.bSets;
+      $("#aLogoUrl").value   = state.aLogoUrl;
+      $("#bLogoUrl").value   = state.bLogoUrl;
+      $("#scoreA").textContent = state.scoreA;
+      $("#scoreB").textContent = state.scoreB;
 
-      $("#serveA").classList.toggle("active", state.serve==="A");
-      $("#serveB").classList.toggle("active", state.serve==="B");
+      $("#serveA").classList.toggle("active", state.serve === "A");
+      $("#serveB").classList.toggle("active", state.serve === "B");
 
-      $$(".highlight-row .chip").forEach(ch=>{
-        ch.classList.toggle("active", ch.dataset.hl === state.highlight || (ch.dataset.hl==="normal" && state.highlight==="normal"));
+      $$(".chip[data-hl]").forEach(ch => {
+        ch.classList.toggle("active", ch.dataset.hl === state.highlight);
       });
-      $$(".view-row .chip").forEach(ch=>{
+
+      $$(".chip[data-view]").forEach(ch => {
         ch.classList.toggle("active", ch.dataset.view === state.view);
       });
     }
 
-    async function pushState(){
-      if(!stateRef) return;
+    async function publishState(){
+      if (!stateRef) return;
+      await set(stateRef, state);
+    }
+
+    // Carga inicial cuando conectamos (por si hay otro control / overlay escribiendo)
+    function attachListener(){
+      if (!stateRef) return;
+      onValue(stateRef, (snap) => {
+        const val = snap.val();
+        if (!val) return;
+        Object.assign(state, val);
+        renderFromState();
+      });
+    }
+
+    // Conectar
+    $("#connect").addEventListener("click", async () => {
+      room = $("#room").value.trim() || "vb1";
+      stateRef = ref(db, `tkd/${room}/vbScore`);
       readInputsToState();
       try{
         await set(stateRef, state);
+        setStatus(`Conectado a room "${room}".`);
+        attachListener();
       }catch(e){
         console.error(e);
-        setStatus("Error al enviar estado: " + (e.message || e), true);
+        setStatus("Error al conectar: " + (e.message || e), true);
       }
-    }
-
-    // botones score
-    $$(".score-btn").forEach(btn=>{
-      btn.addEventListener("click", ()=>{
-        const team = btn.dataset.team;
-        const delta = parseInt(btn.dataset.delta,10);
-        if(team==="A"){
-          state.aScore = Math.max(0, state.aScore + delta);
-        }else{
-          state.bScore = Math.max(0, state.bScore + delta);
-        }
-        renderFromState();
-        pushState();
-      });
     });
 
-    // serve
-    $("#serveA").addEventListener("click", ()=>{ state.serve="A"; renderFromState(); pushState(); });
-    $("#serveB").addEventListener("click", ()=>{ state.serve="B"; renderFromState(); pushState(); });
-
-    // highlight
-    $$(".highlight-row .chip").forEach(ch=>{
-      ch.addEventListener("click", ()=>{
-        state.highlight = ch.dataset.hl || "normal";
-        renderFromState();
-        pushState();
-      });
+    // Reset total
+    $("#reset").addEventListener("click", async () => {
+      state.aSets  = 0;
+      state.bSets  = 0;
+      state.scoreA = 0;
+      state.scoreB = 0;
+      state.serve  = "A";
+      state.highlight = "normal";
+      state.summary = [];
+      renderFromState();
+      await publishState();
     });
 
-    // vista
-    $$(".view-row .chip").forEach(ch=>{
-      ch.addEventListener("click", ()=>{
-        state.view = ch.dataset.view || "score";
-        renderFromState();
-        pushState();
-      });
-    });
-
-    // sets manual
-    $("#aSets").addEventListener("change", ()=>{ state.aSets=parseInt($("#aSets").value||"0",10); pushState(); });
-    $("#bSets").addEventListener("change", ()=>{ state.bSets=parseInt($("#bSets").value||"0",10); pushState(); });
-
-    // logos desde archivo
-    function hookLogoFile(inputId, key){
-      $(inputId).addEventListener("change", e=>{
-        const file = e.target.files[0];
-        if(!file) return;
+    // Logo desde archivo (A/B)
+    function bindLogoFile(inputId, side){
+      const input = $(inputId);
+      input.addEventListener("change", () => {
+        const file = input.files[0];
+        if (!file) return;
         const reader = new FileReader();
-        reader.onload = () =>{
-          state[key] = reader.result;
-          pushState();
+        reader.onload = () => {
+          if (side === "A"){
+            state.aLogoUrl = reader.result;
+            state._aFileOverride = true;
+          }else{
+            state.bLogoUrl = reader.result;
+            state._bFileOverride = true;
+          }
+          renderFromState();
+          publishState();
         };
         reader.readAsDataURL(file);
       });
     }
-    hookLogoFile("#aLogoFile", "aLogoData");
-    hookLogoFile("#bLogoFile", "bLogoData");
+    bindLogoFile("#aLogoFile","A");
+    bindLogoFile("#bLogoFile","B");
 
-    // connect (usa misma rama base que Taekwondo: tkd/<room>/vbScore)
-    $("#connect").addEventListener("click", async ()=>{
-    room = $("#room").value.trim() || "vb1";
-    stateRef = ref(db, `tkd/${room}/vbScore`);
-    try{
-        await set(stateRef, state);
-        setStatus(`Conectado a room "${room}".`);
-    }catch(e){
-        console.error(e);
-        setStatus("Error al conectar: " + (e.message || e), true);
+    // Inputs texto / number: al cambiar, leemos y enviamos
+    ["#matchTitle","#aShort","#aName","#bShort","#bName","#aSets","#bSets","#aLogoUrl","#bLogoUrl"].forEach(sel=>{
+      $(sel).addEventListener("change", async ()=>{
+        readInputsToState();
+        renderFromState();
+        await publishState();
+      });
+    });
+
+    // Botones de score
+    $$(".score-btn").forEach(btn=>{
+      btn.addEventListener("click", async ()=>{
+        const who   = btn.dataset.score;
+        const delta = parseInt(btn.dataset.delta,10);
+        if (who === "a"){
+          state.scoreA = Math.max(0, state.scoreA + delta);
+        }else{
+          state.scoreB = Math.max(0, state.scoreB + delta);
+        }
+        renderFromState();
+        await publishState();
+      });
+    });
+
+    // Serve
+    $("#serveA").addEventListener("click", async ()=>{
+      state.serve = "A";
+      renderFromState();
+      await publishState();
+    });
+    $("#serveB").addEventListener("click", async ()=>{
+      state.serve = "B";
+      renderFromState();
+      await publishState();
+    });
+
+    // Highlight chips
+    $$(".chip[data-hl]").forEach(ch=>{
+      ch.addEventListener("click", async ()=>{
+        state.highlight = ch.dataset.hl;
+        renderFromState();
+        await publishState();
+      });
+    });
+
+    // Vista (Marcador / Resumen)
+    $$(".chip[data-view]").forEach(ch=>{
+      ch.addEventListener("click", async ()=>{
+        state.view = ch.dataset.view;
+        renderFromState();
+        await publishState();
+      });
+    });
+
+    // Guardar set actual
+    function saveCurrentSet(){
+      if (!Array.isArray(state.summary)) state.summary = [];
+      const setNumber = state.summary.length + 1;
+      const aScore = state.scoreA || 0;
+      const bScore = state.scoreB || 0;
+
+      let winner = "";
+      if (aScore > bScore) winner = "A";
+      else if (bScore > aScore) winner = "B";
+
+      state.summary.push({
+        set: setNumber,
+        scoreA: aScore,
+        scoreB: bScore,
+        winner
+      });
+
+      if (winner === "A") state.aSets = (state.aSets || 0) + 1;
+      if (winner === "B") state.bSets = (state.bSets || 0) + 1;
+
+      state.scoreA = 0;
+      state.scoreB = 0;
+      state.highlight = "normal";
     }
-});
 
-// 🔥🔥🔥 → COLOCA ESTO AQUÍ ← 🔥🔥🔥
-$("#saveSet").addEventListener("click", saveCurrentSet);
-// ----------------------------------------------------
+    $("#saveSet").addEventListener("click", async ()=>{
+      saveCurrentSet();
+      renderFromState();
+      await publishState();
+      setStatus(`Set ${state.summary.length} guardado.`);
+    });
 
-$("#reset").addEventListener("click", async ()=>{
-    state.aScore = 0;
-    state.bScore = 0;
-    state.aSets = 0;
-    state.bSets = 0;
-    state.serve = "A";
-    state.highlight = "normal";
+    // Render inicial
     renderFromState();
-    await pushState();
-});
-
-    renderFromState();
-    
   </script>
 </body>
 </html>
