@@ -2,280 +2,520 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <title>VB Score Overlay</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Volleyball Scoreboard – Control</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
-    :root{
-      --bg: rgba(0,0,0,0);
-      --card-bg: rgba(5,10,30,0.96);
-      --card-border: rgba(255,255,255,0.04);
-      --text-main: #f8f9ff;
-      --text-muted: #8f95b5;
-      --accent: #f9c74f;
-      --danger: #ff4d67;
-      --success: #3bd882;
+    :root {
+      --bg: #050918;
+      --card: #080f24;
+      --card-soft: #0c1429;
+      --accent: #fbc94a;
+      --accent-soft: rgba(251, 201, 74, 0.16);
+      --danger: #ff4b6a;
+      --text: #f7f7ff;
+      --text-soft: #97a0c3;
+      --border: #151c34;
+      --pill-bg: #11182e;
+      --chip-bg: #10172c;
+      --chip-active: #1f293b;
     }
-    *{
-      box-sizing:border-box;
-      font-family: system-ui,-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text",sans-serif;
+
+    * {
+      box-sizing: border-box;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
+        "Inter", sans-serif;
     }
-    body{
-      margin:0;
-      padding:0;
-      background:var(--bg);
-      color:var(--text-main);
+
+    body {
+      margin: 0;
+      padding: 24px;
+      background: radial-gradient(circle at top, #101936 0, #050918 55%);
+      color: var(--text);
     }
-    .overlay-root{
-      position:absolute;
-      left:40px;
-      top:40px;
-      width:480px;
-      color:var(--text-main);
+
+    h1 {
+      font-size: 28px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin: 0 0 6px;
     }
-    .score-card{
-      background:radial-gradient(circle at top left,#141b3d 0,#050818 55%);
-      border-radius:24px;
-      padding:10px 18px 12px;
-      border:1px solid var(--card-border);
-      box-shadow:0 26px 40px rgba(0,0,0,0.8);
+
+    .subtitle {
+      color: var(--text-soft);
+      font-size: 13px;
+      margin-bottom: 24px;
     }
-    .score-top{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      padding-bottom:6px;
-      border-bottom:1px solid rgba(255,255,255,0.06);
-      margin-bottom:6px;
+
+    .layout {
+      max-width: 1080px;
+      margin: 0 auto;
+      background: radial-gradient(circle at top left, #131b36 0, #050918 60%);
+      border-radius: 24px;
+      padding: 24px 24px 16px;
+      box-shadow: 0 32px 80px rgba(0, 0, 0, 0.65);
+      border: 1px solid #151b30;
     }
-    .score-top-left{
-      font-size:12px;
-      letter-spacing:0.18em;
-      text-transform:uppercase;
-      color:var(--text-muted);
+
+    .top-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
     }
-    .score-top-left span{
-      color:var(--text-main);
+
+    .top-row .field {
+      flex: 1;
     }
-    .live-pill{
-      display:inline-flex;
-      align-items:center;
-      gap:6px;
-      padding:4px 10px;
-      border-radius:999px;
-      background:rgba(255,255,255,0.06);
-      font-size:11px;
-      text-transform:uppercase;
-      letter-spacing:0.18em;
+
+    label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: var(--text-soft);
+      display: block;
+      margin-bottom: 4px;
     }
-    .live-dot{
-      width:7px;
-      height:7px;
-      border-radius:50%;
-      background:var(--success);
-      box-shadow:0 0 8px rgba(59,216,130,0.9);
+
+    input[type="text"],
+    input[type="number"] {
+      width: 100%;
+      padding: 10px 11px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: #060b1a;
+      color: var(--text);
+      font-size: 14px;
+      outline: none;
     }
-    .teams{
-      margin-top:4px;
+
+    input[type="text"]:focus,
+    input[type="number"]:focus {
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.45);
     }
-    .team-row{
-      display:grid;
-      grid-template-columns:minmax(0,1fr) 76px;
-      align-items:center;
-      padding:5px 0;
+
+    .pill-btn {
+      border-radius: 999px;
+      border: none;
+      padding: 10px 22px;
+      font-size: 13px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.15s ease;
     }
-    .team-row + .team-row{
-      border-top:1px solid rgba(255,255,255,0.04);
-      margin-top:2px;
-      padding-top:7px;
+
+    .pill-btn.primary {
+      background: var(--accent);
+      color: #121212;
+      box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.4), 0 8px 18px rgba(0, 0, 0, 0.65);
     }
-    .team-name{
-      display:flex;
-      align-items:center;
-      gap:8px;
+
+    .pill-btn.primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.75);
     }
-    .logo-box{
-      width:32px;
-      height:32px;
-      border-radius:10px;
-      background:rgba(255,255,255,0.04);
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      overflow:hidden;
+
+    .pill-btn.danger {
+      background: rgba(255, 75, 106, 0.1);
+      color: var(--danger);
+      border: 1px solid rgba(255, 75, 106, 0.65);
     }
-    .logo-box img{
-      max-width:100%;
-      max-height:100%;
-      display:block;
+
+    .pill-btn.secondary {
+      background: #060b19;
+      color: var(--text-soft);
+      border: 1px solid var(--border);
     }
-    .team-name-short{
-      font-size:15px;
-      font-weight:700;
-      letter-spacing:0.16em;
-      text-transform:uppercase;
+
+    .pill-btn.secondary.on {
+      background: var(--accent-soft);
+      color: var(--accent);
+      border-color: var(--accent);
     }
-    .sets-pill{
-      display:flex;
-      align-items:center;
-      justify-content:flex-end;
-      gap:8px;
-      color:var(--text-muted);
-      font-size:11px;
-      text-transform:uppercase;
-      letter-spacing:0.12em;
+
+    .pill-btn + .pill-btn {
+      margin-left: 8px;
     }
-    .sets-value{
-      padding:4px 9px;
-      border-radius:999px;
-      background:rgba(255,255,255,0.06);
-      color:var(--accent);
-      font-weight:600;
-      font-size:13px;
+
+    .card-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 16px;
     }
-    .score-box{
-      display:flex;
-      align-items:center;
-      justify-content:flex-end;
-      gap:6px;
+
+    .card {
+      background: var(--card);
+      border-radius: 18px;
+      border: 1px solid var(--border);
+      padding: 16px 18px 14px;
     }
-    .score-value{
-      font-size:26px;
-      font-weight:800;
-      min-width:32px;
-      text-align:right;
+
+    .card-title {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: var(--text-soft);
+      margin-bottom: 10px;
     }
-    .serve-indicator{
-      width:10px;
-      height:10px;
-      border-radius:50%;
-      border:2px solid rgba(255,255,255,0.35);
-      display:flex;
-      align-items:center;
-      justify-content:center;
+
+    .two-col {
+      display: grid;
+      grid-template-columns: minmax(0, 1.4fr) minmax(0, 2fr);
+      gap: 10px 14px;
+      align-items: flex-end;
     }
-    .serve-dot{
-      width:5px;
-      height:5px;
-      border-radius:50%;
-      background:var(--success);
+
+    .file-note {
+      font-size: 11px;
+      color: var(--text-soft);
+      margin-top: 3px;
     }
-    .serve-indicator.off{
-      opacity:0.25;
+
+    input[type="file"] {
+      font-size: 11px;
+      color: var(--text-soft);
     }
-    .highlight-spA .team-row[data-team="A"] .score-box{
-      text-shadow:0 0 16px rgba(249,199,79,0.9);
-      color:var(--accent);
+
+    .sets-display {
+      margin-top: 8px;
     }
-    .highlight-spB .team-row[data-team="B"] .score-box{
-      text-shadow:0 0 16px rgba(249,199,79,0.9);
-      color:var(--accent);
+
+    .sets-display div {
+      width: 100%;
+      padding: 7px 12px;
+      border-radius: 999px;
+      border: 1px dashed var(--border);
+      background: #050918;
+      font-size: 13px;
+      color: var(--text-soft);
     }
-    .highlight-mpA .team-row[data-team="A"] .score-box{
-      text-shadow:0 0 18px rgba(255,77,103,0.9);
-      color:#ffffff;
+
+    .sets-display span.value {
+      float: right;
+      color: var(--text);
+      font-weight: 600;
     }
-    .highlight-mpB .team-row[data-team="B"] .score-box{
-      text-shadow:0 0 18px rgba(255,77,103,0.9);
-      color:#ffffff;
+
+    .score-card {
+      background: var(--card-soft);
+      border-radius: 18px;
+      border: 1px solid var(--border);
+      padding: 16px 18px 12px;
+      margin-bottom: 12px;
     }
-    .summary-row{
-      margin-top:6px;
-      padding-top:6px;
-      border-top:1px solid rgba(255,255,255,0.06);
-      font-size:11px;
-      color:var(--text-muted);
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:8px;
+
+    .score-header {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: var(--text-soft);
+      margin-bottom: 10px;
     }
-    .summary-label{
-      letter-spacing:0.18em;
-      text-transform:uppercase;
+
+    .score-main-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1.3fr) 130px;
+      gap: 8px 20px;
+      align-items: center;
     }
-    .summary-items{
-      display:flex;
-      flex-wrap:wrap;
-      gap:6px;
-      justify-content:flex-end;
+
+    .score-team-block {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 6px 10px;
+      align-items: center;
     }
-    .summary-pill{
-      padding:3px 8px;
-      border-radius:999px;
-      background:rgba(255,255,255,0.06);
-      font-size:11px;
-      color:var(--text-main);
+
+    .score-team-block label {
+      margin-bottom: 2px;
     }
-    .summary-pill .winner{
-      font-weight:600;
-      margin-left:4px;
-      color:var(--accent);
+
+    .score-control {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      padding: 4px 10px;
+      background: #050918;
+    }
+
+    .score-control button {
+      border-radius: 999px;
+      border: none;
+      width: 26px;
+      height: 26px;
+      font-size: 18px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      background: transparent;
+      color: var(--text-soft);
+      transition: background 0.12s ease, color 0.12s ease, transform 0.08s ease;
+    }
+
+    .score-control button:hover {
+      background: #10172f;
+      color: var(--text);
+      transform: translateY(-1px);
+    }
+
+    .score-value {
+      font-size: 18px;
+      font-weight: 600;
+      min-width: 32px;
+      text-align: center;
+    }
+
+    .serve-toggle {
+      display: inline-flex;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: #050918;
+      overflow: hidden;
+    }
+
+    .serve-toggle button {
+      border: none;
+      padding: 5px 14px;
+      font-size: 12px;
+      color: var(--text-soft);
+      background: transparent;
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+    }
+
+    .serve-toggle button.active {
+      background: var(--accent-soft);
+      color: var(--accent);
+    }
+
+    .highlight-row,
+    .view-row,
+    .overlay-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 6px 0;
+    }
+
+    .chip {
+      border-radius: 999px;
+      padding: 6px 14px;
+      font-size: 12px;
+      border: 1px solid var(--chip-bg);
+      background: var(--chip-bg);
+      color: var(--text-soft);
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+    }
+
+    .chip.active {
+      background: var(--chip-active);
+      border-color: #3b82f6;
+      color: #bfdbfe;
+    }
+
+    .chip.highlight-normal.active {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .chip-view.active {
+      border-color: #22c55e;
+      color: #a7f3d0;
+    }
+
+    .status {
+      margin-top: 8px;
+      font-size: 12px;
+      color: var(--text-soft);
+    }
+
+    .status.error {
+      color: var(--danger);
+    }
+
+    .footer-note {
+      margin-top: 4px;
+      font-size: 11px;
+      color: var(--text-soft);
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .footer-note strong {
+      color: var(--accent);
+    }
+
+    @media (max-width: 900px) {
+      .card-row {
+        grid-template-columns: 1fr;
+      }
+      .score-main-row {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
 <body>
-  <div id="overlayRoot" class="overlay-root">
-    <div class="score-card">
-      <div class="score-top">
-        <div class="score-top-left">
-          <span id="matchTitle">BRONZE MEDAL MATCH · LAI</span>
-        </div>
-        <div class="live-pill">
-          <div class="live-dot"></div>
-          Live score
+  <div class="layout">
+    <h1>Volleyball Scoreboard – Control</h1>
+    <div class="subtitle">
+      Usa el mismo <strong>room</strong> que en el overlay. Conecta una vez y
+      luego controla todo desde aquí.
+    </div>
+
+    <div class="top-row">
+      <div class="field">
+        <label for="room">Room</label>
+        <input id="room" type="text" value="vb1" />
+      </div>
+      <div class="field">
+        <label for="matchTitle">Match Title</label>
+        <input
+          id="matchTitle"
+          type="text"
+          value="Bronze Medal Match · LAI"
+        />
+      </div>
+      <div style="display:flex; gap:8px; align-items:flex-end;">
+        <button id="connect" class="pill-btn primary">Connect</button>
+        <button id="reset" class="pill-btn danger">Reset</button>
+      </div>
+    </div>
+
+    <div class="card-row">
+      <!-- Equipo A -->
+      <div class="card">
+        <div class="card-title">Equipo A</div>
+        <div class="two-col">
+          <div>
+            <label for="aShort">Nombre corto (siglas)</label>
+            <input id="aShort" type="text" value="ITA" />
+          </div>
+          <div>
+            <label for="aLogoUrl">Logo (URL)</label>
+            <input id="aLogoUrl" type="text" placeholder="https://..." />
+            <div class="file-note">Usa archivo o URL (archivo tiene prioridad).</div>
+            <input id="aLogoFile" type="file" accept="image/*" />
+          </div>
+          <div class="sets-display">
+            <label>Sets ganados</label>
+            <div>Equipo A <span class="value" id="aSetsLabel">0</span></div>
+          </div>
         </div>
       </div>
 
-      <div class="teams" id="teams">
-        <div class="team-row" id="rowA" data-team="A">
-          <div class="team-name">
-            <div class="logo-box"><img id="logoA" alt="" /></div>
-            <div class="team-name-short" id="shortA">ITA</div>
+      <!-- Equipo B -->
+      <div class="card">
+        <div class="card-title">Equipo B</div>
+        <div class="two-col">
+          <div>
+            <label for="bShort">Nombre corto (siglas)</label>
+            <input id="bShort" type="text" value="USA" />
           </div>
-          <div class="score-box" id="scoreBoxA">
-            <div class="sets-pill">
-              <span>SETS</span>
-              <span class="sets-value" id="setsA">0</span>
-            </div>
-            <div class="score-value" id="scoreA">23</div>
-            <div class="serve-indicator off" id="serveA">
-              <div class="serve-dot"></div>
-            </div>
+          <div>
+            <label for="bLogoUrl">Logo (URL)</label>
+            <input id="bLogoUrl" type="text" placeholder="https://..." />
+            <div class="file-note">Usa archivo o URL (archivo tiene prioridad).</div>
+            <input id="bLogoFile" type="file" accept="image/*" />
           </div>
-        </div>
-
-        <div class="team-row" id="rowB" data-team="B">
-          <div class="team-name">
-            <div class="logo-box"><img id="logoB" alt="" /></div>
-            <div class="team-name-short" id="shortB">USA</div>
+          <div class="sets-display">
+            <label>Sets ganados</label>
+            <div>Equipo B <span class="value" id="bSetsLabel">0</span></div>
           </div>
-          <div class="score-box" id="scoreBoxB">
-            <div class="sets-pill">
-              <span>SETS</span>
-              <span class="sets-value" id="setsB">1</span>
-            </div>
-            <div class="score-value" id="scoreB">24</div>
-            <div class="serve-indicator off" id="serveB">
-              <div class="serve-dot"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="summary-row">
-        <div class="summary-label">Resumen sets</div>
-        <div class="summary-items" id="summaryItems">
-          <!-- Aquí se llenan los sets -->
         </div>
       </div>
     </div>
+
+    <!-- Marcador -->
+    <div class="score-card">
+      <div class="score-header">Marcador actual (set en juego)</div>
+      <div class="score-main-row">
+        <div class="score-team-block">
+          <div>
+            <label for="scoreA">A</label>
+            <div class="score-control">
+              <button id="aMinus">−</button>
+              <div id="scoreA" class="score-value">0</div>
+              <button id="aPlus">+</button>
+            </div>
+          </div>
+          <div>
+            <label for="scoreB">B</label>
+            <div class="score-control">
+              <button id="bMinus">−</button>
+              <div id="scoreB" class="score-value">0</div>
+              <button id="bPlus">+</button>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:flex; flex-direction:column; gap:8px; align-items:flex-start;">
+          <label>Serve</label>
+          <div class="serve-toggle">
+            <button id="serveA" class="active">A</button>
+            <button id="serveB">B</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Highlight -->
+    <div class="highlight-row">
+      <label>Highlight</label>
+      <button class="chip chip-highlight highlight-normal active" data-hl="normal">
+        Normal
+      </button>
+      <button class="chip chip-highlight" data-hl="spA">Set point A</button>
+      <button class="chip chip-highlight" data-hl="spB">Set point B</button>
+      <button class="chip chip-highlight" data-hl="mpA">Match point A</button>
+      <button class="chip chip-highlight" data-hl="mpB">Match point B</button>
+    </div>
+
+    <!-- Vista -->
+    <div class="view-row">
+      <label>Vista</label>
+      <button class="chip chip-view active" data-view="score">Marcador</button>
+      <button class="chip chip-view" data-view="summary">Resumen sets</button>
+      <button id="saveSet" class="pill-btn secondary">
+        Guardar set
+      </button>
+    </div>
+
+    <!-- Overlay ON/OFF -->
+    <div class="overlay-row">
+      <label>Overlay</label>
+      <button id="toggleOverlay" class="pill-btn secondary on">
+        Ocultar overlay
+      </button>
+    </div>
+
+    <div id="status" class="status">Sin conectar.</div>
+    <div class="footer-note">
+      <div>Atajos: <strong>+ / −</strong> para sumar/restar puntos luego 😉</div>
+      <div>Vista: usa “Marcador / Resumen sets” para cambiar lo que ve el overlay.</div>
+    </div>
   </div>
 
+  <!-- Firebase + lógica -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
-    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
+    import {
+      getDatabase,
+      ref,
+      set,
+    } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
 
-    // ⚠️ Misma config real
+    // ⚠️ CONFIG de tu proyecto
     const firebaseConfig = {
       apiKey: "AIzaSyD8r0rLLcLPJx3DsNGMuvVTfuwCMBxRPpM",
       authDomain: "tkd-overlay.firebaseapp.com",
@@ -284,96 +524,265 @@
       storageBucket: "tkd-overlay.firebasestorage.app",
       messagingSenderId: "41501920835",
       appId: "1:41501920835:web:4ccecdf129cf20619d8ef6",
-      measurementId: "G-CXBJCL86EM"
+      measurementId: "G-CXBJCL86EM",
     };
 
     const app = initializeApp(firebaseConfig);
-    const db  = getDatabase(app);
+    const db = getDatabase(app);
 
-    const $  = (s) => document.querySelector(s);
+    const $ = (s) => document.querySelector(s);
+    const $$ = (s) => Array.from(document.querySelectorAll(s));
 
-    function getRoomFromQuery(){
-      const params = new URLSearchParams(window.location.search);
-      return params.get("room") || "vb1";
+    let stateRef = null;
+
+    const state = {
+      matchTitle: "Bronze Medal Match · LAI",
+      aShort: "ITA",
+      bShort: "USA",
+      aSets: 0,
+      bSets: 0,
+      aLogoUrl: "",
+      bLogoUrl: "",
+      aLogoData: "",
+      bLogoData: "",
+      scoreA: 0,
+      scoreB: 0,
+      serve: "A",
+      highlight: "normal", // normal | spA | spB | mpA | mpB
+      view: "score",       // score | summary
+      summary: [],         // historial de sets
+      visible: true,       // 👈 overlay visible
+    };
+
+    function setStatus(msg, isError = false) {
+      const el = $("#status");
+      el.textContent = msg;
+      el.classList.toggle("error", isError);
     }
 
-    function setText(selector, value){
-      const el = $(selector);
-      if (!el) return;
-      el.textContent = value ?? "";
-    }
+    function renderFromState() {
+      $("#matchTitle").value = state.matchTitle;
+      $("#aShort").value = state.aShort;
+      $("#bShort").value = state.bShort;
+      $("#aLogoUrl").value = state.aLogoUrl;
+      $("#bLogoUrl").value = state.bLogoUrl;
+      $("#aSetsLabel").textContent = state.aSets;
+      $("#bSetsLabel").textContent = state.bSets;
+      $("#scoreA").textContent = state.scoreA;
+      $("#scoreB").textContent = state.scoreB;
 
-    function setLogo(selector, url){
-      const img = $(selector);
-      if (!img) return;
-      if (url){
-        img.src = url;
-        img.style.visibility = "visible";
-      }else{
-        img.removeAttribute("src");
-        img.style.visibility = "hidden";
+      // Serve
+      $("#serveA").classList.toggle("active", state.serve === "A");
+      $("#serveB").classList.toggle("active", state.serve === "B");
+
+      // Highlight chips
+      $$(".chip-highlight").forEach((chip) => {
+        chip.classList.toggle(
+          "active",
+          chip.dataset.hl === state.highlight
+        );
+      });
+
+      // View chips
+      $$(".chip-view").forEach((chip) => {
+        chip.classList.toggle("active", chip.dataset.view === state.view);
+      });
+
+      // Overlay toggle button
+      const toggleBtn = $("#toggleOverlay");
+      if (state.visible) {
+        toggleBtn.textContent = "Ocultar overlay";
+        toggleBtn.classList.add("on");
+      } else {
+        toggleBtn.textContent = "Mostrar overlay";
+        toggleBtn.classList.remove("on");
       }
     }
 
-    function renderOverlay(state){
-      setText("#matchTitle", state.matchTitle || "");
+    async function pushState() {
+      if (!stateRef) return;
+      await set(stateRef, state);
+    }
 
-      setText("#shortA", state.aShort || "");
-      setText("#shortB", state.bShort || "");
+    // Leer inputs básicos al cambiar algo
+    function syncInputsToState() {
+      state.matchTitle = $("#matchTitle").value || "";
+      state.aShort = $("#aShort").value || "";
+      state.bShort = $("#bShort").value || "";
+      state.aLogoUrl = $("#aLogoUrl").value.trim();
+      state.bLogoUrl = $("#bLogoUrl").value.trim();
+    }
 
-      setLogo("#logoA", state.aLogoUrl || "");
-      setLogo("#logoB", state.bLogoUrl || "");
-
-      setText("#setsA", state.aSets ?? 0);
-      setText("#setsB", state.bSets ?? 0);
-      setText("#scoreA", state.scoreA ?? 0);
-      setText("#scoreB", state.scoreB ?? 0);
-
-      const serve = state.serve || "A";
-      $("#serveA").classList.toggle("off", serve !== "A");
-      $("#serveB").classList.toggle("off", serve !== "B");
-
-      const root = $("#overlayRoot");
-      root.classList.remove("highlight-spA","highlight-spB","highlight-mpA","highlight-mpB");
-      if (state.highlight && state.highlight !== "normal"){
-        root.classList.add("highlight-" + state.highlight);
+    // Botón CONNECT
+    $("#connect").addEventListener("click", async () => {
+      const room = ($("#room").value || "vb1").trim();
+      stateRef = ref(db, `tkd/${room}/vbScore`);
+      try {
+        syncInputsToState();
+        await set(stateRef, state);
+        setStatus(`Conectado a room "${room}".`);
+      } catch (e) {
+        console.error(e);
+        setStatus("Error al conectar: " + (e.message || e), true);
       }
+    });
 
-      const summary = Array.isArray(state.summary) ? state.summary : [];
-      const container = $("#summaryItems");
-      container.innerHTML = "";
-      summary.forEach(item=>{
-        const pill = document.createElement("div");
-        pill.className = "summary-pill";
-        const setNum = item.set ?? "?";
-        const a = item.scoreA ?? 0;
-        const b = item.scoreB ?? 0;
-        const winner =
-          item.winner === "A" ? (state.aShort || "A") :
-          item.winner === "B" ? (state.bShort || "B") : "";
+    // Botón RESET
+    $("#reset").addEventListener("click", async () => {
+      state.aSets = 0;
+      state.bSets = 0;
+      state.scoreA = 0;
+      state.scoreB = 0;
+      state.serve = "A";
+      state.highlight = "normal";
+      state.summary = [];
+      state.visible = true;
+      syncInputsToState();
+      renderFromState();
+      await pushState();
+    });
 
-        pill.textContent = `Set ${setNum} · ${a}–${b}`;
-        if (winner){
-          const span = document.createElement("span");
-          span.className = "winner";
-          span.textContent = `· ${winner}`;
-          pill.appendChild(span);
+    // Score handlers
+    $("#aPlus").addEventListener("click", async () => {
+      state.scoreA++;
+      renderFromState();
+      await pushState();
+    });
+    $("#aMinus").addEventListener("click", async () => {
+      if (state.scoreA > 0) state.scoreA--;
+      renderFromState();
+      await pushState();
+    });
+    $("#bPlus").addEventListener("click", async () => {
+      state.scoreB++;
+      renderFromState();
+      await pushState();
+    });
+    $("#bMinus").addEventListener("click", async () => {
+      if (state.scoreB > 0) state.scoreB--;
+      renderFromState();
+      await pushState();
+    });
+
+    // Atajos teclado (+ / -)
+    document.addEventListener("keydown", async (e) => {
+      if (state.view !== "score") return;
+      if (e.key === "+") {
+        state.scoreA++;
+        renderFromState();
+        await pushState();
+      } else if (e.key === "-") {
+        state.scoreB++;
+        renderFromState();
+        await pushState();
+      }
+    });
+
+    // Serve
+    $("#serveA").addEventListener("click", async () => {
+      state.serve = "A";
+      renderFromState();
+      await pushState();
+    });
+
+    $("#serveB").addEventListener("click", async () => {
+      state.serve = "B";
+      renderFromState();
+      await pushState();
+    });
+
+    // Highlight
+    $$(".chip-highlight").forEach((chip) => {
+      chip.addEventListener("click", async () => {
+        state.highlight = chip.dataset.hl;
+        renderFromState();
+        await pushState();
+      });
+    });
+
+    // View
+    $$(".chip-view").forEach((chip) => {
+      chip.addEventListener("click", async () => {
+        state.view = chip.dataset.view;
+        renderFromState();
+        await pushState();
+      });
+    });
+
+    // Toggle Overlay ON/OFF
+    $("#toggleOverlay").addEventListener("click", async () => {
+      state.visible = !state.visible;
+      renderFromState();
+      await pushState();
+    });
+
+    // Guardar set en summary
+    function saveCurrentSet() {
+      if (!Array.isArray(state.summary)) state.summary = [];
+
+      const n = state.summary.length + 1;
+      const aScore = state.scoreA || 0;
+      const bScore = state.scoreB || 0;
+      let winner = "";
+      if (aScore > bScore) winner = "A";
+      else if (bScore > aScore) winner = "B";
+
+      state.summary.push({
+        n,
+        aScore,
+        bScore,
+        winner,
+      });
+
+      if (winner === "A") state.aSets++;
+      if (winner === "B") state.bSets++;
+
+      state.scoreA = 0;
+      state.scoreB = 0;
+      state.highlight = "normal";
+    }
+
+    $("#saveSet").addEventListener("click", async () => {
+      saveCurrentSet();
+      renderFromState();
+      await pushState();
+    });
+
+    // Logo desde archivo
+    function setupLogoFile(inputId, key) {
+      const input = $("#" + inputId);
+      input.addEventListener("change", async (e) => {
+        const file = e.target.files[0];
+        if (!file) {
+          state[key] = "";
+          renderFromState();
+          await pushState();
+          return;
         }
-        container.appendChild(pill);
+        const reader = new FileReader();
+        reader.onload = async (ev) => {
+          state[key] = ev.target.result;
+          renderFromState();
+          await pushState();
+        };
+        reader.readAsDataURL(file);
       });
     }
 
-    function init(){
-      const room = getRoomFromQuery();
-      const stateRef = ref(db, `tkd/${room}/vbScore`);
-      onValue(stateRef, (snap)=>{
-        const val = snap.val();
-        if (!val) return;
-        renderOverlay(val);
-      });
-    }
+    setupLogoFile("aLogoFile", "aLogoData");
+    setupLogoFile("bLogoFile", "bLogoData");
 
-    init();
+    // Inputs básicos al escribir
+    ["matchTitle", "aShort", "bShort", "aLogoUrl", "bLogoUrl"].forEach((id) => {
+      $("#" + id).addEventListener("input", async () => {
+        syncInputsToState();
+        renderFromState();
+        await pushState();
+      });
+    });
+
+    // Render inicial
+    renderFromState();
   </script>
 </body>
 </html>
