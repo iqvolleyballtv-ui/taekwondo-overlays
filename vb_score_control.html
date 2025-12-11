@@ -343,13 +343,16 @@
       </div>
 
       <div class="highlight-row">
-        <span>Highlight</span>
-        <button class="chip active" data-hl="normal">Normal</button>
-        <button class="chip" data-hl="spA">Set point A</button>
-        <button class="chip" data-hl="spB">Set point B</button>
-        <button class="chip" data-hl="mpA">Match point A</button>
-        <button class="chip" data-hl="mpB">Match point B</button>
-      </div>
+    <span>Highlight</span>
+    <button class="chip active" data-hl="normal">Normal</button>
+    <button class="chip" data-hl="spA">Set point A</button>
+    <button class="chip" data-hl="spB">Set point B</button>
+    <button class="chip" data-hl="mpA">Match point A</button>
+    <button class="chip" data-hl="mpB">Match point B</button>
+
+    <!--🔥 Nuevo botón para guardar el set -->
+    <button id="saveSet" class="chip warning">Guardar Set</button>
+</div>
 
       <div class="view-row">
         <span>Vista</span>
@@ -409,16 +412,90 @@
       el.textContent = msg;
       el.classList.toggle("error", isError);
     }
+let state = {
+  matchTitle: "",
+  aShort: "",
+  bShort: "",
+  aSets: 0,
+  bSets: 0,
+  aLogoUrl: "",
+  bLogoUrl: "",
+  scoreA: 0,
+  scoreB: 0,
+  serve: "A",
+  highlight: "normal",
+  view: "score",
+  summary: []  // 🔥 el historial de sets
+};
 
     function readInputsToState(){
-      state.matchTitle = $("#matchTitle").value || "";
-      state.aShort = $("#aShort").value || "";
-      state.bShort = $("#bShort").value || "";
-      state.aSets = parseInt($("#aSets").value || "0",10);
-      state.bSets = parseInt($("#bSets").value || "0",10);
-      state.aLogoUrl = $("#aLogoUrl").value.trim();
-      state.bLogoUrl = $("#bLogoUrl").value.trim();
-    }
+  state.matchTitle = $("#matchTitle").value || "";
+  state.aShort = $("#aShort").value || "";
+  state.bShort = $("#bShort").value || "";
+  state.aSets = parseInt($("#aSets").value || "0",10);
+  state.bSets = parseInt($("#bSets").value || "0",10);
+  state.aLogoUrl = $("#aLogoUrl").value.trim();
+  state.bLogoUrl = $("#bLogoUrl").value.trim();
+}
+function finishSet(winner) {
+
+  // Guardar el set actual en summary
+  const entry = {
+    n: state.summary.length + 1,
+    a: state.scoreA,
+    b: state.scoreB,
+    winner
+  };
+
+  state.summary.push(entry);
+
+  // Sumar set ganado
+  if (winner === "A") {
+    state.aSets++;
+  } else {
+    state.bSets++;
+  }
+
+  // Resetear marcador
+  state.scoreA = 0;
+  state.scoreB = 0;
+
+  // Reset highlight
+  state.highlight = "normal";
+
+  // Enviar a Firebase
+  publishState();
+}
+function saveCurrentSet() {
+  // Asegurarnos de que summary es un array
+  if (!Array.isArray(state.summary)) {
+    state.summary = [];
+  }
+
+  const n = state.summary.length + 1;
+
+  const aScore = state.scoreA || 0;
+  const bScore = state.scoreB || 0;
+
+  let winner = "";
+  if (aScore > bScore) winner = "A";
+  else if (bScore > aScore) winner = "B";
+
+  const entry = {
+    n,         // número de set
+    aScore,
+    bScore,
+    winner     // "A", "B" o "" si empatan
+  };
+
+  state.summary = [...state.summary, entry];
+
+  // 👇 Usa la MISMA función que ya usas para enviar el state al overlay
+  // (si se llama publish(), push(), syncUIAndSend()… pon ese nombre aquí)
+  publishState();
+
+  setStatus(`Set ${n} guardado en el resumen.`);
+}
 
     function renderFromState(){
       $("#matchTitle").value = state.matchTitle;
@@ -512,29 +589,34 @@
 
     // connect (usa misma rama base que Taekwondo: tkd/<room>/vbScore)
     $("#connect").addEventListener("click", async ()=>{
-      room = $("#room").value.trim() || "vb1";
-      stateRef = ref(db, `tkd/${room}/vbScore`);
-      try{
-        await set(stateRef, state);   // crea / actualiza el nodo inicial
+    room = $("#room").value.trim() || "vb1";
+    stateRef = ref(db, `tkd/${room}/vbScore`);
+    try{
+        await set(stateRef, state);
         setStatus(`Conectado a room "${room}".`);
-      }catch(e){
+    }catch(e){
         console.error(e);
         setStatus("Error al conectar: " + (e.message || e), true);
-      }
-    });
+    }
+});
 
-    $("#reset").addEventListener("click", async ()=>{
-      state.aScore = 0;
-      state.bScore = 0;
-      state.aSets = 0;
-      state.bSets = 0;
-      state.serve = "A";
-      state.highlight = "normal";
-      renderFromState();
-      await pushState();
-    });
+// 🔥🔥🔥 → COLOCA ESTO AQUÍ ← 🔥🔥🔥
+$("#saveSet").addEventListener("click", saveCurrentSet);
+// ----------------------------------------------------
+
+$("#reset").addEventListener("click", async ()=>{
+    state.aScore = 0;
+    state.bScore = 0;
+    state.aSets = 0;
+    state.bSets = 0;
+    state.serve = "A";
+    state.highlight = "normal";
+    renderFromState();
+    await pushState();
+});
 
     renderFromState();
+    
   </script>
 </body>
 </html>
