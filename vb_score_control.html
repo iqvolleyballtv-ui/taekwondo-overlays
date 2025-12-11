@@ -5,601 +5,529 @@
   <title>Volleyball Scoreboard – Control</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
-    :root {
-      --bg: #050812;
-      --panel: #0b101f;
-      --panel-alt: #121828;
-      --accent: #ffd54a;
-      --accent-soft: #ffec9c22;
-      --text-main: #f5f6fb;
-      --text-muted: #8590b3;
-      --danger: #ff4b6b;
-      --good: #3dd68c;
-      --border: #1b2236;
-      --btn-bg: #151b2b;
-      --btn-bg-active: #1e2638;
-      --btn-pill: 999px;
+    :root{
+      --bg:#050814;
+      --panel:#0b1020;
+      --accent:#f7c43a;
+      --accent-soft:#f7c43a22;
+      --text:#f5f7ff;
+      --muted:#8b92b3;
+      --danger:#ff4b6a;
+      --pill:#20263a;
+      --pill-active:#f7c43a;
+      --input:#111729;
+      --shadow:0 18px 45px rgba(0,0,0,.7);
+      --radius-lg:18px;
+      --radius-pill:999px;
+      --font:"SF Pro Display","Inter",-apple-system,BlinkMacSystemFont,system-ui,sans-serif;
     }
-    * {
-      box-sizing: border-box;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
-        Roboto, sans-serif;
+    *{box-sizing:border-box;margin:0;padding:0;font-family:var(--font);}
+    body{
+      background:radial-gradient(circle at top,#141b33 0,#050814 55%,#02030a 100%);
+      color:var(--text);
+      min-height:100vh;
+      padding:32px 16px 24px;
+      display:flex;
+      justify-content:center;
     }
-    body {
-      margin: 0;
-      padding: 24px;
-      background: radial-gradient(circle at top, #151c33 0, #050812 55%);
-      color: var(--text-main);
+    .wrap{
+      width:min(960px,100%);
+      background:linear-gradient(135deg,#080c1b 0,#060916 45%,#050814 100%);
+      border-radius:24px;
+      padding:24px 26px 18px;
+      box-shadow:var(--shadow);
+      border:1px solid #171b2e;
+      position:relative;
+      overflow:hidden;
     }
-    h1 {
-      margin: 0 0 12px;
-      font-size: 24px;
-      letter-spacing: 0.04em;
+    h1{
+      font-size:26px;
+      letter-spacing:.06em;
+      text-transform:uppercase;
+      margin-bottom:18px;
     }
-    .card {
-      max-width: 900px;
-      margin: 0 auto;
-      background: linear-gradient(145deg, #0b101f, #060815);
-      border-radius: 18px;
-      padding: 20px 22px 18px;
-      box-shadow: 0 24px 80px rgba(0, 0, 0, 0.65);
-      border: 1px solid var(--border);
+    .subtitle{
+      font-size:13px;
+      color:var(--muted);
+      margin-bottom:16px;
     }
-    .row {
-      display: flex;
-      gap: 16px;
-      flex-wrap: wrap;
-      margin-bottom: 14px;
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:18px 22px;
+      margin-bottom:18px;
     }
-    .col {
-      flex: 1;
-      min-width: 160px;
+    .field-group{
+      background:rgba(8,12,28,.85);
+      border-radius:18px;
+      padding:14px 14px 12px;
+      border:1px solid #151a30;
     }
-    label {
-      display: block;
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 0.12em;
-      color: var(--text-muted);
-      margin-bottom: 4px;
+    .field-group h2{
+      font-size:13px;
+      text-transform:uppercase;
+      letter-spacing:.14em;
+      color:var(--muted);
+      margin-bottom:8px;
     }
-    input[type="text"],
-    input[type="number"] {
-      width: 100%;
-      border-radius: 999px;
-      border: 1px solid var(--border);
-      background: #050813;
-      color: var(--text-main);
-      padding: 7px 12px;
-      font-size: 13px;
-      outline: none;
+    .field-row{
+      display:flex;
+      gap:10px;
+      margin-bottom:8px;
     }
-    input[type="text"]:focus,
-    input[type="number"]:focus {
-      border-color: #4b9dff;
-      box-shadow: 0 0 0 1px #214573;
+    label{
+      font-size:11px;
+      text-transform:uppercase;
+      letter-spacing:.13em;
+      color:var(--muted);
+      display:block;
+      margin-bottom:3px;
     }
-    .topbar {
-      display: flex;
-      gap: 12px;
-      align-items: center;
-      margin-bottom: 16px;
+    input[type="text"], input[type="number"]{
+      width:100%;
+      border-radius:999px;
+      border:none;
+      background:var(--input);
+      padding:8px 12px;
+      font-size:13px;
+      color:var(--text);
+      outline:none;
     }
-    .topbar .grow {
-      flex: 1;
+    input[type="number"]{text-align:center;}
+    input[type="file"]{
+      font-size:11px;
+      color:var(--muted);
     }
-    .chip {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 5px 11px 6px;
-      border-radius: 999px;
-      background: var(--panel-alt);
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 0.12em;
-      color: var(--text-muted);
+    .top-row{
+      display:flex;
+      gap:18px;
+      margin-bottom:18px;
+      align-items:center;
     }
-    .chip-dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: #27e86c;
-      box-shadow: 0 0 0 4px #27e86c22;
+    .top-row .field{
+      flex:1;
     }
-    button {
-      border-radius: 999px;
-      border: none;
-      cursor: pointer;
-      font-size: 13px;
-      padding: 8px 18px;
-      background: var(--btn-bg);
-      color: var(--text-main);
-      transition: background 0.15s, transform 0.05s, box-shadow 0.15s;
-      border: 1px solid transparent;
+    .pill-btn{
+      border-radius:var(--radius-pill);
+      border:none;
+      padding:8px 18px;
+      font-size:13px;
+      text-transform:uppercase;
+      letter-spacing:.13em;
+      cursor:pointer;
+      background:var(--pill);
+      color:var(--muted);
     }
-    button:hover {
-      background: #20273a;
+    .pill-btn.primary{
+      background:var(--accent);
+      color:#111321;
     }
-    button:active {
-      transform: translateY(1px);
-      box-shadow: none;
+    .pill-btn.danger{
+      background:#1f1020;
+      color:#ff7ca0;
+      border:1px solid var(--danger);
     }
-    .btn-accent {
-      background: var(--accent);
-      color: #11121a;
-      font-weight: 600;
-      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+    .score-row{
+      display:flex;
+      gap:18px;
+      align-items:center;
+      margin:10px 0 14px;
     }
-    .btn-accent:hover {
-      background: #ffe177;
+    .score-team{
+      flex:1;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:10px 12px;
+      border-radius:16px;
+      background:#090e1d;
+      border:1px solid #171b2e;
     }
-    .btn-ghost {
-      background: transparent;
-      border-color: var(--border);
-      color: var(--text-muted);
+    .score-team-name{
+      font-size:13px;
+      letter-spacing:.2em;
+      text-transform:uppercase;
+      color:var(--muted);
     }
-    .btn-pill {
-      border-radius: var(--btn-pill);
-      padding-inline: 16px;
-      font-size: 12px;
+    .score-controls{
+      display:flex;
+      align-items:center;
+      gap:10px;
     }
-    .btn-pill.active {
-      background: #1e2537;
-      border-color: #3b4764;
-      color: #fefefe;
+    .score-btn{
+      width:26px;
+      height:26px;
+      border-radius:999px;
+      border:none;
+      font-size:16px;
+      background:#111729;
+      color:var(--text);
+      cursor:pointer;
     }
-    .score-row {
-      display: grid;
-      grid-template-columns: auto auto auto auto;
-      align-items: center;
-      gap: 10px;
-      margin-top: 4px;
+    .score-value{
+      width:28px;
+      text-align:center;
+      font-size:18px;
+      font-weight:600;
     }
-    .score-label {
-      font-size: 13px;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.14em;
+    .serve-toggle{
+      display:flex;
+      gap:6px;
+      margin-top:6px;
     }
-    .score-value {
-      font-size: 22px;
-      text-align: center;
-      min-width: 32px;
+    .serve-toggle button{
+      border-radius:999px;
+      border:none;
+      padding:3px 12px;
+      font-size:11px;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      cursor:pointer;
+      background:var(--pill);
+      color:var(--muted);
     }
-    .score-btn {
-      width: 28px;
-      height: 28px;
-      border-radius: 999px;
-      background: #13192a;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 16px;
+    .serve-toggle button.active{
+      background:var(--accent);
+      color:#111321;
     }
-    .score-btn:hover {
-      background: #222a40;
+    .highlight-row, .view-row{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      margin-top:4px;
+      flex-wrap:wrap;
     }
-    .serv-toggle {
-      display: inline-flex;
-      gap: 6px;
-      border-radius: 999px;
-      background: #050813;
-      border: 1px solid #242b40;
-      padding: 2px;
+    .highlight-row span,
+    .view-row span{
+      font-size:11px;
+      color:var(--muted);
+      text-transform:uppercase;
+      letter-spacing:.13em;
+      margin-right:6px;
     }
-    .serv-toggle button {
-      padding: 4px 10px;
-      border-radius: 999px;
-      font-size: 11px;
-      border: none;
-      background: transparent;
-      color: var(--text-muted);
+    .chip{
+      border-radius:999px;
+      border:1px solid #262b41;
+      padding:6px 14px;
+      font-size:11px;
+      text-transform:uppercase;
+      letter-spacing:.12em;
+      background:#0b1020;
+      color:var(--muted);
+      cursor:pointer;
     }
-    .serv-toggle button.active {
-      background: #24e26a22;
-      color: var(--good);
+    .chip.active{
+      background:var(--accent-soft);
+      border-color:var(--accent);
+      color:var(--accent);
     }
-    .section-title {
-      margin: 10px 0 4px;
-      text-transform: uppercase;
-      font-size: 11px;
-      letter-spacing: 0.16em;
-      color: var(--text-muted);
+    .status{
+      margin-top:14px;
+      font-size:12px;
+      color:var(--muted);
     }
-    .foot {
-      margin-top: 10px;
-      font-size: 11px;
-      color: var(--text-muted);
-      display: flex;
-      justify-content: space-between;
-      gap: 10px;
-      align-items: center;
-      flex-wrap: wrap;
-    }
-    .status-dot {
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      margin-right: 6px;
-    }
-    .status-ok {
-      background: var(--good);
-      box-shadow: 0 0 0 4px #3dd68c22;
-    }
-    .status-bad {
-      background: var(--danger);
-      box-shadow: 0 0 0 4px #ff4b6b22;
-    }
-    .file-note {
-      font-size: 11px;
-      color: var(--text-muted);
-      margin-top: 2px;
-    }
-    input[type="file"] {
-      display: block;
-      font-size: 11px;
-      color: var(--text-muted);
-      margin-top: 3px;
+    .status.error{color:var(--danger);}
+    .footer-note{
+      margin-top:8px;
+      font-size:11px;
+      color:var(--muted);
+      display:flex;
+      justify-content:flex-end;
     }
   </style>
 </head>
 <body>
-  <div class="card">
+  <div class="wrap">
     <h1>Volleyball Scoreboard – Control</h1>
+    <div class="subtitle">
+      Usa el mismo <strong>room</strong> que en el overlay. Conecta una vez, luego controla todo desde aquí.
+    </div>
 
-    <div class="topbar">
-      <div class="col" style="max-width: 120px">
+    <div class="top-row">
+      <div class="field">
         <label>Room</label>
-        <input id="room" type="text" value="vb1" />
+        <input type="text" id="room" value="vb1" />
       </div>
-      <div class="grow">
+      <div class="field">
         <label>Match title</label>
-        <input
-          id="matchTitle"
-          type="text"
-          value="Bronze Medal Match · LAI"
-        />
+        <input type="text" id="matchTitle" value="Bronze Medal Match · LAI" />
       </div>
-      <div>
-        <button id="connect" class="btn-accent">Connect</button>
-      </div>
-      <div>
-        <button id="reset" class="btn-ghost">Reset</button>
-      </div>
+      <button id="connect" class="pill-btn primary">Connect</button>
+      <button id="reset" class="pill-btn danger">Reset</button>
     </div>
 
-    <!-- EQUIPO A -->
-    <div class="section-title">Equipo A</div>
-    <div class="row">
-      <div class="col" style="max-width: 120px">
-        <label>Nombre corto (siglas)</label>
-        <input id="aShort" type="text" value="ITA" maxlength="4" />
-      </div>
-      <div class="col">
-        <label>Nombre completo</label>
-        <input id="aName" type="text" value="Team A" />
-      </div>
-      <div class="col">
-        <label>Logo (URL)</label>
-        <input id="aLogoUrl" type="text" placeholder="https://..." />
-        <input id="aLogoFile" type="file" accept="image/*" />
-        <div class="file-note">Usa archivo o URL (archivo tiene prioridad).</div>
-      </div>
-      <div class="col" style="max-width: 120px">
-        <label>Sets ganados</label>
-        <input id="aSets" type="number" min="0" max="5" value="0" />
-      </div>
-    </div>
-
-    <!-- EQUIPO B -->
-    <div class="section-title">Equipo B</div>
-    <div class="row">
-      <div class="col" style="max-width: 120px">
-        <label>Nombre corto (siglas)</label>
-        <input id="bShort" type="text" value="USA" maxlength="4" />
-      </div>
-      <div class="col">
-        <label>Nombre completo</label>
-        <input id="bName" type="text" value="Team B" />
-      </div>
-      <div class="col">
-        <label>Logo (URL)</label>
-        <input id="bLogoUrl" type="text" placeholder="https://..." />
-        <input id="bLogoFile" type="file" accept="image/*" />
-        <div class="file-note">Usa archivo o URL (archivo tiene prioridad).</div>
-      </div>
-      <div class="col" style="max-width: 120px">
-        <label>Sets ganados</label>
-        <input id="bSets" type="number" min="0" max="5" value="0" />
-      </div>
-    </div>
-
-    <!-- MARCADOR ACTUAL -->
-    <div class="section-title">Marcador actual (set en juego)</div>
-    <div class="row">
-      <div class="col">
-        <div class="score-row">
-          <div class="score-label">A</div>
-          <button class="score-btn" data-score="-1" data-team="A">−</button>
-          <div id="scoreA" class="score-value">0</div>
-          <button class="score-btn" data-score="+1" data-team="A">+</button>
+    <div class="grid">
+      <div class="field-group">
+        <h2>Equipo A</h2>
+        <div class="field-row">
+          <div style="flex:1;">
+            <label>Nombre corto (siglas)</label>
+            <input type="text" id="aShort" value="ITA" />
+          </div>
+        </div>
+        <div class="field-row">
+          <div style="flex:1;">
+            <label>Logo (URL)</label>
+            <input type="text" id="aLogoUrl" placeholder="https://..." />
+          </div>
+        </div>
+        <div class="field-row">
+          <div style="flex:1;">
+            <label>Logo desde archivo</label>
+            <input type="file" id="aLogoFile" accept="image/*" />
+          </div>
+        </div>
+        <div class="field-row">
+          <div style="flex:1;">
+            <label>Sets ganados</label>
+            <input type="number" id="aSets" value="0" min="0" />
+          </div>
         </div>
       </div>
-      <div class="col">
-        <div class="score-row">
-          <div class="score-label">B</div>
-          <button class="score-btn" data-score="-1" data-team="B">−</button>
-          <div id="scoreB" class="score-value">0</div>
-          <button class="score-btn" data-score="+1" data-team="B">+</button>
+
+      <div class="field-group">
+        <h2>Equipo B</h2>
+        <div class="field-row">
+          <div style="flex:1;">
+            <label>Nombre corto (siglas)</label>
+            <input type="text" id="bShort" value="USA" />
+          </div>
         </div>
-      </div>
-      <div class="col">
-        <label>Serve</label>
-        <div class="serv-toggle">
-          <button type="button" id="serveA" class="active">A</button>
-          <button type="button" id="serveB">B</button>
+        <div class="field-row">
+          <div style="flex:1;">
+            <label>Logo (URL)</label>
+            <input type="text" id="bLogoUrl" placeholder="https://..." />
+          </div>
+        </div>
+        <div class="field-row">
+          <div style="flex:1;">
+            <label>Logo desde archivo</label>
+            <input type="file" id="bLogoFile" accept="image/*" />
+          </div>
+        </div>
+        <div class="field-row">
+          <div style="flex:1;">
+            <label>Sets ganados</label>
+            <input type="number" id="bSets" value="1" min="0" />
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- HIGHLIGHT -->
-    <div class="section-title">Highlight</div>
-    <div class="row">
-      <div class="col">
-        <button class="btn-pill active" data-hl="normal">Normal</button>
-        <button class="btn-pill" data-hl="setA">Set point A</button>
-        <button class="btn-pill" data-hl="setB">Set point B</button>
-        <button class="btn-pill" data-hl="matchA">Match point A</button>
-        <button class="btn-pill" data-hl="matchB">Match point B</button>
+    <div class="field-group">
+      <h2>Marcador actual (set en juego)</h2>
+
+      <div class="score-row">
+        <div class="score-team">
+          <div class="score-team-name">A</div>
+          <div class="score-controls">
+            <button class="score-btn" data-team="A" data-delta="-1">−</button>
+            <div class="score-value" id="scoreA">23</div>
+            <button class="score-btn" data-team="A" data-delta="1">+</button>
+          </div>
+        </div>
+        <div class="score-team">
+          <div class="score-team-name">B</div>
+          <div class="score-controls">
+            <button class="score-btn" data-team="B" data-delta="-1">−</button>
+            <div class="score-value" id="scoreB">24</div>
+            <button class="score-btn" data-team="B" data-delta="1">+</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="serve-toggle">
+        <span>Serve</span>
+        <button id="serveA" class="active">A</button>
+        <button id="serveB">B</button>
+      </div>
+
+      <div class="highlight-row">
+        <span>Highlight</span>
+        <button class="chip active" data-hl="normal">Normal</button>
+        <button class="chip" data-hl="spA">Set point A</button>
+        <button class="chip" data-hl="spB">Set point B</button>
+        <button class="chip" data-hl="mpA">Match point A</button>
+        <button class="chip" data-hl="mpB">Match point B</button>
+      </div>
+
+      <div class="view-row">
+        <span>Vista</span>
+        <button class="chip active" data-view="score">Marcador</button>
+        <button class="chip" data-view="sets">Resumen sets</button>
       </div>
     </div>
 
-    <!-- VISTA -->
-    <div class="section-title">Vista</div>
-    <div class="row">
-      <div class="col">
-        <button class="btn-pill active" data-view="score">Marcador</button>
-        <button class="btn-pill" data-view="sets">Resumen sets</button>
-      </div>
-    </div>
-
-    <div class="foot">
-      <div id="status">
-        <span class="status-dot status-bad"></span>
-        Sin conectar.
-      </div>
-      <div>
-        Atajos: + / − para sumar/restar puntos luego 😉
-      </div>
-    </div>
+    <div class="status" id="status">Sin conectar.</div>
+    <div class="footer-note">Atajos: + / − para sumar/restar puntos luego 😉</div>
   </div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
-    import {
-      getDatabase,
-      ref,
-      set,
-      onValue,
-    } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
+    import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
 
-    // ⚙️ MISMA CONFIG QUE YA USAS EN LOS OTROS OVERLAYS
+    // 🔥 Usa EXACTAMENTE el mismo config que en weightlifting_control.html
     const firebaseConfig = {
-      apiKey: "AIzaSyDB0r0rLCLpJX3DsNGMuvvTFUwCMBXRPpM",
-      authDomain: "tkd-overlay.firebaseapp.com",
-      databaseURL: "https://tkd-overlay-default-rtdb.firebaseio.com",
-      projectId: "tkd-overlay",
-      storageBucket: "tkd-overlay.firebasestorage.app",
-      messagingSenderId: "41501920835",
-      appId: "1:41501920835:web:4ccecdf129cf20619d8ef6",
-      measurementId: "G-CXBJCL86EM",
+      /* Pega aquí tu config de Firebase */
     };
 
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
-    // ----- estado local -----
-    let state = {
-      room: "vb1",
+    const $ = s => document.querySelector(s);
+    const $$ = s => Array.from(document.querySelectorAll(s));
+
+    const state = {
       matchTitle: "Bronze Medal Match · LAI",
-      teamA: {
-        short: "ITA",
-        name: "Team A",
-        logoUrl: "",
-        logoData: "",
-        sets: 0,
-        score: 0,
-        serves: true,
-      },
-      teamB: {
-        short: "USA",
-        name: "Team B",
-        logoUrl: "",
-        logoData: "",
-        sets: 0,
-        score: 0,
-        serves: false,
-      },
-      highlight: "normal", // normal | setA | setB | matchA | matchB
-      view: "score", // score | sets (más adelante)
+      aShort: "ITA",
+      bShort: "USA",
+      aSets: 0,
+      bSets: 1,
+      aScore: 23,
+      bScore: 24,
+      serve: "A",
+      highlight: "normal",
+      view: "score",
+      aLogoUrl: "",
+      bLogoUrl: "",
+      aLogoData: "",
+      bLogoData: ""
     };
 
+    let room = "vb1";
     let stateRef = null;
 
-    const $ = (id) => document.getElementById(id);
-    const statusEl = $("status");
-    const connectBtn = $("connect");
-    const resetBtn = $("reset");
-
-    // helpers
-    function updateFromForm() {
-      state.room = $("room").value.trim() || "vb1";
-      state.matchTitle = $("matchTitle").value || "";
-
-      state.teamA.short = $("aShort").value || "A";
-      state.teamA.name = $("aName").value || "";
-      state.teamA.logoUrl = $("aLogoUrl").value || "";
-      state.teamA.sets = Number($("aSets").value || 0);
-
-      state.teamB.short = $("bShort").value || "B";
-      state.teamB.name = $("bName").value || "";
-      state.teamB.logoUrl = $("bLogoUrl").value || "";
-      state.teamB.sets = Number($("bSets").value || 0);
+    function setStatus(msg, isError=false){
+      const el = $("#status");
+      el.textContent = msg;
+      el.classList.toggle("error", isError);
     }
 
-    function renderScores() {
-      $("scoreA").textContent = state.teamA.score;
-      $("scoreB").textContent = state.teamB.score;
-      $("aSets").value = state.teamA.sets;
-      $("bSets").value = state.teamB.sets;
-
-      $("serveA").classList.toggle("active", state.teamA.serves);
-      $("serveB").classList.toggle("active", state.teamB.serves);
+    function readInputsToState(){
+      state.matchTitle = $("#matchTitle").value || "";
+      state.aShort = $("#aShort").value || "";
+      state.bShort = $("#bShort").value || "";
+      state.aSets = parseInt($("#aSets").value || "0",10);
+      state.bSets = parseInt($("#bSets").value || "0",10);
+      state.aLogoUrl = $("#aLogoUrl").value.trim();
+      state.bLogoUrl = $("#bLogoUrl").value.trim();
     }
 
-    function pushState() {
-      if (!stateRef) return;
-      updateFromForm();
-      set(stateRef, state).catch((err) => {
-        console.error(err);
-        statusEl.innerHTML =
-          '<span class="status-dot status-bad"></span>Error enviando al overlay.';
+    function renderFromState(){
+      $("#matchTitle").value = state.matchTitle;
+      $("#aShort").value = state.aShort;
+      $("#bShort").value = state.bShort;
+      $("#aSets").value = state.aSets;
+      $("#bSets").value = state.bSets;
+      $("#scoreA").textContent = state.aScore;
+      $("#scoreB").textContent = state.bScore;
+      $("#aLogoUrl").value = state.aLogoUrl;
+      $("#bLogoUrl").value = state.bLogoUrl;
+
+      $("#serveA").classList.toggle("active", state.serve==="A");
+      $("#serveB").classList.toggle("active", state.serve==="B");
+
+      $$(".highlight-row .chip").forEach(ch=>{
+        ch.classList.toggle("active", ch.dataset.hl === state.highlight || (ch.dataset.hl==="normal" && state.highlight==="normal"));
+      });
+      $$(".view-row .chip").forEach(ch=>{
+        ch.classList.toggle("active", ch.dataset.view === state.view);
       });
     }
 
-    // logo desde archivo → dataURL
-    function wireLogoFile(inputEl, teamKey) {
-      inputEl.addEventListener("change", (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = () => {
-          state[teamKey].logoData = reader.result;
-          pushState();
-        };
-        reader.readAsDataURL(file);
-      });
+    async function pushState(){
+      if(!stateRef) return;
+      readInputsToState();
+      try{
+        await set(stateRef, state);
+      }catch(e){
+        console.error(e);
+        setStatus("Error al enviar estado: " + (e.message || e), true);
+      }
     }
-    wireLogoFile($("aLogoFile"), "teamA");
-    wireLogoFile($("bLogoFile"), "teamB");
 
     // botones score
-    document.querySelectorAll(".score-btn").forEach((btn) => {
-      btn.addEventListener("click", () => {
+    $$(".score-btn").forEach(btn=>{
+      btn.addEventListener("click", ()=>{
         const team = btn.dataset.team;
-        const delta = btn.dataset.score === "+1" ? 1 : -1;
-        if (team === "A") {
-          state.teamA.score = Math.max(0, state.teamA.score + delta);
-        } else {
-          state.teamB.score = Math.max(0, state.teamB.score + delta);
+        const delta = parseInt(btn.dataset.delta,10);
+        if(team==="A"){
+          state.aScore = Math.max(0, state.aScore + delta);
+        }else{
+          state.bScore = Math.max(0, state.bScore + delta);
         }
-        renderScores();
+        renderFromState();
         pushState();
       });
     });
 
     // serve
-    $("serveA").addEventListener("click", () => {
-      state.teamA.serves = true;
-      state.teamB.serves = false;
-      renderScores();
-      pushState();
-    });
-    $("serveB").addEventListener("click", () => {
-      state.teamA.serves = false;
-      state.teamB.serves = true;
-      renderScores();
-      pushState();
-    });
+    $("#serveA").addEventListener("click", ()=>{ state.serve="A"; renderFromState(); pushState(); });
+    $("#serveB").addEventListener("click", ()=>{ state.serve="B"; renderFromState(); pushState(); });
 
-    // highlight pills
-    document.querySelectorAll("[data-hl]").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        document
-          .querySelectorAll("[data-hl]")
-          .forEach((b) => b.classList.remove("active"));
-        btn.classList.add("active");
-        state.highlight = btn.dataset.hl;
+    // highlight
+    $$(".highlight-row .chip").forEach(ch=>{
+      ch.addEventListener("click", ()=>{
+        state.highlight = ch.dataset.hl || "normal";
+        renderFromState();
         pushState();
       });
     });
 
-    // view pills
-    document.querySelectorAll("[data-view]").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        document
-          .querySelectorAll("[data-view]")
-          .forEach((b) => b.classList.remove("active"));
-        btn.classList.add("active");
-        state.view = btn.dataset.view;
+    // vista
+    $$(".view-row .chip").forEach(ch=>{
+      ch.addEventListener("click", ()=>{
+        state.view = ch.dataset.view || "score";
+        renderFromState();
         pushState();
       });
     });
 
-    // connect
-    connectBtn.addEventListener("click", () => {
-      updateFromForm();
-      const room = state.room;
-      stateRef = ref(db, `vb/${room}/state`);
-      statusEl.innerHTML =
-        '<span class="status-dot status-ok"></span>Conectando a room "' +
-        room +
-        '"…';
+    // sets manual
+    $("#aSets").addEventListener("change", ()=>{ state.aSets=parseInt($("#aSets").value||"0",10); pushState(); });
+    $("#bSets").addEventListener("change", ()=>{ state.bSets=parseInt($("#bSets").value||"0",10); pushState(); });
 
-      // escribir estado inicial
-      set(stateRef, state)
-        .then(() => {
-          statusEl.innerHTML =
-            '<span class="status-dot status-ok"></span>Conectado a room "' +
-            room +
-            '"';
-          // opcional: escuchar cambios remotos
-          onValue(stateRef, (snap) => {
-            if (!snap.exists()) return;
-            state = snap.val();
-            $("room").value = state.room;
-            $("matchTitle").value = state.matchTitle;
-            $("aShort").value = state.teamA.short;
-            $("aName").value = state.teamA.name;
-            $("aLogoUrl").value = state.teamA.logoUrl || "";
-            $("aSets").value = state.teamA.sets;
-            $("bShort").value = state.teamB.short;
-            $("bName").value = state.teamB.name;
-            $("bLogoUrl").value = state.teamB.logoUrl || "";
-            $("bSets").value = state.teamB.sets;
+    // logos desde archivo
+    function hookLogoFile(inputId, key){
+      $(inputId).addEventListener("change", e=>{
+        const file = e.target.files[0];
+        if(!file) return;
+        const reader = new FileReader();
+        reader.onload = () =>{
+          state[key] = reader.result;
+          pushState();
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+    hookLogoFile("#aLogoFile", "aLogoData");
+    hookLogoFile("#bLogoFile", "bLogoData");
 
-            document
-              .querySelectorAll("[data-hl]")
-              .forEach((b) =>
-                b.classList.toggle("active", b.dataset.hl === state.highlight),
-              );
-            document
-              .querySelectorAll("[data-view]")
-              .forEach((b) =>
-                b.classList.toggle("active", b.dataset.view === state.view),
-              );
-
-            renderScores();
-          });
-        })
-        .catch((err) => {
-          console.error(err);
-          statusEl.innerHTML =
-            '<span class="status-dot status-bad"></span>Error al conectar.';
-        });
+    // connect (usa misma rama base que Taekwondo: tkd/<room>/vbScore)
+    $("#connect").addEventListener("click", async ()=>{
+      room = $("#room").value.trim() || "vb1";
+      stateRef = ref(db, `tkd/${room}/vbScore`);
+      try{
+        await set(stateRef, state);   // crea / actualiza el nodo inicial
+        setStatus(`Conectado a room "${room}".`);
+      }catch(e){
+        console.error(e);
+        setStatus("Error al conectar: " + (e.message || e), true);
+      }
     });
 
-    // reset marcador actual (no resetea sets)
-    resetBtn.addEventListener("click", () => {
-      state.teamA.score = 0;
-      state.teamB.score = 0;
-      renderScores();
-      pushState();
+    $("#reset").addEventListener("click", async ()=>{
+      state.aScore = 0;
+      state.bScore = 0;
+      state.aSets = 0;
+      state.bSets = 0;
+      state.serve = "A";
+      state.highlight = "normal";
+      renderFromState();
+      await pushState();
     });
 
-    // estado inicial UI
-    renderScores();
+    renderFromState();
   </script>
 </body>
 </html>
