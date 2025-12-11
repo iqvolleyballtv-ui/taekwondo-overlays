@@ -202,8 +202,15 @@
 
     // 🔥 MISMO CONFIG que en el control
     const firebaseConfig = {
-      /* Pega aquí TU MISMO config */
-    };
+  apiKey: "TU_API_KEY",
+  authDomain: "tkd-overlay.firebaseapp.com",
+  databaseURL: "https://tkd-overlay-default-rtdb.firebaseio.com",
+  projectId: "tkd-overlay",
+  storageBucket: "tkd-overlay.appspot.com",
+  messagingSenderId: "41501920835",
+  appId: "1:41501920835:web:4ccecdf129cf20619d8ef6",
+  measurementId: "G-CXBJCL86EM"
+};
 
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
