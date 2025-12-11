@@ -1,218 +1,296 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
   <meta charset="UTF-8" />
   <title>VB Score Overlay</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     :root{
-      --card:#050814ee;
-      --card-inner:#0a0f23ee;
-      --accent:#f7c43a;
-      --accent-soft:#f7c43a22;
-      --text:#f5f7ff;
-      --muted:#8b92b3;
-      --serve:#45d56b;
-      --radius-lg:22px;
-      --radius-pill:999px;
-      --font:"SF Pro Display","Inter",-apple-system,BlinkMacSystemFont,system-ui,sans-serif;
+      --bg: rgba(0,0,0,0);
+      --card-bg: rgba(5,10,30,0.96);
+      --card-border: rgba(255,255,255,0.04);
+      --row-bg: #050818;
+      --pill-bg: #f9c74f;
+      --pill-text: #11101a;
+      --text-main: #f8f9ff;
+      --text-muted: #8f95b5;
+      --accent: #f9c74f;
+      --danger: #ff4d67;
+      --success: #3bd882;
     }
-    *{box-sizing:border-box;margin:0;padding:0;font-family:var(--font);}
-    body{background:transparent;color:var(--text);overflow:hidden;}
-    .root{position:fixed;top:24px;left:24px;transform-origin:top left;}
+    *{
+      box-sizing:border-box;
+      font-family: system-ui,-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text",sans-serif;
+    }
+    body{
+      margin:0;
+      padding:0;
+      background:var(--bg);
+      color:var(--text-main);
+    }
+    .overlay-root{
+      position:absolute;
+      left:40px;
+      top:40px;
+      width:480px;
+      color:var(--text-main);
+      font-smoothing:antialiased;
+    }
     .score-card{
-      background:var(--card);
-      border-radius:var(--radius-lg);
-      padding:6px;
-      box-shadow:0 18px 45px rgba(0,0,0,.85);
-      border:1px solid #141a30;
-      width:540px;
+      background:radial-gradient(circle at top left,#141b3d 0,#050818 55%);
+      border-radius:24px;
+      padding:10px 18px 12px;
+      border:1px solid var(--card-border);
+      box-shadow:0 26px 40px rgba(0,0,0,0.8);
     }
-    .score-inner{
-      background:var(--card-inner);
-      border-radius:18px;
-      padding:10px 14px 10px 16px;
-    }
-    .header{
+    .score-top{
       display:flex;
       justify-content:space-between;
       align-items:center;
-      margin-bottom:8px;
-      font-size:13px;
-      letter-spacing:.18em;
-      text-transform:uppercase;
-      color:var(--muted);
+      padding-bottom:6px;
+      border-bottom:1px solid rgba(255,255,255,0.06);
+      margin-bottom:6px;
     }
-    .header-title{font-weight:500;}
-    .header-right{display:flex;align-items:center;gap:10px;}
-    .live-pill{
-      border-radius:var(--radius-pill);
-      padding:2px 10px;
-      border:1px solid #26314d;
-      font-size:11px;
-      letter-spacing:.16em;
+    .score-top-left{
+      font-size:12px;
+      letter-spacing:0.18em;
       text-transform:uppercase;
-      display:flex;
+      color:var(--text-muted);
+    }
+    .score-top-left span{
+      color:var(--text-main);
+    }
+    .live-pill{
+      display:inline-flex;
       align-items:center;
       gap:6px;
+      padding:4px 10px;
+      border-radius:999px;
+      background:rgba(255,255,255,0.06);
+      font-size:11px;
+      text-transform:uppercase;
+      letter-spacing:0.18em;
     }
     .live-dot{
-      width:6px;height:6px;border-radius:50%;
-      background:#ff4949;box-shadow:0 0 8px rgba(255,73,73,.9);
+      width:7px;
+      height:7px;
+      border-radius:50%;
+      background:var(--success);
+      box-shadow:0 0 8px rgba(59,216,130,0.9);
     }
-    .teams{display:flex;flex-direction:column;gap:6px;}
+    .teams{
+      margin-top:4px;
+    }
     .team-row{
       display:grid;
-      grid-template-columns:auto auto 1fr auto auto;
+      grid-template-columns:54px minmax(0,1fr) 76px;
       align-items:center;
-      gap:10px;
-      padding:6px 8px;
-      border-radius:14px;
-      background:rgba(4,7,18,.9);
+      padding:5px 0;
+    }
+    .team-row + .team-row{
+      border-top:1px solid rgba(255,255,255,0.04);
+      margin-top:2px;
+      padding-top:7px;
     }
     .pill-code{
-      width:48px;height:36px;
-      border-radius:12px;
-      background:var(--accent);
-      display:flex;align-items:center;justify-content:center;
-      font-size:14px;font-weight:700;
-      letter-spacing:.18em;text-transform:uppercase;
-      color:#111321;
+      width:46px;
+      height:30px;
+      border-radius:999px;
+      background:var(--pill-bg);
+      color:var(--pill-text);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:13px;
+      font-weight:700;
+      letter-spacing:0.16em;
     }
     .logo-box{
-      width:34px;height:34px;
-      border-radius:11px;
-      background:#070b18;
-      border:1px solid #222840;
-      display:flex;align-items:center;justify-content:center;
+      width:32px;
+      height:32px;
+      border-radius:10px;
+      background:rgba(255,255,255,0.04);
+      display:flex;
+      align-items:center;
+      justify-content:center;
       overflow:hidden;
+      margin-right:8px;
     }
-    .logo-box img{max-width:100%;max-height:100%;object-fit:contain;}
-    .team-name{padding-left:4px;}
+    .logo-box img{
+      max-width:100%;
+      max-height:100%;
+      display:block;
+    }
+    .team-name{
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
     .team-name-short{
-      font-size:15px;
-      letter-spacing:.22em;
-      text-transform:uppercase;
+      font-size:14px;
       font-weight:700;
+      letter-spacing:0.14em;
+      text-transform:uppercase;
     }
     .sets-pill{
-      border-radius:var(--radius-pill);
-      background:#070b18;
-      border:1px solid #20263c;
-      padding:4px 11px;
-      display:flex;align-items:center;gap:6px;
-      font-size:11px;text-transform:uppercase;color:var(--muted);
+      display:flex;
+      align-items:center;
+      justify-content:flex-end;
+      gap:8px;
+      color:var(--text-muted);
+      font-size:11px;
+      text-transform:uppercase;
+      letter-spacing:0.12em;
     }
-    .sets-label{letter-spacing:.16em;}
-    .sets-value{font-size:15px;color:var(--text);font-weight:600;}
+    .sets-value{
+      padding:4px 9px;
+      border-radius:999px;
+      background:rgba(255,255,255,0.06);
+      color:var(--accent);
+      font-weight:600;
+      font-size:13px;
+    }
     .score-box{
-      width:80px;
-      border-radius:16px;
-      background:#0b1226;
-      padding:4px 10px;
-      display:flex;align-items:center;justify-content:space-between;
+      display:flex;
+      align-items:center;
+      justify-content:flex-end;
       gap:6px;
     }
-    .score-value{font-size:26px;font-weight:800;letter-spacing:.03em;}
+    .score-value{
+      font-size:26px;
+      font-weight:800;
+      min-width:32px;
+      text-align:right;
+    }
     .serve-indicator{
-      width:14px;height:14px;border-radius:999px;
-      border:2px solid rgba(69,213,107,.28);
-      display:flex;align-items:center;justify-content:center;
+      width:10px;
+      height:10px;
+      border-radius:50%;
+      border:2px solid rgba(255,255,255,0.35);
+      display:flex;
+      align-items:center;
+      justify-content:center;
     }
     .serve-dot{
-      width:6px;height:6px;border-radius:50%;
-      background:var(--serve);box-shadow:0 0 10px rgba(69,213,107,.9);
+      width:5px;
+      height:5px;
+      border-radius:50%;
+      background:var(--success);
     }
-    .score-box.sp{outline:2px solid var(--accent);}
-    .score-box.mp{outline:2px solid #ff4b6a;}
-    .summary{
+    .serve-indicator.off{
+      opacity:0.25;
+    }
+    .highlight-spA .team-row[data-team="A"] .score-box{
+      text-shadow:0 0 16px rgba(249,199,79,0.9);
+      color:var(--accent);
+    }
+    .highlight-spB .team-row[data-team="B"] .score-box{
+      text-shadow:0 0 16px rgba(249,199,79,0.9);
+      color:var(--accent);
+    }
+    .highlight-mpA .team-row[data-team="A"] .score-box{
+      text-shadow:0 0 18px rgba(255,77,103,0.9);
+      color:#ffffff;
+    }
+    .highlight-mpB .team-row[data-team="B"] .score-box{
+      text-shadow:0 0 18px rgba(255,77,103,0.9);
+      color:#ffffff;
+    }
+    .summary-row{
       margin-top:6px;
-      padding:6px 8px 0;
+      padding-top:6px;
+      border-top:1px solid rgba(255,255,255,0.06);
       font-size:11px;
-      color:var(--muted);
-      letter-spacing:.18em;
-      text-transform:uppercase;
-      display:none;
+      color:var(--text-muted);
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:8px;
     }
-    .pill-code {
-  display: none !important;
-}
-    .summary.visible{display:block;}
+    .summary-label{
+      letter-spacing:0.18em;
+      text-transform:uppercase;
+    }
+    .summary-items{
+      display:flex;
+      flex-wrap:wrap;
+      gap:6px;
+      justify-content:flex-end;
+    }
+    .summary-pill{
+      padding:3px 8px;
+      border-radius:999px;
+      background:rgba(255,255,255,0.06);
+      font-size:11px;
+      color:var(--text-main);
+    }
+    .summary-pill .winner{
+      font-weight:600;
+      margin-left:4px;
+      color:var(--accent);
+    }
+    /* Vista */
+    .view-score .score-section{display:block;}
+    .view-score .summary-row{display:flex;}
+    .view-summary .score-section{display:none;}
+    .view-summary .summary-row{display:flex;}
   </style>
 </head>
 <body>
-  <div class="root">
-    <div class="score-card">
-      <div class="score-inner">
-        <div class="header">
-          <div class="header-title" id="title">BRONZE MEDAL MATCH</div>
-          <div class="header-right">
-            <div class="live-pill">
-              <span class="live-dot"></span>
-              <span>LIVE SCORE</span>
+  <div id="overlayRoot" class="overlay-root view-score">
+    <div class="score-card score-section">
+      <div class="score-top">
+        <div class="score-top-left">
+          <span id="matchTitle">BRONZE MEDAL MATCH · LAI</span>
+        </div>
+        <div class="live-pill">
+          <div class="live-dot"></div>
+          Live score
+        </div>
+      </div>
+
+      <div class="teams" id="teams">
+        <div class="team-row" id="rowA" data-team="A">
+          <div class="pill-code" id="codeA">ITA</div>
+          <div class="team-name">
+            <div class="logo-box"><img id="logoA" alt="" /></div>
+            <div class="team-name-short" id="shortA">ITA</div>
+          </div>
+          <div class="sets-pill">
+            <span class="sets-label">SETS</span>
+            <span class="sets-value" id="setsA">0</span>
+          </div>
+          <div class="score-box" id="scoreBoxA">
+            <div class="score-value" id="scoreA">23</div>
+            <div class="serve-indicator off" id="serveA">
+              <div class="serve-dot"></div>
             </div>
           </div>
         </div>
 
-        <div class="teams" id="teams">
-          <div class="team-row" id="rowA">
-
-  <!-- Volvemos a poner el codeA, pero lo vamos a ocultar con CSS -->
-  <div class="pill-code" id="codeA">ITA</div>
-
-  <div class="logo-box">
-    <img id="logoA" />
-  </div>
-
-  <div class="team-name">
-    <div class="team-name-short" id="shortA">ITA</div>
-  </div>
-
-  <div class="sets-pill">
-    <span class="sets-label">SETS</span>
-    <span class="sets-value" id="setsA">0</span>
-  </div>
-
-  <div class="score-box" id="scoreBoxA">
-    <div class="score-value" id="scoreA">23</div>
-    <div class="serve-indicator" id="serveA" style="visibility:hidden;">
-      <div class="serve-dot"></div>
-    </div>
-  </div>
-
-</div>
-
-<div class="team-row" id="rowB">
-
-  <!-- Volvemos a poner el codeB -->
-  <div class="pill-code" id="codeB">USA</div>
-
-  <div class="logo-box">
-    <img id="logoB" />
-  </div>
-
-  <div class="team-name">
-    <div class="team-name-short" id="shortB">USA</div>
-  </div>
-
-  <div class="sets-pill">
-    <span class="sets-label">SETS</span>
-    <span class="sets-value" id="setsB">1</span>
-  </div>
-
-  <div class="score-box" id="scoreBoxB">
-    <div class="score-value" id="scoreB">24</div>
-    <div class="serve-indicator" id="serveB" style="visibility:hidden;">
-      <div class="serve-dot"></div>
-    </div>
-  </div>
-
-</div>
-
+        <div class="team-row" id="rowB" data-team="B">
+          <div class="pill-code" id="codeB">USA</div>
+          <div class="team-name">
+            <div class="logo-box"><img id="logoB" alt="" /></div>
+            <div class="team-name-short" id="shortB">USA</div>
+          </div>
+          <div class="sets-pill">
+            <span class="sets-label">SETS</span>
+            <span class="sets-value" id="setsB">1</span>
+          </div>
+          <div class="score-box" id="scoreBoxB">
+            <div class="score-value" id="scoreB">24</div>
+            <div class="serve-indicator off" id="serveB">
+              <div class="serve-dot"></div>
+            </div>
+          </div>
         </div>
+      </div>
 
-        <div class="summary" id="summary">
-          <span id="summaryText">SET 1 · 25–23 · TEAM B</span>
+      <div class="summary-row">
+        <div class="summary-label">Resumen sets</div>
+        <div class="summary-items" id="summaryItems">
+          <!-- Ejemplo: SET 1 · 25–23 · TEAM B -->
         </div>
       </div>
     </div>
@@ -222,66 +300,116 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
     import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
 
-    // 🔥 MISMO CONFIG que en el control
+    // 🔐 Pega aquí el MISMO config que en weightlifting_control.html
     const firebaseConfig = {
-  apiKey: "AIzaSyD8r0rLLcLPJx3DsNGMuvVTfuwCMBxRPpM",
-  authDomain: "tkd-overlay.firebaseapp.com",
-  databaseURL: "https://tkd-overlay-default-rtdb.firebaseio.com",
-  projectId: "tkd-overlay",
-  storageBucket: "tkd-overlay.firebasestorage.app",
-  messagingSenderId: "41501920835",
-  appId: "1:41501920835:web:4ccecdf129cf20619d8ef6",
-  measurementId: "G-CXBJCL86EM"
-};
+      apiKey: "TU_API_KEY",
+      authDomain: "tu-proyecto.firebaseapp.com",
+      databaseURL: "https://tu-proyecto-default-rtdb.firebaseio.com",
+      projectId: "tu-proyecto",
+      storageBucket: "tu-proyecto.appspot.com",
+      messagingSenderId: "1234567890",
+      appId: "1:1234567890:web:xxxxxxxxxxxxxx"
+    };
 
     const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
+    const db  = getDatabase(app);
 
-    const params = new URLSearchParams(location.search);
-    const room = params.get("room") || "vb1";
+    const $  = (s) => document.querySelector(s);
+    const $$ = (s) => Array.from(document.querySelectorAll(s));
 
-    // 👉 Usa misma ruta que el control: tkd/<room>/vbScore
-    const stateRef = ref(db, `tkd/${room}/vbScore`);
-
-    const $ = s => document.querySelector(s);
-
-    function applyState(s){
-      $("#title").textContent = s.matchTitle || "";
-      $("#shortA").textContent = s.aShort || "";
-      $("#shortB").textContent = s.bShort || "";
-      $("#codeA").textContent = (s.aShort || "").toUpperCase();
-      $("#codeB").textContent = (s.bShort || "").toUpperCase();
-      $("#setsA").textContent = s.aSets ?? 0;
-      $("#setsB").textContent = s.bSets ?? 0;
-      $("#scoreA").textContent = s.aScore ?? 0;
-      $("#scoreB").textContent = s.bScore ?? 0;
-
-      const aLogo = s.aLogoData || s.aLogoUrl || "";
-      const bLogo = s.bLogoData || s.bLogoUrl || "";
-      $("#logoA").src = aLogo;
-      $("#logoB").src = bLogo;
-
-      $("#serveA").style.visibility = s.serve === "A" ? "visible" : "hidden";
-      $("#serveB").style.visibility = s.serve === "B" ? "visible" : "hidden";
-
-      $("#scoreBoxA").classList.remove("sp","mp");
-      $("#scoreBoxB").classList.remove("sp","mp");
-      const hl = s.highlight || "normal";
-      if(hl === "spA") $("#scoreBoxA").classList.add("sp");
-      if(hl === "spB") $("#scoreBoxB").classList.add("sp");
-      if(hl === "mpA") $("#scoreBoxA").classList.add("mp");
-      if(hl === "mpB") $("#scoreBoxB").classList.add("mp");
-
-      const showSummary = s.view === "sets";
-      $("#summary").classList.toggle("visible", showSummary);
-      const teamsEl = $("#teams");
-      if(teamsEl) teamsEl.style.opacity = showSummary ? "0.25" : "1";
+    function getRoomFromQuery(){
+      const params = new URLSearchParams(window.location.search);
+      return params.get("room") || "vb1";
     }
 
-    onValue(stateRef, snap=>{
-      if(!snap.exists()) return;
-      applyState(snap.val());
-    });
+    function setText(id, value){
+      const el = $(id);
+      if (!el) return;
+      el.textContent = value ?? "";
+    }
+
+    function setLogo(id, url){
+      const img = $(id);
+      if (!img) return;
+      if (url){
+        img.src = url;
+        img.style.visibility = "visible";
+      }else{
+        img.removeAttribute("src");
+        img.style.visibility = "hidden";
+      }
+    }
+
+    function renderOverlay(state){
+      setText("#matchTitle", state.matchTitle || "");
+      setText("#codeA", state.aShort || "");
+      setText("#shortA", state.aShort || "");
+      setText("#codeB", state.bShort || "");
+      setText("#shortB", state.bShort || "");
+
+      setLogo("#logoA", state.aLogoUrl || "");
+      setLogo("#logoB", state.bLogoUrl || "");
+
+      setText("#setsA", state.aSets ?? 0);
+      setText("#setsB", state.bSets ?? 0);
+      setText("#scoreA", state.scoreA ?? 0);
+      setText("#scoreB", state.scoreB ?? 0);
+
+      // Serve indicator
+      const serve = state.serve || "A";
+      $("#serveA").classList.toggle("off", serve !== "A");
+      $("#serveB").classList.toggle("off", serve !== "B");
+
+      // Highlight
+      const root = $("#overlayRoot");
+      root.classList.remove("highlight-spA","highlight-spB","highlight-mpA","highlight-mpB");
+      if (state.highlight && state.highlight !== "normal"){
+        root.classList.add("highlight-" + state.highlight);
+      }
+
+      // Vista
+      root.classList.remove("view-score","view-summary");
+      if (state.view === "summary"){
+        root.classList.add("view-summary");
+      }else{
+        root.classList.add("view-score");
+      }
+
+      // Resumen de sets
+      const summary = Array.isArray(state.summary) ? state.summary : [];
+      const container = $("#summaryItems");
+      container.innerHTML = "";
+      summary.forEach(item=>{
+        const pill = document.createElement("div");
+        pill.className = "summary-pill";
+        const setNum = item.set ?? "?";
+        const a = item.scoreA ?? 0;
+        const b = item.scoreB ?? 0;
+        const winner = item.winner === "A" ? (state.aShort || "A")
+                      : item.winner === "B" ? (state.bShort || "B")
+                      : "";
+        pill.textContent = `Set ${setNum} · ${a}–${b}`;
+        if (winner){
+          const span = document.createElement("span");
+          span.className = "winner";
+          span.textContent = `· ${winner}`;
+          pill.appendChild(span);
+        }
+        container.appendChild(pill);
+      });
+    }
+
+    function init(){
+      const room = getRoomFromQuery();
+      const stateRef = ref(db, `tkd/${room}/vbScore`);
+      onValue(stateRef, (snap)=>{
+        const val = snap.val();
+        if (!val) return;
+        renderOverlay(val);
+      });
+    }
+
+    init();
   </script>
 </body>
 </html>
